@@ -2,3 +2,77 @@
     border-right: 2px solid rgb(243, 243, 243);
     min-width: 60px!important;
 }
+
+
+.header{
+    padding: 10px;
+    font-size: 13px;
+}
+
+
+.p-paginator{
+
+    background-color: #ffffff00!important;
+    padding: 0;
+
+}
+
+
+
+.p-paginator{
+
+    background-color: #ffffff02!important;
+    padding: 0;
+    margin: 0;
+    font-size: 5px!important;
+    height: 52px;
+}
+
+
+.p-dropdown {
+    height: 40px;
+    font-size:13px ;
+
+}
+
+.p-dropdown-label {
+    font-size: 13px;
+}
+
+
+.p-paginator-page{
+    font-size: 13px;
+}
+
+
+.p-datatable-footer{
+    padding: 0px;
+    border-top: rgb(209, 209, 209);
+    border-top-width: 1px;
+    border-top-style: solid;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+ 
+}
+
+
+.p-inputtext {
+    font-size: 13px;
+   
+
+}
+
+
+Button{
+    
+    font-size: 12px;
+    height: 35px;
+    margin-left: 20px;
+    
+    }
+
+.p-button-label{
+    font-weight: 500!important;
+
+}
