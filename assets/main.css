@@ -83,3 +83,8 @@ Button{
 .p-calendar{
 margin-left: 5px;
 }
+
+
+.p-column-header-content{
+    font-weight: 500;
+}

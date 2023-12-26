@@ -21,7 +21,7 @@
       :virtualScrollerOptions="{ itemSize: 30 }"
       resizableColumns 
       columnResizeMode="expand" 
-      tableStyle="font-size: 13px;"
+      tableStyle="font-size: 12px;"
       @selection-change="selectedProduct = $event.value"
       
         >
