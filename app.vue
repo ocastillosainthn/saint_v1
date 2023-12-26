@@ -1,7 +1,10 @@
   <template>
+
+
+
     <div>
-      <div class="header"> Filtrar de  <Calendar showButtonBar style="max-width:125px; margin-right:10px; padding: 0px; font-size:11px; height:35px; border-color: rgba(241, 241, 241, 0.64); " v-model="startDate" showIcon iconDisplay="input"  />  
-        hasta  <Calendar showButtonBar style="max-width:125px; padding: 0px; font-size:11px; height:35px;" v-model="endDate" showIcon iconDisplay="input" />
+      <div class="header"> Filtrar de   <Calendar showButtonBar style="max-width:125px; margin-right:10px; padding: 0px; font-size:11px; height:35px; border-color: rgba(241, 241, 241, 0.64); " v-model="startDate" showIcon iconDisplay="input"  />  
+        hasta   <Calendar showButtonBar style="max-width:125px; padding: 0px; font-size:11px; height:35px;" v-model="endDate" showIcon iconDisplay="input" />
         <Button label="Descargar" @click="downloadCSV"  icon="pi pi-download" iconPos="right" size="small"></Button>
       </div>
       <DataTable 
@@ -22,7 +25,7 @@
       @selection-change="selectedProduct = $event.value"
       
         >
-        <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :frozen="col.frozen"  :class="col.class"/>
+        <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :frozen="col.frozen"  :class="col.class" style="max-width:500px;"/>
         <template 
         #footer > 
         <div style="display: flex; flex-direction: row; font-size: 13px; font-weight: 500; align-items: center;  justify-content:left;"  > 

@@ -6,7 +6,10 @@
 
 .header{
     padding: 10px;
-    font-size: 13px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+
 }
 
 
