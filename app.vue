@@ -1,10 +1,23 @@
 <template>
   <div>
-    <DataTable v-if="columns.length > 0" :value="products" showGridlines  size="small"
-      sortField="Id"  :sortOrder="-1"  scrollable scrollHeight="95VH" :virtualScrollerOptions="{ itemSize: 30 }"
-      resizableColumns columnResizeMode="fit" style="font-size: 12px;"
+    <DataTable 
+    v-model:selection="selectedProduct" 
+    v-if="columns.length > 0" 
+    selectionMode="single" 
+    :value="products" 
+    showGridlines  
+    size="small"
+    sortField="Id"  
+    :sortOrder="-1" 
+    scrollable 
+    scrollHeight="95VH" 
+    :virtualScrollerOptions="{ itemSize: 30 }"
+    resizableColumns 
+    columnResizeMode="fit" 
+    style="font-size: 12px;"
+    @selection-change="selectedProduct = $event.value"
       >
-      <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" />
+      <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :frozen="col.frozen"  :class="col.class"/>
       <template #footer> Total records: {{ products.length }} </template>
     </DataTable>
     <div v-else>...</div>
@@ -23,7 +36,8 @@ export default {
       loading: true,
       pageIndex: 1,
       pageSize: 1000,
-      totalRecords: 0
+      totalRecords: 0,
+      selectedProduct: null
     }
   },
   async mounted() {
@@ -36,6 +50,8 @@ export default {
     let { data, error, count } = await supabase
       .from('promoUNOnavidad')
       .select('*', { count: 'exact' })
+      .neq('email', '')
+      .order('id', { ascending: false })
       .range((this.pageIndex - 1) * this.pageSize, this.pageIndex * this.pageSize - 1);
 
     if (error) throw error;
@@ -61,6 +77,8 @@ export default {
       return Object.keys(dataObject).map(key => ({
         field: key,
         header: this.capitalizeFirstLetter(key),
+         frozen: key === 'id',
+         class: key === 'id' ? 'frozen-column-border' : ''
       }));
     },
     capitalizeFirstLetter(string) {

@@ -1,0 +1,4 @@
+.frozen-column-border {
+    border-right: 2px solid rgb(243, 243, 243);
+    min-width: 60px!important;
+}

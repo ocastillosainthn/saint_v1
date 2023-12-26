@@ -22,6 +22,6 @@ export default defineNuxtConfig({
    
   }
 },
-  css: ['primevue/resources/themes/lara-light-teal/theme.css' ]
+  css: ['primevue/resources/themes/lara-light-teal/theme.css', '~/assets/main.css' ]
 })
 
