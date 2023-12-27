@@ -1,12 +1,10 @@
   <template>
-
-
-
     <div>
-      <div class="header"> Filtrar de   <Calendar showButtonBar style="max-width:125px; margin-right:10px; padding: 0px; font-size:11px; height:35px; border-color: rgba(241, 241, 241, 0.64); " v-model="startDate" showIcon iconDisplay="input"  />  
-        hasta   <Calendar showButtonBar style="max-width:125px; padding: 0px; font-size:11px; height:35px;" v-model="endDate" showIcon iconDisplay="input" />
-        <Button label="Descargar" @click="downloadCSV"  icon="pi pi-download" iconPos="right" size="small"></Button>
+      <div class="header"> Filtrar de   <Calendar showButtonBar style="max-width:125px; margin-right:10px; padding: 0px; font-size:11px; height:33px; border-color: rgba(241, 241, 241, 0.64); " v-model="startDate" showIcon iconDisplay="input"  />  
+        hasta   <Calendar showButtonBar style="max-width:125px; padding: 0px; font-size:11px; height:33px;" v-model="endDate" showIcon iconDisplay="input" />
+        <Button label="Descargar" @click="downloadCSV"  icon="pi pi-download" iconPos="right" size="small" style="height: 33px; font-size: 12px; font-weight: 100;"></Button>
       </div>
+
       <DataTable 
       v-model:selection="selectedProduct" 
       v-if="columns.length > 0" 
@@ -25,17 +23,30 @@
       @selection-change="selectedProduct = $event.value"
       
         >
-        <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :frozen="col.frozen"  :class="col.class" style="max-width:500px;"/>
+      <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :frozen="col.frozen"  :class="col.class" style="max-width:500px "> 
+        
+        <template v-if="col.isBoolean" v-slot:body="slotProps">
+          <Checkbox v-model="slotProps.data[col.field]" style="margin-left: 10px;" :binary="true"  /> 
+        </template>
+
+      <template v-else v-slot:body="slotProps">
+        {{ slotProps.data[col.field] }}
+      </template>
+
+        </Column>
+    
+
+        
         <template 
         #footer > 
         <div style="display: flex; flex-direction: row; font-size: 13px; font-weight: 500; align-items: center;  justify-content:left;"  > 
-          <Paginator  :rows="100" :totalRecords="totalRecords"  :rowsPerPageOptions="[100, 500, 1000]" :pageLinkSize="4"  @page="onPageChange" >  </Paginator>
+          <Paginator  :rows="100" :totalRecords="totalRecords"  :rowsPerPageOptions="[100, 500, 1000]" :pageLinkSize="3"  @page="onPageChange" >  </Paginator>
          <span class="p-paginator-pag" style="display: flex;  align-items: center; justify-content: left;"> {{ totalRecords }} registros   <ProgressSpinner v-if="loading" style="width:30px; border-width:5px; height:15px;" strokeWidth="6" animationDuration=".6s"/> </span>
         </div>
         
         </template> 
       </DataTable>
-      <div v-else>...</div>
+      <div v-else> <ProgressSpinner style="width:30px; border-width:5px; height:25px;" strokeWidth="6" animationDuration=".6s"/> </div>
     </div>
   </template>
 
@@ -43,10 +54,17 @@
   import supabase from './db/supabaseClient'
   import { PrimeIcons } from 'primevue/api';
   import 'primeicons/primeicons.css';
+  import Checkbox from 'primevue/checkbox';
+
   
   
 
   export default {
+
+    components: {
+    Checkbox,
+    },
+    
     data() {
       return {
         products: [],
@@ -92,12 +110,12 @@
   this.loading = true;
   try {
     let startIndex = (this.pageIndex - 1) * this.pageSize;
-    let endIndex = startIndex + this.pageSize - 1;
+    let endIndex = startIndex + this.pageSize - 1;  
 
     let query = supabase
       .from('promoUNOnavidad')
       .select('*', { count: 'exact' })
-      .neq('email', '')
+     
       .order('id', { ascending: false });
 
     // Agregar filtro de fecha de inicio si está disponible
@@ -147,7 +165,6 @@ async fetchDataForCSV() {
       let query = supabase
         .from('promoUNOnavidad')
         .select('*', { count: 'exact' })
-        .neq('email', '')
         .range(index * pageSize, (index + 1) * pageSize - 1);
 
       if (this.startDate) {
@@ -206,7 +223,9 @@ convertToCSV(arr) {
           field: key,
           header: this.capitalizeFirstLetter(key),
           frozen: key === 'id',
-          class: key === 'id' ? 'frozen-column-border' : ''
+          class: key === 'id' ? 'frozen-column-border' : '',
+          isBoolean: typeof dataObject[key] === 'boolean',
+
         }));
       },
       capitalizeFirstLetter(string) {
