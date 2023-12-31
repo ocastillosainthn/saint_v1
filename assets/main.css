@@ -1,3 +1,10 @@
+
+
+body {
+    padding: 0px;
+    margin: 0px;
+  }
+
 .frozen-column-border {
     border-right: 2px solid rgb(243, 243, 243);
     min-width: 60px!important;
@@ -5,9 +12,9 @@
 
 
 .header{
-    padding: 10px;
+    padding: 0px;
     font-size: 12px;
-    display: flex;
+    
     align-items: center;
 
 }
@@ -71,7 +78,7 @@ Button{
     
     font-size: 12px;
     height: 35px;
-    margin-left: 20px;
+    margin-left: 0px;
     
     }
 
@@ -91,3 +98,146 @@ margin-left: 5px;
 }
 
 
+
+.p-button-text{
+    color: rgb(49, 49, 49);
+    height: 35px;
+    max-width: 100px;
+}
+
+.container{
+ display: flex;
+ flex-direction: row;
+ min-width: 100%;
+}
+
+.leftBar{
+    width: 250px;
+    border-right-color: rgb(239, 239, 239);
+    border-right-width: 2px;
+    border-right-style: solid;
+    height: 100vh;
+    background-color: #FAFAF9;
+
+
+}
+
+
+.tableD{
+    width: 100%;
+}
+
+
+.my-custom-list {
+    list-style-type: none; 
+    padding: 0; 
+    font-size: 13px;
+    color: rgb(75, 75, 75);
+  }
+
+  .my-custom-list_menu {
+    list-style-type: none; 
+    padding: 0; 
+    font-size: 13px;
+    color: rgb(75, 75, 75);
+    
+  }
+  
+  .my-custom-list li {
+    display: flex; /* Alinea el ícono y el texto horizontalmente */
+    align-items: center; /* Centra el ícono y el texto verticalmente */
+    margin-bottom: 12px;
+  }
+
+
+  .my-custom-list li .pi {
+    margin-right: 12px; /* Espacio entre el ícono y el texto */
+    margin-left: 15px;
+    font-size: 11px;
+    color: rgb(203, 203, 203);
+  }
+
+  .tablesList{
+    height: 97vh; 
+    overflow: scroll;
+    padding-left: 10px;
+    margin-top: 0px;
+  }
+
+  .tablesList_menu{
+    max-height: 400px;
+    overflow: scroll;
+    width:300px;
+    border-width: 1; border-style: solid; border-color: rgb(235, 235, 235); border-radius: 10px; padding: 10px;
+    line-height: 2;
+ 
+  }
+
+
+
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .spin {
+    display: flex!important;
+    transform-origin: center;
+opacity: 1;
+  }
+
+
+  .p-listbox-header{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: none;
+  }
+
+
+
+  .p-datatable .p-datatable-tbody > tr:hover .icon-class-name {
+    opacity: 1;
+  }
+
+  
+  .row-hover-icon {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .inputInside{
+    width: 100%;
+  }
+
+
+.itemAgregar{
+  font-size: 13px; 
+  margin-bottom: 10px;
+
+}
+
+input, textarea {
+  background-color: #fafafa00;
+  border-color: #f9f9f900;
+}
+ 
+
+tr.p-highlight{
+background: #fef9ff;
+color: #4d1b66;
+}
+
+
+
+tr:not(.p-highlight):hover {
+
+ background: #f9f9f9;
+  }
+  
+  
+
+  .formItem{
+    padding:10px; width: 100%; margin-bottom: 20px; border-style: dashed; border-width: 1px; border-color: rgb(220, 220, 220);
+  }

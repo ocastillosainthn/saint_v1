@@ -3,10 +3,22 @@
 
 
 export default defineNuxtConfig({
+  
   devtools: { enabled: true },
-  modules: ['nuxt-primevue'],
+  
+  plugins: ['~/assets/global-fonts.ts'],
+  
+  modules: ['nuxt-primevue', 'nuxt-icon' ],
   runtimeConfig: {
     public: {
+
+      ui: {
+        notifications: {
+          position: 'top-0 bottom-auto'
+        }
+      },
+
+
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY
     }
@@ -17,11 +29,13 @@ export default defineNuxtConfig({
       ripple: true
   },
 
+
+ 
   components:{
     include: '*'
    
   }
 },
-  css: ['primevue/resources/themes/lara-light-teal/theme.css', '~/assets/main.css' ]
+  css: ['primevue/resources/themes/saga-purple/theme.css', '~/assets/main.css' ]
 })
 
