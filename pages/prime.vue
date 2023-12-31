@@ -471,8 +471,7 @@
 
   } catch (error) {
     console.error('Error al agregar nueva fila:', error);
-    // Mostrar mensaje de error usando Nuxt Toast
-    this.$toast.add({severity:'error', summary: 'Error', detail: 'Error al crear registro', life: 3000});
+    this.$toast.add({severity:'error', summary: 'Error', detail: 'Error al crear registro ' , life: 3000});
   } finally {
     this.loading = false; // Desactivar el indicador de carga
     
