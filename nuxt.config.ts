@@ -3,7 +3,6 @@
 
 
 export default defineNuxtConfig({
-  
   devtools: { enabled: true },
   
   plugins: ['~/assets/global-fonts.ts'],
@@ -11,14 +10,6 @@ export default defineNuxtConfig({
   modules: ['nuxt-primevue', 'nuxt-icon' ],
   runtimeConfig: {
     public: {
-
-      ui: {
-        notifications: {
-          position: 'top-0 bottom-auto'
-        }
-      },
-
-
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY
     }

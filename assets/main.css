@@ -101,8 +101,18 @@ margin-left: 5px;
 
 .p-button-text{
     color: rgb(49, 49, 49);
-    height: 35px;
+    height: 35px; 
     max-width: 100px;
+}
+
+.customActionButton{
+background-color: purple;
+padding-top: 0px;
+padding-bottom: 0px;
+height: 30px;
+max-width: 90px;
+padding-left: 6px;
+padding-right: 6px;
 }
 
 .container{
@@ -225,7 +235,7 @@ input, textarea {
  
 
 tr.p-highlight{
-background: #fef9ff;
+background: #f3f3f3;
 color: #4d1b66;
 }
 
