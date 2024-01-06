@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+
     <div class="leftBar" style="display: flex">
       <div class="tablesList" style="display: none">
         <ul class="my-custom-list">
@@ -13,37 +14,21 @@
     <div class="tableD">
       <div class="header">
         <div
-          style="
-            display: flex;
-            align-items: center;
-            width: 100%;
-            height: 40px;
-            border-bottom-color: rgb(226, 226, 226);
-            border-bottom-width: 1px;
-            border-bottom-style: solid;
-            padding: 18px;
-          "
+          class="headerLine"
         >
-          <div style="display: flex; align-items: center">
+          <div style="display: flex; align-items: center;">
             <!-- <div> <Icon name="teenyicons:database-solid" style="font-size: 14px; margin-right: 10px;"/> </div> -->
             <div style="font-size: 16px; font-weight: 350; margin-right: 10px">
               Tabla
             </div>
             /
           </div>
-          <div @click="toggleTables">
+          <div @click="toggleTables" style="cursor: pointer;">
             <span style="font-size: 16px; font-weight: 350; margin-left: 10px">
               {{ selectedTableName }}
             </span>
-            <Icon
-              name="quill:expand"
-              style="
-                font-size: 15px;
-                margin-top: -3px;
-                margin-left: 1px;
-                margin-right: 10px;
-              "
-            />
+            <Icon name="quill:expand" style="
+                font-size: 15px; margin-top: -3px; margin-left: 1px; margin-right: 10px;" />
           </div>
         </div>
 
@@ -51,7 +36,7 @@
 
         <OverlayPanel ref="tables">
           <div>
-            <div style="font-size: 12px; margin-bottom: 10px">
+            <div style="font-size: 12px; margin-bottom: 10px; ">
               Selecciona Tabla
               <div style="margin-top: 4px">
                 <Listbox
@@ -71,7 +56,8 @@
           </div>
         </OverlayPanel>
 
-        <div style="height: 40px">
+        <div style="height: 40px; display: flex; align-items: center;">
+
           <Button
             type="button"
             label="Recargar"
@@ -125,16 +111,17 @@
   <!-- Tab AGregar items -->
 
           <Button v-if="selectedTableName"
-            icon="pi pi-plus"
-            type="button"
-            label="Agregar"
-            iconPos="left"
             size="small"
+            style="padding-right: 14px;"
             class="p-button-text, customActionButton"
             @click="toggleAdd"
-          />
+          >  <Icon
+                name="material-symbols-light:add-rounded"
+                style="font-size: 20px; margin-right: 5px"
+              /> Agregar </Button>
+
           <OverlayPanel ref="add">
-            <div @click="toggleNewItemSidebar" class="itemAgregar">
+            <div @click="toggleNewItemSidebar" class="itemAgregar" style="cursor: pointer;">
               <Icon
                 name="bx:columns"
                 style="font-size: 18px; margin-right: 10px"
@@ -145,7 +132,7 @@
 
             
 
-            <div @click="toggleAddColumnSidebar" style="font-size: 13px">
+            <div @click="toggleAddColumnSidebar" style="font-size: 13px; cursor: pointer;" >
               <Icon name="clarity:view-columns-line" style="font-size: 18px; margin-right: 10px"
               />
               Agregar Columna
@@ -179,7 +166,6 @@
         columnResizeMode="expand"
         tableStyle="min-width:50rem; font-size: 12px;"
         editMode="cell"
-        @cell-edit-complete="onCellEditComplete"
         @row-click="onRowClick"
       >
         <Column
@@ -275,6 +261,15 @@
           </div>
         </template>
       </DataTable>
+
+      <!--  NO HAY TALBA  -->
+
+<div @click="toggleTables"  v-if="selectedTableName === null"  style="display: flex; max-width:fit-content; padding:20px; margin:auto; font-size: 13px; border-color: rgb(234, 234, 234); border-width: 1px; border-style: solid;" >  
+ <Icon name="codicon:empty-window" style="font-size: 18px; margin-right: 10px"
+       />
+       Selecciona tabla
+</div>
+
 
       <!--
         //  <div v-else> <ProgressSpinner style="width:30px; border-width:5px; height:25px;" strokeWidth="6" animationDuration=".6s"/> </div>
@@ -576,10 +571,10 @@
        
         <div class="formItem"> <div style="width: 100%">
           <div style="font-size: 11px; margin-bottom: 7px;"  > Nombre de la Columna  </div>
-           <InputText v-model="columnName" style="max-height: 300px" class="inputInside" :id="columnName" 
+           <InputText v-model="columnName" style="max-height: 300px" class="inputInside" placeholder="escribe el nombre de la columna" :id="columnName" 
            required
-            :inputStyle="{ textTransform: 'lowercase' }"
-            @input="validateNoSpacesAndLowercase"/>
+          
+            @input="validateNoSpaces"/>
           </div>
         </div>
         
@@ -771,7 +766,6 @@ export default {
     try {
       await this.fetchTables();
       await this.loadPageData();
-      this.subscribeToTableChanges();
       this.subscribeToRealtimeUpdates();
     } catch (error) {
       console.error("Error en mounted:", error);
@@ -828,7 +822,10 @@ export default {
         if (error) throw error;
         console.log('Columna añadida:', data);
         this.newColumnSidebarVisible = false; 
-        this.getFilteredRowDataKeys()
+        await this.fetchColumnDetails();
+        this.reloadData();
+        this.getColumnDetail();
+        this.getCreationRowDataKeys();
 
 
         this.$toast.add({
@@ -857,10 +854,9 @@ export default {
     },
   
     
-    validateNoSpacesAndLowercase(event) {
-      event.target.value = event.target.value.replace(/\s+/g, '');
-      event.target.value = event.target.value.toLowerCase();
-    },  
+    validateNoSpaces() {
+      this.columnName = event.target.value.replace(/\s+/g, '');
+    },
 
    toggleAddColumnSidebar() {
     this.newColumnSidebarVisible = true;
@@ -1059,6 +1055,8 @@ export default {
         // Realiza una llamada a la función almacenada
         const { data, error } = await supabase.rpc("get_tables", {
           target_schema: "public",
+
+      
         });
 
         if (error) {
@@ -1212,6 +1210,11 @@ export default {
 
       this.loading = true;
       try {
+
+        if (this.selectedTableName === null) {         
+        return;
+        }
+
         let startIndex = (this.pageIndex - 1) * this.pageSize;
         let endIndex = startIndex + this.pageSize - 1;
 

@@ -27,6 +27,6 @@ export default defineNuxtConfig({
    
   }
 },
-  css: ['primevue/resources/themes/saga-purple/theme.css', '~/assets/main.css' ]
+  css: ['primevue/resources/themes/md-light-indigo/theme.css', '~/assets/main.css' ]
 })
 
