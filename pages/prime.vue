@@ -35,6 +35,7 @@
 <!-- Seleccionar Tabla -->
 
         <OverlayPanel ref="tables">
+
           <div>
             <div style="font-size: 12px; margin-bottom: 10px; ">
               Selecciona Tabla
@@ -130,7 +131,7 @@
               <span style="font-weight: 600">{{ selectedTableName }}</span>
             </div>
 
-            
+
 
             <div @click="toggleAddColumnSidebar" style="font-size: 13px; cursor: pointer;" >
               <Icon name="clarity:view-columns-line" style="font-size: 18px; margin-right: 10px"
@@ -166,7 +167,7 @@
         columnResizeMode="expand"
         tableStyle="min-width:50rem; font-size: 12px;"
         editMode="cell"
-        @row-click="onRowClick"
+        @row-click="onRowClick($event)"
       >
         <Column
           header="#"
@@ -289,7 +290,8 @@
 
     <template #header>
       <h3 style="font-weight: 300; font-size: 15px; padding: 0px">
-        Editar fila desde
+        {{ currentMode === 'editar' ? 'Editar' : 'Insertar' }} fila desde
+
         <Tag :value="this.selectedTableName" class="custom-tag"> </Tag>
       </h3>
     </template>
@@ -297,7 +299,7 @@
     <!-- Contenido del Sidebar -->
 
     <form
-      @submit.prevent="saveChanges"
+    @submit.prevent="currentMode === 'editar' ? saveChanges() : addNewRow()"
       style="font-weight: 300; font-size: 14px; padding: 10px; padding-top: 0px"
     >
       <div v-for="key in getFilteredRowDataKeys()" :key="key">
@@ -319,230 +321,66 @@
                 margin-left: 7px;
               "
             >
-              {{ getColumnDetail(key).data_type }}
+              {{ getColumnDetail(key).data_type }} /   {{ getColumnDetail(key).description }}
             </div>
           </div>
 
           <div style="width: 100%">
-            <Editor
-              v-if="getColumnDetail(key).data_type === 'character varying'"
-              v-model="selectedRowData[key]"
-              editorStyle="height: 220px"
-            />
-            <Textarea
-              v-if="['text', 'json'].includes(getColumnDetail(key).data_type)"
-              class="inputInside"
-              :id="key"
-              v-model="selectedRowData[key]"
-              autoResize
-              rows="5"
-              cols="30"
-            />
-            <Checkbox
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'boolean'"
-              :id="key"
-              v-model="selectedRowData[key]"
-              binary
-            />
-            <Calendar
-              class="inputInside"
-              v-else-if="
-                getColumnDetail(key).data_type === 'timestamp with time zone' ||
-                getColumnDetail(key).data_type === 'timestamp without time zone'
-              "
-              :id="key"
-              v-model="selectedRowData[key]"
-              showTime
-              hourFormat="12"
-              showIcon
-              iconDisplay="input"
-              :disabled="
-                key === 'created' ||
-                key === 'update' ||
-                key === 'created_at' ||
-                key === 'id'
-              "
-            />
-            <InputText
-              style="max-height: 300px"
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'uuid'"
-              :id="key"
-              v-model="selectedRowData[key]"
-              disabled
-              placeholder="Deshabilitado"
-            />
-            <InputNumber
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'bigint'"
-              :id="key"
-              v-model="selectedRowData[key]"
-              :disabled="key === 'id'"
-            />
-            <InputNumber
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'numeric'"
-              :id="key"
-              v-model="selectedRowData[key]"
-              :useGrouping="false"
-              :minFractionDigits="2"
-              :maxFractionDigits="4"
-            />
-            <input
-              class="inputInside"
-              v-else
-              :type="getInputType(getColumnDetail(key).data_type)"
-              :id="key"
-              v-model="selectedRowData[key]"
-            />
-          </div>
-        </div>
-      </div>
 
-      <Button label="Guardar" @click="saveChanges"></Button>
-      <ProgressSpinner
-        v-if="loading"
-        style="width: 30px; height: 30px"
-        strokeWidth="6"
-      />
-      <Button
-        style="margin-left: 20px"
-        label="Eliminar"
-        class="p-button-text p-button-danger"
-        @click="deleteRecord"
-      ></Button>
-    </form>
-  </Sidebar>
+        <template v-if="!(currentMode === 'crear' && (key === 'id' || key === 'created_at' || key === 'update' || key === 'uuid' || key === 'created'))" >
+         
+          <InputText v-if="getColumnDetail(key).description === 'Texto plano'" class="inputInside" :id="key" v-model="formData[key]" 
+          :disabled="currentMode !== 'crear' && (key === 'uuid')" />
+          <Textarea v-if="getColumnDetail(key).description === 'Texto plano extendido'" class="inputInside" :id="key" v-model="formData[key]" autoResize rows="2" cols="30"  />
+          <InputNumber v-if="getColumnDetail(key).description === 'Número'"  :id="key" v-model="formData[key]"/>
 
-  <!-- Slidebar CREAR -->
+          <InputNumber v-if="getColumnDetail(key).description === 'Decimal'"
+             class="inputInside" :id="key"  v-model="formData[key]"  :useGrouping="false"  :minFractionDigits="2" :maxFractionDigits="4" />
 
-  <Sidebar
-    v-model:visible="newItemSidebarVisible"
-    position="right"
-    :style="{ width: '50%' }"
-  >
-    <template #header>
-      <h3 style="font-weight: 300; font-size: 15px; padding: 0px">
-        Insertar fila desde
-        <Tag :value="this.selectedTableName" class="custom-tag"> </Tag>
-      </h3>
-    </template>
 
-    <form
-      @submit.prevent="addNewRow"
-      style="font-weight: 300; font-size: 14px; padding: 10px; padding-top: 0px"
-    >
-      <div v-for="key in getCreationRowDataKeys()" :key="key">
-        <div class="formItem">
-          <div
-            style="
-              min-width: 250px;
-              display: flex;
-              flex-direction: row;
-              margin-bottom: 7px;
-              align-items: center;
-            "
-          >
-            <div style="font-size: 11px">{{ key }}</div>
-            <div
-              style="
-                font-size: 9px;
-                color: rgb(165, 165, 165);
-                margin-left: 7px;
-              "
+          <Calendar v-if="getColumnDetail(key).description === 'Fecha'"
+            :id="key"
+            v-model="formData[key]"
+            showTime
+            hourFormat="12"
+            showIcon
+            iconDisplay="input"
+            :disabled="currentMode !== 'crear' && (key === 'created_at' || key === 'updated' || key === 'updated_at')">
+          </Calendar>
+
+          
+       
+
+          <div v-if="getColumnDetail(key).description === 'Imágen'">
+           
+
+            <uploadImage 
+            :selectedRowData="selectedRowData" 
+            :columnName="key"
+            :selectedTableName="selectedTableName"
             >
-              {{ getColumnDetail(key).data_type }}
-            </div>
+
+            
+            </uploadImage>
           </div>
 
-          <div style="width: 100%">
-            <!-- Asegúrate de que todos los v-model apunten a newRowData en lugar de selectedRowData -->
-            <Editor
-              v-if="getColumnDetail(key).data_type === 'character varying'"
-              v-model="newRowData[key]"
-              editorStyle="height: 220px"
-            />
-            <Textarea
-              v-if="['text', 'json'].includes(getColumnDetail(key).data_type)"
-              class="inputInside"
-              :id="key"
-              v-model="newRowData[key]"
-              autoResize
-              rows="5"
-              cols="30"
-            />
-            <Checkbox
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'boolean'"
-              :id="key"
-              v-model="newRowData[key]"
-              binary
-            />
-            <Calendar
-              class="inputInside"
-              v-else-if="
-                [
-                  'timestamp with time zone',
-                  'timestamp without time zone',
-                ].includes(getColumnDetail(key).data_type)
-              "
-              :id="key"
-              v-model="newRowData[key]"
-              showTime
-              hourFormat="12"
-              showIcon
-              iconDisplay="input"
-              :disabled="key === 'created_at'"
-              :placeholder="
-                key === 'created_at' ? new Date().toLocaleString() : ''
-              "
-            />
-            <InputText
-              style="max-height: 300px"
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'uuid'"
-              :id="key"
-              v-model="newRowData[key]"
-              disabled
-              placeholder="Deshabilitado"
-            />
-            <InputNumber
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'bigint'"
-              :id="key"
-              v-model="newRowData[key]"
-              :disabled="key === 'id'"
-              :placeholder="key === 'id' ? 'Autogenerado' : ''"
-            />
-            <InputNumber
-              class="inputInside"
-              v-else-if="getColumnDetail(key).data_type === 'numeric'"
-              :id="key"
-              v-model="newRowData[key]"
-              :useGrouping="false"
-              :minFractionDigits="2"
-              :maxFractionDigits="4"
-            />
-            <input
-              class="inputInside"
-              v-else
-              :type="getInputType(getColumnDetail(key).data_type)"
-              :id="key"
-              v-model="newRowData[key]"
-            />
+
+          </template>
+
+
           </div>
         </div>
       </div>
-      <Button @click="addNewRow" label="Crear item"></Button>
-      <ProgressSpinner
-        v-if="loading"
-        style="width: 30px; height: 30px"
-        strokeWidth="6"
-      />
+
+      <Button label="Guardar" @click="currentMode === 'editar' ? saveChanges() : addNewRow()">{{ currentMode === 'editar' ? 'Guardar' : 'Crear' }}</Button>
+      <ProgressSpinner v-if="loading" style="width: 30px; height: 30px" strokeWidth="6" />
+      <Button v-if="currentMode === 'editar'" style="margin-left: 20px" label="Eliminar" class="p-button-text p-button-danger" @click="deleteRecord"></Button>
+
     </form>
   </Sidebar>
 
+
+  
 
  <!-- Slidebar CREAR COLUMNA -->
 
@@ -594,35 +432,49 @@
                 </div>
               </template>
           </Dropdown>
-        <div style="padding-left: 20px;">
+
+        <div v-if="dataType && !['Imágen', 'Galería', 'Relación única', 'Relación múltiple'].includes(dataType.label)" style="padding-left: 20px;">
           <div style="margin-top: 10px; display: flex;">
             <Checkbox  v-model="isCheckedArray" :binary="true" style="margin-right: 10px;" />
             <div>
             <div>Definir como listado</div>  
-            <div style="color:gray; font-size: 11px; margin-top: 5px;">Permitir que la columna se defina como arrays multidimensionales de longitud variable  </div>
+              <div style="color:gray; font-size: 11px; margin-top: 5px;">
+                Permitir que la columna se defina como arrays multidimensionales de longitud variable 
+              </div>
             </div>
-          </div>
+           </div>
 
-        <div style="margin-top: 20px; margin-bottom: 20px;">
-          <div style="margin-bottom: 7px;"  > Valor predeterminado </div>
-           <InputText  v-model="defaultValue"  style="max-height: 300px" class="inputRegular"
-           />
-           <div style="color:gray; font-size: 11px; margin-top: 5px;">Agregar valor predeterminado para cada registro  </div>
+            <div style="margin-top: 20px; margin-bottom: 20px;">
+              <div style="margin-bottom: 7px;"  > Valor predeterminado </div>
+              <InputText  v-model="defaultValue"  style="max-height: 300px" class="inputRegular"
+              />
+              <div style="color:gray; font-size: 11px; margin-top: 5px;">Agregar valor predeterminado para cada registro  </div>
 
-        </div>
-
-          <div style="margin-top: 10px; display: flex;">
-            <Checkbox  v-model="isCheckedNullable" :binary="true" style="margin-right: 10px;" />
-            <div>
-            <div>Permitir valores vacios <span style="font-size: 13px; color: gray;"> *campo no obligatorio </span> </div>  
-            <div style="color:gray; font-size: 11px; margin-top: 5px;">Permitir que la columna asuma un valor NULL si no se proporciona ningún valor  </div>
             </div>
-          </div>
+
+              <div style="margin-top: 10px; display: none;">
+                <Checkbox  v-model="isCheckedNullable" :binary="true" style="margin-right: 10px;" />
+                <div>
+                <div>Permitir valores vacios <span style="font-size: 13px; color: gray;"> *campo no obligatorio </span> </div>  
+                <div style="color:gray; font-size: 11px; margin-top: 5px;">Permitir que la columna asuma un valor NULL si no se proporciona ningún valor  </div>
+                </div>
+              </div>
 
           </div>
         </div>
 
+        <div v-if="dataType && ['Relación única', 'Relación múltiple'].includes(dataType.label)" style="margin-top:15px; font-size: 11px;" >
+           <div style="margin-bottom:5px;"> Tabla relacionada</div> 
+              <Dropdown 
+                v-model="relationTable" 
+                :options="tables" 
+                optionLabel="" 
+                placeholder="Seleccionar relación" 
+                class="w-full md:w-14rem">
+              
+              </Dropdown>
         </div>
+     </div>
 
 
       </div>
@@ -650,6 +502,7 @@
 
    
    <script>
+   
 import supabase from "../db/supabaseClient";
 import { PrimeIcons } from "primevue/api";
 import "primeicons/primeicons.css";
@@ -666,9 +519,13 @@ import Tag from "primevue/tag";
 import Calendar from "primevue/calendar";
 import InputNumber from "primevue/inputnumber";
 import Textarea from "primevue/textarea";
-import Editor from "primevue/editor";
+import Editor from 'primevue/editor';
 import Toast from "primevue/toast";
 import ProgressSpinner from "primevue/progressspinner";
+import FormTable from '../components/uploadImage.vue'
+
+
+
 
 export default {
   beforeDestroy() {
@@ -719,17 +576,24 @@ export default {
       columnName: '',         
       dataType: null,         
       defaultValue: '',   
+      currentMode:'',
       isCheckedArray: false,   
+      relationTable: '', 
       isCheckedNullable: true,
             dataTypeList: [
         { label: "Texto plano", typeSupabase: "text", icon: "material-symbols-light:text-fields-rounded", description: "Texto corto de linea única" },
-        { label: "Rich Text", typeSupabase: "varchar", icon: "material-symbols-light:text-ad-outline-rounded", description: "Texto extenso con formato enriqucido"  },
+        { label: "Texto plano extendido", typeSupabase: "text", icon: "material-symbols-light:text-fields-rounded", description: "Texto extendido sin formato" },
+        { label: "Rich Text", typeSupabase: "varchar", icon: "material-symbols-light:text-ad-outline-rounded", description: "Texto extenso con formato enriquecido"  },
         { label: "Número", typeSupabase: "int", icon: "codicon:symbol-numeric", description: "Entero int8" },
-        { label: "Décimal", typeSupabase: "numeric", icon: "ic:twotone-numbers", description: "Número exacto" },
+        { label: "Decimal", typeSupabase: "numeric", icon: "ic:twotone-numbers", description: "Número exacto" },
         { label: "Fecha", typeSupabase: "timestamptz", icon: "material-symbols-light:calendar-today", description: "Día y hora con timezone" },
         { label: "Bool", typeSupabase: "Bool", icon: "ic:outline-toggle-off" , description: "Lógica condicional (si/no) "},
-        { label: "Imagen", typeSupabase: "text", icon: "ph:image-light", description: "Subir imagen (png,jpg,svg)" },
+        { label: "Imágen", typeSupabase: "text", icon: "ph:image-light", description: "Subir imagen (png,jpg,svg)" },
+        { label: "Galería", typeSupabase: "text", icon: "clarity:image-gallery-line", description: "Subir múltiples imagen (png,jpg,svg)" },
         { label: "Archivo", typeSupabase: "text", icon: "material-symbols:attach-file", description: "Subir archivo (pdf,doc,xcl )" },
+        { label: "Relación única", typeSupabase: "int", icon: "mdi:relation-many-to-one", description: "Columna tipo dato único" },
+        { label: "Relación múltiple", typeSupabase: "text", icon: "material-symbols-light:account-tree-outline-rounded", description: "Columna tipo relación a muchos" },
+
       ],
     };
   },
@@ -745,6 +609,9 @@ export default {
           }, {});
       },
 
+      formData() {
+          return this.currentMode === 'crear' ? this.newRowData : this.selectedRowData;
+        },
       formattedTables() {
         return this.tables.map((name) => ({ name }));
       },
@@ -774,10 +641,22 @@ export default {
 
   methods: {
 
+
+    openSidebarForCreate() {
+      this.sidebarVisible = true;
+    },
+    openSidebarForEdit(rowData) {
+      this.currentMode = 'editar';
+    this.selectedRowData = rowData; // Cargar los datos para editar
+    this.sidebarVisible = true;
+    },
     
       async addColumn() {
         try {
           this.loading = true;
+
+        let description = this.isCheckedArray ? `${this.dataType.label} [array]` : this.dataType.label;
+        let relation_table = ['Relación única', 'Relación múltiple'].includes(this.dataType.label) ? this.relationTable : null;
 
           const queryParameters = {
             table_name: this.selectedTableName, 
@@ -786,10 +665,10 @@ export default {
             is_nullable: this.isCheckedNullable,
             is_array: this.isCheckedArray,
             default_value: this.defaultValue === '' ? null : this.defaultValue,
-            description: this.dataType.label, 
-          };
+            description: description, 
+            relation_table: relation_table
 
-          // Imprimir los parámetros en la consola
+          };
           console.log('Ejecutando RPC con parámetros:', queryParameters);
 
           const checkColumnExistence = await supabase
@@ -816,7 +695,9 @@ export default {
             is_nullable: this.isCheckedNullable,
             is_array: this.isCheckedArray,
             default_value: this.defaultValue === '' ? null : this.defaultValue,
-            description: this.dataType.label 
+            description: description ,
+            relation_table: relation_table
+
           });
 
         if (error) throw error;
@@ -866,15 +747,19 @@ export default {
     },
     
     toggleNewItemSidebar() {
-      this.newItemSidebarVisible = true;
+      this.currentMode = 'crear';
       this.initializeNewRowData();
+      this.sidebarVisible = true;
       this.toggleAdd();
-    },
+  },
+
     initializeNewRowData() {
-      this.newRowData = this.columns.reduce((obj, col) => {
-        obj[col.field] = ""; // o el valor predeterminado adecuado para el tipo de dato
+      this.newRowData = this.columnDetails.reduce((obj, col) => {
+        obj[col.column_name] = ""; // O un valor por defecto según el tipo de columna
         return obj;
       }, {});
+      this.openSidebarForCreate();
+
     },
 
     async deleteRecord() {
@@ -910,6 +795,7 @@ export default {
         // Preparar los datos para la inserción
         const newRow = { ...this.newRowData };
         delete newRow.id; // Excluir el id ya que se genera automáticamente
+        delete newRow.uuid;
         newRow.created_at = new Date().toISOString(); // Establecer la fecha y hora actuales
 
         // Llamada a Supabase para insertar la nueva fila
@@ -935,6 +821,7 @@ export default {
         });
       } finally {
         this.loading = false; // Desactivar el indicador de carga
+        this.sidebarVisible = false;
       }
     },
 
@@ -979,29 +866,32 @@ export default {
     },
 
     getFilteredRowDataKeys() {
-      return Object.keys(this.selectedRowData).filter((key) => {
-        if (key === "index" || key.endsWith("_index")) return false;
+    return Object.keys(this.formData).filter(key => {
+      if (key === "index" || key.endsWith("_index")) return false;
 
-        const columnDetail = this.columnDetails.find(
-          (detail) => detail.column_name === key
-        );
+      // Excluir campos específicos en modo 'crear'
+      if (this.currentMode === 'crear' && (key === 'id' || key === 'created_at' || key === 'uuid' || key === 'updated' || key === 'updated_at')) {
+        return false;
+      }
 
-        return columnDetail && columnDetail.data_type !== "tsvector";
-      });
-    },
+      const columnDetail = this.columnDetails.find(
+        (detail) => detail.column_name === key
+      );
+
+      return columnDetail && columnDetail.data_type !== "tsvector";
+    });
+  },
 
     getColumnDetail(columnName) {
-
-      console.log(this.columnDetails);
-
-      return (
-        this.columnDetails.find(
-          (detail) => detail.column_name === columnName
-        ) || {}
+        const detail = this.columnDetails.find(detail => detail.column_name === columnName);
+        console.log(`Details for ${columnName}:`, detail);
         
-      );
-      
-    },
+        if (detail && detail.hasOwnProperty('is_array')) {
+          return { ...detail, is_array: detail.is_array };
+        }
+
+        return detail || {};
+      },
 
     getInputType(columnName) {
       const column = this.columnDetails.find(
@@ -1023,8 +913,12 @@ export default {
 
     onRowClick(event) {
       console.log("Fila clickeada:", event.data);
-      this.selectedRowData = event.data;
+      this.currentMode = 'editar';
+      this.selectedRowData = event.data; // Corrección aquí
       this.sidebarVisible = true;
+      this.openSidebarForEdit(event.data);
+
+      
     },
 
     selectTable(tableName) {
@@ -1379,6 +1273,16 @@ border: #cccccc;
 border-style: solid;
 border-width: 1px; 
 width: 100%;
+}
+
+.p-dropdown {
+  width: 100%;
+}
+
+.p-dropdown-panel .p-dropdown-items{
+
+ font-size: 13px!important;
+  height: 35px!important;
 }
 
 </style>

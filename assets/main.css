@@ -52,6 +52,7 @@ body {
 .p-dropdown {
     height: 40px;
     font-size:13px ;
+    padding: 5px;
 
 }
 
@@ -81,6 +82,7 @@ body {
     font-size: 13px;
     display: flex;
     align-items: center;
+    padding: 5px;
 
 }
 
@@ -100,6 +102,7 @@ Button{
 
 .p-calendar{
 margin-left: 5px;
+width: 100%;
 }
 
 
@@ -140,6 +143,10 @@ padding-right: 6px;
     height: 100vh;
 
 
+}
+
+.p-inputnumber {
+ width: 100%; 
 }
 
 
@@ -237,6 +244,7 @@ opacity: 1;
   .inputInside{
     width: 100%;
     padding: 5px;
+    background-color: #f8f8f8;
   }
 
 
