@@ -348,21 +348,28 @@
             :disabled="currentMode !== 'crear' && (key === 'created_at' || key === 'updated' || key === 'updated_at')">
           </Calendar>
 
-          
-       
+        
 
           <div v-if="getColumnDetail(key).description === 'Imágen'">
-           
-
+          
             <uploadImage 
             :selectedRowData="selectedRowData" 
             :columnName="key"
             :selectedTableName="selectedTableName"
             >
-
-            
             </uploadImage>
           </div>
+
+          <div v-if="getColumnDetail(key).description === 'Relación única'">
+          
+            <oneRelation 
+            :selectedRowData="selectedRowData" 
+            :columnName="key"
+            :selectedTableName="selectedTableName"
+            >
+            </oneRelation>
+          </div>
+
 
 
           </template>
@@ -522,7 +529,7 @@ import Textarea from "primevue/textarea";
 import Editor from 'primevue/editor';
 import Toast from "primevue/toast";
 import ProgressSpinner from "primevue/progressspinner";
-import FormTable from '../components/uploadImage.vue'
+
 
 
 

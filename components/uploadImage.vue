@@ -152,4 +152,9 @@ export default {
     width: 100%!important;
 }
 
+.dropzone{
+  border-color: rgba(201, 201, 201, 0.504);
+  background-color: rgba(236, 236, 236, 0.245);
+}
+
 </style>

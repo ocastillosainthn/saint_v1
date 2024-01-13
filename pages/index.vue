@@ -1,13 +1,12 @@
 <template>
-    <div>
-      WORKS
-    </div>
-  </template>
-  
-  <script>
-  export default {
-  }
-  </script>
-  
-  <style>
-  </style>
+  <div>WORKS</div>
+</template>
+
+<script setup>
+
+
+</script>
+
+<style>
+/* Estilos aquí */
+</style>

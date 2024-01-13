@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxtjs/supabase": "^1.1.5",
     "nuxt": "^3.8.2",
     "nuxt-icon": "^0.6.8",
     "nuxt-primevue": "^0.2.2",
@@ -25,6 +26,7 @@
     "@nuxtjs/toast": "^3.3.1",
     "@supabase/supabase-js": "^2.39.1",
     "@vueuse/head": "^2.0.0",
+    "dotenv": "^16.3.1",
     "dropzone": "^6.0.0-beta.2",
     "frappe-datatable": "^1.17.9",
     "nuxt-dropzone": "^1.0.4",

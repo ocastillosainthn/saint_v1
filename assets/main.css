@@ -224,17 +224,20 @@ opacity: 1;
 
   .p-listbox-header{
     position: sticky;
-    top: 0;
+    top: 0; 
+    padding: 3px;
     z-index: 10;
-    display: none;
+    display:block ;
   }
 
 
+  .p-inputtext {  
+    height: 40px;
+}
 
-  .p-datatable .p-datatable-tbody > tr:hover .icon-class-name {
-    opacity: 1;
-  }
-
+.p-overlaypanel .p-overlaypanel-content {
+  padding: 17px;
+}
   
   .row-hover-icon {
     opacity: 0;
