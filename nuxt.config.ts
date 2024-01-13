@@ -8,12 +8,17 @@ export default defineNuxtConfig({
   plugins: ['~/assets/global-fonts.ts'],
   
   modules: ['nuxt-primevue', 'nuxt-icon' ],
+  
   runtimeConfig: {
+    public: {
       supabaseUrl: process.env.SUPABASE_URL,
+    },
+    private: {
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    
-    
+    }
   },
+
+
   primevue: {
     usePrimeVue: true,
     options: {

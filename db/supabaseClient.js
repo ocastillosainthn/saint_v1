@@ -1,9 +1,16 @@
-// supabaseClient.js
 import { createClient } from '@supabase/supabase-js'
+import { useRuntimeConfig } from '#app'
 
-const supabaseUrl = SUPABASE_URL
-const supabaseKey = SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+export default () => {
+    
+    const config = useRuntimeConfig()
+    const supabaseUrl = config.public.supabaseUrl
+    const supabaseAnonKey = config.private.supabaseAnonKey
 
-export default supabase
+  console.log("Supabase URL:", supabaseUrl);
+  console.log("Supabase Anon Key:", supabaseAnonKey); // Solo para depuración
 
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+  return supabase;
+}
