@@ -535,6 +535,8 @@ import ProgressSpinner from "primevue/progressspinner";
 
 
 export default {
+
+
   beforeDestroy() {
     this.unsubscribeFromRealtimeUpdates();
   },

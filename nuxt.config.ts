@@ -9,17 +9,6 @@ export default defineNuxtConfig({
   
   modules: ['nuxt-primevue', 'nuxt-icon' ],
   
-  runtimeConfig: {
-    public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-
-    },
-    private: {
-      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    }
-  },
-
 
   primevue: {
     usePrimeVue: true,
