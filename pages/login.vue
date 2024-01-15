@@ -104,6 +104,7 @@ onMounted(() => {
   border-color: rgb(231, 231, 231);
   border-style: solid;
   height: 500px;
+  background-color: white;
 }
 
 .logo-container {
