@@ -29,7 +29,8 @@
         :uuid="project.uuid"
         :state="project.state"
         :url="project.url"
-        
+        @click="handleProjectClick(project.uuid)"
+
         
 
       />
@@ -57,7 +58,6 @@ const userUUID = ref('');
 const userData = ref(null);
 const clientData = ref(null);  // Agrega esta línea
 const projectData = ref(null);
-
 
 
 onMounted(async () => {
@@ -121,6 +121,11 @@ function logout() {
   store.dispatch('clearAuthentication');
   router.push('/login');
 }
+
+function handleProjectClick(uuid) {
+  router.push(`/${uuid}/prime`);
+}
+
 </script>
 
 <style >

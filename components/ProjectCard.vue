@@ -48,13 +48,13 @@
 
   border: 1px solid #e5e5e5; 
   transition: border-color 0.3s, box-shadow 0.3s; 
-  cursor: pointer;
+  cursor: pointer;  
 
 }
 
 .project-card:hover {
-  border-color: #5f2efe;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+  border-color: #03010b3c;
+  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.059); 
 }
 
 

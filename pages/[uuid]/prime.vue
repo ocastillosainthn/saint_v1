@@ -507,10 +507,8 @@
  
 
 
-   
-   <script>
-   
-import supabase from "../db/supabaseClient";
+<script>
+import { createDynamicSupabaseClient } from '../../db/dynamicSupabaseClient';
 import { PrimeIcons } from "primevue/api";
 import "primeicons/primeicons.css";
 import Checkbox from "primevue/checkbox";
@@ -529,6 +527,7 @@ import Textarea from "primevue/textarea";
 import Editor from 'primevue/editor';
 import Toast from "primevue/toast";
 import ProgressSpinner from "primevue/progressspinner";
+import { useRoute } from 'vue-router';
 
 
 
@@ -536,6 +535,7 @@ import ProgressSpinner from "primevue/progressspinner";
 
 export default {
 
+  
 
   beforeDestroy() {
     this.unsubscribeFromRealtimeUpdates();
@@ -549,6 +549,7 @@ export default {
     },
   },
 
+  
   components: {
     Checkbox,
     OverlayPanel,
@@ -561,6 +562,7 @@ export default {
 
   data() {
     return {
+      supabase: null,
       products: [],
       columns: [],
       error: null,
@@ -639,6 +641,15 @@ export default {
   },
 
   async mounted() {
+
+    const route = useRoute();
+    const projectID = route.params.uuid;
+
+    this.supabase = createDynamicSupabaseClient();
+    this.initializeSupabase();
+
+    if (projectID) {
+      this.supabase = createDynamicSupabaseClient(projectID);
     try {
       await this.fetchTables();
       await this.loadPageData();
@@ -646,10 +657,26 @@ export default {
     } catch (error) {
       console.error("Error en mounted:", error);
     }
+  
+} else {
+      console.error('Project ID no encontrado en la ruta.');
+    }
   },
 
   methods: {
 
+
+    initializeSupabase() {
+      const route = useRoute();
+      this.$nextTick(() => {
+        const projectID = route.params.uuid;
+        if (projectID) {
+          this.supabase = createDynamicSupabaseClient(projectID);
+        } else {
+          console.error('No se pudo obtener el projectID de la ruta');
+        }
+      });
+    },
 
     openSidebarForCreate() {
       this.sidebarVisible = true;
@@ -680,7 +707,7 @@ export default {
           };
           console.log('Ejecutando RPC con parámetros:', queryParameters);
 
-          const checkColumnExistence = await supabase
+          const checkColumnExistence = await this.supabase
             .from(this.selectedTableName)
             .select(this.columnName)
             .limit(1);
@@ -774,7 +801,7 @@ export default {
     async deleteRecord() {
       try {
         this.loading = true;
-        const { error } = await supabase
+        const { error } = await this.supabase
           .from(this.selectedTableName)
           .delete()
           .match({ id: this.selectedRowData.id });
@@ -808,7 +835,7 @@ export default {
         newRow.created_at = new Date().toISOString(); // Establecer la fecha y hora actuales
 
         // Llamada a Supabase para insertar la nueva fila
-        const { error } = await supabase
+        const { error } = await this.supabase
           .from(this.selectedTableName)
           .insert([newRow]);
 
@@ -845,7 +872,7 @@ export default {
         console.log("Datos a guardar:", dataToUpdate);
 
         // Llamada a Supabase para actualizar los datos
-        const { error } = await supabase
+        const { error } = await this.supabase
           .from(this.selectedTableName)
           .update(dataToUpdate)
           .match({ id: this.selectedRowData.id }); // Asegúrate de tener un campo 'id'
@@ -956,7 +983,7 @@ export default {
     async fetchTables() {
       try {
         // Realiza una llamada a la función almacenada
-        const { data, error } = await supabase.rpc("get_tables", {
+        const { data, error } = await this.supabase.rpc("get_tables", {
           target_schema: "public",
 
       
@@ -979,7 +1006,7 @@ export default {
 
     async fetchColumnDetails() {
       try {
-        const { data, error } = await supabase.rpc("get_table_column_details", {
+        const { data, error } = await this.supabase.rpc("get_table_column_details", {
           target_schema: "public",
           target_table: this.selectedTableName,
         });
@@ -1007,7 +1034,7 @@ export default {
           "Subscribiendo a cambios en tiempo real para la tabla:",
           this.selectedTableName
         );
-        const channel = supabase
+        const channel = this.supabase
           .channel(`public:${this.selectedTableName}`)
           .on(
             "postgres_changes",
@@ -1104,66 +1131,63 @@ export default {
     },
 
     async loadPageData() {
-      console.log(
-        "Cargando datos de la página:",
-        this.pageIndex,
-        "con tamaño de página:",
-        this.pageSize
-      );
+  console.log(
+    "Cargando datos de la página:",
+    this.pageIndex,
+    "con tamaño de página:",
+    this.pageSize
+  );
 
-      this.loading = true;
-      try {
+  this.loading = true;
+  try {
+    if (!this.supabase || this.selectedTableName === null) {         
+      console.error("Cliente Supabase no disponible o nombre de tabla no seleccionado.");
+      return;
+    }
 
-        if (this.selectedTableName === null) {         
-        return;
-        }
+    let startIndex = (this.pageIndex - 1) * this.pageSize;
+    let endIndex = startIndex + this.pageSize - 1;
 
-        let startIndex = (this.pageIndex - 1) * this.pageSize;
-        let endIndex = startIndex + this.pageSize - 1;
+    let query = this.supabase
+      .from(this.selectedTableName)
+      .select("*", { count: "exact" });
 
-        let query = supabase
-          .from(this.selectedTableName)
-          .select("*", { count: "exact" });
-        // .order('created', { ascending: false });
+    if (this.startDate) {
+      let formattedStartDate = this.startDate.toISOString().split("T")[0];
+      query = query.gte("created_at", formattedStartDate);
+    }
 
-        if (this.startDate) {
-          let formattedStartDate = this.startDate.toISOString().split("T")[0];
-          query = query.gte("created_at", formattedStartDate);
-        }
+    if (this.endDate) {
+      let formattedEndDate = this.endDate.toISOString().split("T")[0];
+      query = query.lte("created_at", formattedEndDate);
+    }
 
-        if (this.endDate) {
-          let formattedEndDate = this.endDate.toISOString().split("T")[0];
-          query = query.lte("created_at", formattedEndDate);
-        }
+    let { data, error, count } = await query.range(startIndex, endIndex);
 
-        let { data, error, count } = await query.range(startIndex, endIndex);
+    if (error) throw error;
 
-        if (error) throw error;
+    this.products = data.map((item, index) => ({
+      ...item,
+      index: startIndex + index + 1,
+    }));
 
-        // Añadir un campo 'index' a cada elemento en los datos
-        this.products = data.map((item, index) => ({
-          ...item,
-          index: startIndex + index + 1,
-        }));
+    this.totalRecords = count;
+    console.log(`Datos cargados desde Supabase: ${data.length} registros`);
 
-        this.totalRecords = count;
-        console.log(`Datos cargados desde Supabase: ${data.length} registros`);
+    if (data && data.length > 0) {
+      this.columns = this.generateColumns(data[0]);
+      console.log(`Se encontraron ${data.length} registros en la página actual.`);
+    } else {
+      console.log("No se encontraron registros.");
+    }
+  } catch (error) {
+    this.error = error.message;
+    console.error(`Error en la carga de datos: ${error.message}`);
+  } finally {
+    this.loading = false;
+  }
+},
 
-        if (data && data.length > 0) {
-          this.columns = this.generateColumns(data[0]);
-          console.log(
-            `Se encontraron ${data.length} registros en la página actual.`
-          );
-        } else {
-          console.log("No se encontraron registros.");
-        }
-      } catch (error) {
-        this.error = error.message;
-        console.error(`Error en la carga de datos: ${error.message}`);
-      } finally {
-        this.loading = false;
-      }
-    },
 
     async fetchDataForCSV() {
       try {
@@ -1173,7 +1197,7 @@ export default {
         let fetched = 0;
 
         do {
-          let query = supabase
+          let query = this.supabase
             .from(this.selectedTableName)
             .select("*", { count: "exact" })
             .range(index * pageSize, (index + 1) * pageSize - 1);
