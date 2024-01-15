@@ -4,10 +4,12 @@
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   
-  plugins: ['~/assets/global-fonts.ts'],
   
-  modules: ['nuxt-primevue', 'nuxt-icon' ],
+  plugins: ['~/assets/global-fonts.ts', '~/plugins/supabase.js','~/plugins/vuex.js'],
+  
+  modules: ['nuxt-primevue', 'nuxt-icon'], 
   
 
   primevue: {

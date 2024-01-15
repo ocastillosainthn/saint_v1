@@ -1,12 +1,14 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import supabase from "../db/supabaseClient";
+import { useStore } from 'vuex';
 
 const router = useRouter();
 const email = ref('');
 const password = ref('');
 const errorMsg = ref(null);
+const store = useStore();
 
 async function signIn() {
   try {
@@ -14,16 +16,37 @@ async function signIn() {
       email: email.value,
       password: password.value,
     });
+
     if (error) throw error;
-    router.push('/');
   } catch (error) {
+    console.error("Error durante el inicio de sesión:", error);
     errorMsg.value = error.message;
   }
 }
 
+onMounted(() => {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      // Almacena el token de autenticación y el UUID del usuario en el localStorage
+      localStorage.setItem('authToken', session.access_token);
+      localStorage.setItem('userUUID', session.user.id);
+
+      store.dispatch('setAuthenticatedUser', {
+        isAuthenticated: true,
+        user: {
+          uuid: session.user.id,
+        },
+      });
 
 
+      router.push('/');
+    }
+  });
+});
 </script>
+
+
+
 
 <template>
     <div class="login-container">
