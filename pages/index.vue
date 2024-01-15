@@ -132,7 +132,7 @@ font-size: 13px;
 }
 
 body{
-  background-color: #F3F3F3;
+  background-color: #f8f8f8;
 }
 
 .contenedor{
