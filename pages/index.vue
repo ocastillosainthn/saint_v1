@@ -11,8 +11,14 @@
 
 
   <div class="contenedor" >
+    <div style="display: flex; align; align-items: center;">
 
-    <p v-if="clientData" style="font-size:45px; font-weight: 500; margin-top: -10px;" > {{ clientData.name }}</p>
+    <div class="logo-container">
+      <img v-if="clientData && clientData.image" :src="clientData.image" alt="Logo" class="logo" />
+        </div>
+        <p v-if="clientData" style="font-size:45px; font-weight: 500; margin-top: 30px; margin-left: 20px;" > {{ clientData.name }}</p>
+
+  </div>
    <p v-if="!isAuthenticated">No estás autenticado.</p>
 
    <div class="project-grid" v-if="projectData && projectData.length">
@@ -72,7 +78,7 @@ onMounted(async () => {
 
     const { data: clientDataResponse, error: clientError } = await supabase
       .from('client')
-      .select('name, uuid, id') 
+      .select('name, uuid, id, image') 
       .eq('user_uuid', userUUID.value);
 
     if (clientError) {
