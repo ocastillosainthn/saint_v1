@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <div class="leftBar" style="display: flex">
+    <div class="leftBar" style="display: flex; width: 0;">
       <div class="tablesList" style="display: none">
         <ul class="my-custom-list">
           <li v-for="table in tables" :key="table" @click="selectTable(table)">
@@ -81,7 +81,7 @@
             </span>
             Recargar
           </Button>
-
+<!-- 
           <Button
             icon="pi pi-table"
             type="button"
@@ -92,6 +92,7 @@
             @click="toggleColumn"
           />
 
+          
           <OverlayPanel ref="column">
             <div>opciones de columna <Icon name="ph:text-t-thin" /></div>
           </OverlayPanel>
@@ -109,6 +110,9 @@
             <div>Selecciona filtro</div>
           </OverlayPanel>
 
+          -->
+
+          
   <!-- Tab AGregar items -->
 
           <Button v-if="selectedTableName"
