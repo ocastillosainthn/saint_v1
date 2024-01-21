@@ -26,4 +26,5 @@ export function createDynamicSupabaseClient(projectID) {
         console.error('Project ID no encontrado o inválido:', projectID);
         return null;
     }
+    
 }
