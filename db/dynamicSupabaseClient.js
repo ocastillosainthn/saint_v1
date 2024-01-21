@@ -10,7 +10,11 @@ const credentialsDirectory = {
         url: 'https://phnpalffthkimmhufuuq.supabase.co',
         anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobnBhbGZmdGhraW1taHVmdXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzM0MDg3MzgsImV4cCI6MTk4ODk4NDczOH0.7Kr1nJddHT87KJU0MabsgeZcIb4wal5-KabW5_Y4J0k'
     },
-    // ... otros proyectos ...
+    '0e26f1cb-5aa3-4f1b-8284-c0f0c6c408d2': {
+        url: 'https://abcssyjuunupvreklpdt.supabase.co',
+        anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY3NzeWp1dW51cHZyZWtscGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4NjYwODgsImV4cCI6MjAyMDQ0MjA4OH0.B0bl48XdkU5nkJHspPKKc96kLLFCkSMYejnSyGXeU-c'
+    }
+
 };
 
 export function createDynamicSupabaseClient(projectID) {

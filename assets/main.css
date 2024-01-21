@@ -133,14 +133,14 @@ padding-right: 6px;
  display: flex;
  flex-direction: row;
  min-width: 100%;
- background-color: #e9e8e8;
+ background-color: #f4f4f4;
 
 }
 
 .leftBar{
     width: 250px;
     height: 100vh;
-
+      background-color: #fbfbfb;
 
 }
 
@@ -151,7 +151,7 @@ padding-right: 6px;
 
 .tableD{
     width: 100%;
-    border-left-color: #d3d3d3;
+    border-left-color: #ededed;
     border-left-width: 1px;
     border-left-style: solid;
  

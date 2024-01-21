@@ -1,10 +1,30 @@
 <template>
+
+
+
   <div style="display: flex; flex-direction: column;  align-items: flex-end; padding:20px;">
-    <div class="usertext">
-      <div v-if="isFetchingData">Cargando usuario...</div>
-      <div  v-if="userData">{{ userData.name }} </div>
-      <div style="color: rgb(112, 112, 112);" v-if="userData">{{ userData.email }}   </div>
-      <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+    <div >
+       
+       
+       <div class="userButton" @click="toggleUserMenu"> 
+        <div class="Lavatar" v-if="userData">{{ userData.name.charAt(0) }}
+        </div>
+        <Icon name="tabler:menu" style="font-size: 20px; "/>
+       </div>
+
+
+       <OverlayPanel ref="userMenu">
+            <div class="usertext" >
+              <div v-if="isFetchingData">Cargando usuario...</div>
+              <div  v-if="userData" style="font-size: 15px;">{{ userData.name }} </div>
+              <div style="color: rgb(112, 112, 112);" v-if="userData">{{ userData.email }}   </div>
+              <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+
+            </div>
+            
+      </OverlayPanel>
+
+      
     </div>
 
   </div>
@@ -49,6 +69,8 @@ import { useRouter } from "vue-router";
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { ref, onMounted } from 'vue';
+import OverlayPanel from "primevue/overlaypanel";
+
 
 const router = useRouter();
 const store = useStore();
@@ -58,6 +80,7 @@ const userUUID = ref('');
 const userData = ref(null);
 const clientData = ref(null);  // Agrega esta línea
 const projectData = ref(null);
+const userMenu = ref(null);
 
 
 onMounted(async () => {
@@ -90,6 +113,8 @@ onMounted(async () => {
     }
     
 
+    
+
     if (clientData.value && 'id' in clientData.value) {
       console.log("Consultando proyectos para el cliente con ID:", clientData.value.id);
 
@@ -113,6 +138,8 @@ onMounted(async () => {
   }
 });
 
+
+
 // Función de logout
 function logout() {
   supabase.auth.signOut();
@@ -124,6 +151,12 @@ function logout() {
 
 function handleProjectClick(uuid) {
   router.push(`/${uuid}/prime`);
+}
+
+function toggleUserMenu() {
+  if (userMenu.value) {
+    userMenu.value.toggle(event);
+  }
 }
 
 </script>
@@ -158,10 +191,53 @@ body{
   grid-gap: 20px;
 }
 
+
+.userButton{
+  
+border-style: solid;
+border-width: 1px;
+border-color: rgb(191, 191, 191);
+padding: 3px;
+padding-right: 6px;
+display: flex;
+flex-direction: row;
+border-radius: 20px;
+max-width:65px;
+align-items: center;
+cursor: pointer;
+background-color: transparent;
+}
+
+.userButton:hover {
+    background-color: rgb(239, 239, 239);
+}
+
+.Lavatar{
+ padding: 5px;
+ background-color: black;
+ width: 25px;
+ height: 25px;
+ border-radius: 15px;
+ color: white;
+ align-items: center;
+ justify-content: center;
+ align-content: center;
+ text-align: center;
+ margin-right: 7px;
+ font-size: 15px;
+}
+
+.Lavatar:hover {
+    background-color: rgb(67, 38, 199);
+}
+
+
 @media (max-width: 600px) {
   .project-grid {
     grid-template-columns: 1fr;  /* En pantallas pequeñas, se muestran en una sola columna */
   }
 }
+
+
 
 </style>
