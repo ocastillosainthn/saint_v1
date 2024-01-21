@@ -11,8 +11,8 @@ const credentialsDirectory = {
         anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobnBhbGZmdGhraW1taHVmdXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzM0MDg3MzgsImV4cCI6MTk4ODk4NDczOH0.7Kr1nJddHT87KJU0MabsgeZcIb4wal5-KabW5_Y4J0k'
     },
     '0e26f1cb-5aa3-4f1b-8284-c0f0c6c408d2': {
-        url: 'https://abcssyjuunupvreklpdt.supabase.co',
-        anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY3NzeWp1dW51cHZyZWtscGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4NjYwODgsImV4cCI6MjAyMDQ0MjA4OH0.B0bl48XdkU5nkJHspPKKc96kLLFCkSMYejnSyGXeU-c'
+        url: 'https://ebrhusdbblzhjxwdrmpn.supabase.co',
+        anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVicmh1c2RiYmx6aGp4d2RybXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDU1MTk2MDIsImV4cCI6MjAyMTA5NTYwMn0.9gz1J5DWoQ6Jzetx5yoPHfHxBqGWG7S4SdASo6nco2s'
     }
 
 };
