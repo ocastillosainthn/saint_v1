@@ -49,7 +49,7 @@
         :uuid="project.uuid"
         :state="project.state"
         :url="project.url"
-        @click="handleProjectClick(project.uuid)"
+        @click="handleProjectClick(project.uuid, project.id)"
 
         
 
@@ -149,8 +149,8 @@ function logout() {
   router.push('/login');
 }
 
-function handleProjectClick(uuid) {
-  router.push(`/${uuid}/prime`);
+function handleProjectClick(uuid,id) {
+  router.push(`/${uuid}/prime?id=${id}`);
 }
 
 function toggleUserMenu() {

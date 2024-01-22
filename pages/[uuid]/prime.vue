@@ -17,7 +17,11 @@
           class="headerLine"
         >
           <div style="display: flex; align-items: center;">
-            <!-- <div> <Icon name="teenyicons:database-solid" style="font-size: 14px; margin-right: 10px;"/> </div> -->
+            <div style="font-size: 16px; font-weight: 350; margin-right: 30px">
+
+            <span>{{ project.name }}</span>
+
+            </div>
             <div style="font-size: 16px; font-weight: 350; margin-right: 10px">
               Tabla
             </div>
@@ -96,7 +100,7 @@
           <OverlayPanel ref="column">
             <div>opciones de columna <Icon name="ph:text-t-thin" /></div>
           </OverlayPanel>
-
+ -->
           <Button
             icon="pi pi-filter"
             type="button"
@@ -106,13 +110,157 @@
             class="p-button-text"
             @click="toggleFilter"
           />
-          <OverlayPanel ref="filter">
-            <div>Selecciona filtro</div>
-          </OverlayPanel>
 
-          -->
 
-          
+        <OverlayPanel ref="filter" class="overlay">
+            <div style="width:auto;">  
+            
+
+              <div v-if="filterTemp.length === 0 && filters.length === 0" style="color: #787878; margin-bottom: 25px;">
+                <p style="font-size: 14px; line-height: 0; margin-bottom: 18px;"> No has aplicado ningún filtro </p>
+                <p style="font-size: 12px; line-height: 0; color: #aeaeae;"> Selecciona una columna que deseas filtrar </p>
+              </div>
+            
+              <div v-for="(filter, index) in filters" :key="index" class="filter-container">
+                
+                <div class="filter-column">
+                    <Dropdown 
+                      v-model="filter.column"
+                      :options="columns"
+                      optionLabel="field"
+                      placeholder="Columna"
+                      class="borderSelect"
+                      style="width: 150px;"
+                    />
+                  </div>
+
+                  <div class="filter-column">
+                    <Dropdown 
+                      v-model="filter.operator"
+                      :options="operators"
+                      optionLabel="label"
+                      placeholder="Operador"
+                      class="borderSelect"
+                      style="width: 110px;"
+                    />
+                  </div>
+
+                  <div class="filter-column">
+                    <InputText 
+                      type="text" 
+                      v-model="filter.value" 
+                      class="borderSelect" 
+                      style="width: 150px;"
+                    />
+                  </div>
+
+                  <div class="filter-column">
+                    <Button style="min-width: 30px;"
+                      icon="pi pi-times"
+                      type="button"
+                      iconPos="left"
+                      size="small"
+                      class="p-button-text"
+                      @click="removeFromFilters(index)" 
+                    />
+                  </div>
+             
+              </div>
+
+              <div v-for="(filter, index) in filterTemp" :key="index" class="filter-container">
+                
+              
+
+                <div class="filter-column">
+                  <Dropdown 
+                    v-model="filter.column"
+                    :options="columns"
+                    optionLabel="field"
+                    placeholder="Columna"
+                    class="borderSelect"
+                    style="width: 150px;"
+                  />
+                </div>
+
+                <div class="filter-column">
+                  <Dropdown 
+                    v-model="filter.operator"
+                    :options="operators"
+                    optionLabel="label"
+                    placeholder="Operador"
+                    class="borderSelect"
+                    style="width: 110px;"
+                  />
+                </div>
+
+                <div class="filter-column">
+                  <InputText 
+                    type="text" 
+                    v-model="filter.value" 
+                    class="borderSelect" 
+                    style="width: 150px;"
+                    />
+                    
+                </div>
+
+                <div class="filter-column">
+                  <Button style="min-width: 30px;"
+                    icon="pi pi-times"
+                    type="button"
+                    iconPos="left"
+                    size="small"
+                    class="p-button-text"
+                    @click="removeFilter(index)" 
+                    
+                  />
+                </div>
+             
+              </div>
+
+
+            </div>
+
+
+            <div class="filterBar">
+              <Button style="min-width: 125px;"
+            icon="pi pi-plus"
+            type="button"
+            label="Agregar filtro"
+            iconPos="left"
+            size="small"
+            class="p-button-text"
+            @click="addFilter" 
+          />
+
+            <div > 
+            <Button style="min-width: 70px;"
+            type="button"
+            label="Aplicar"
+            iconPos="left"
+            size="small"
+            class="p-button-text"
+        
+            @click="applyFilters" 
+          />
+            </div>
+            
+
+          </div>
+        </OverlayPanel>
+
+         
+        <div> 
+            <Button style="min-width: 110px;"
+            type="button"
+            label="Descargar CSV"
+            iconPos="left"
+            size="small"
+            class="p-button-text "
+            @click="downloadCSV" 
+          />
+            </div>
+
+
   <!-- Tab AGregar items -->
 
           <Button v-if="selectedTableName"
@@ -144,6 +292,9 @@
             </div>
 
           </OverlayPanel>
+
+          
+
         </div>
 
         <!--
@@ -534,7 +685,18 @@ import ProgressSpinner from "primevue/progressspinner";
 import { useRoute } from 'vue-router';
 
 
-
+const operatorMapping = {
+  '=': 'eq',
+  '<>': 'neq',
+  '>': 'gt',
+  '<': 'lt',
+  '>=': 'gte',
+  '<=': 'lte',
+  '~~': 'like',
+  '~~*': 'ilike',
+  'in': 'in',
+  'is': 'is'
+};
 
 
 export default {
@@ -595,7 +757,25 @@ export default {
       isCheckedArray: false,   
       relationTable: '', 
       isCheckedNullable: true,
-            dataTypeList: [
+      selectedOperator: null,
+      filterColumn:null,
+      filterTemp:[],
+      project: { name: '', icon: '' },      
+      filters:[],
+
+      operators: [
+          { label: '[=] Igual', value: '=' },
+          { label: '[<>] Distinto', value: '<>' },
+          { label: '[>] Mayor que', value: '>' },
+          { label: '[<] Menor que', value: '<' },
+          { label: '[>=] Mayor o igual que', value: '>=' },
+          { label: '[<=] Menor o igual que', value: '<=' },
+          { label: '[~~] like', value: '~~' },
+          { label: '[~~*] ilike', value: '~~*' },
+          { label: '[in] dentro de un listado', value: 'in' },
+          { label: '[is] checking valor', value: 'is' }
+        ],
+      dataTypeList: [
         { label: "Texto plano", typeSupabase: "text", icon: "material-symbols-light:text-fields-rounded", description: "Texto corto de linea única" },
         { label: "Texto plano extendido", typeSupabase: "text", icon: "material-symbols-light:text-fields-rounded", description: "Texto extendido sin formato" },
         { label: "Rich Text", typeSupabase: "varchar", icon: "material-symbols-light:text-ad-outline-rounded", description: "Texto extenso con formato enriquecido"  },
@@ -636,6 +816,8 @@ export default {
     selectedTableName(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.selectTable(newVal);
+        this.filterTemp = [];
+        this.filters = [];
       }
     },
     endDate() {
@@ -646,10 +828,28 @@ export default {
 
   async mounted() {
 
+
+    try {
+        const { data, error } = await supabase
+          .from('config')
+          .select('name, icon')
+          .limit(1);  
+
+         console.log("Datos recibidos:", data);
+
+        if (error) {
+          console.error('Error al obtener datos de configuración:', error.message);
+        } else if (data && data.length > 0) {
+          this.project.name = data[0].name;
+          this.project.icon = data[0].icon;
+        }
+      } catch (err) {
+        console.error('Error en la solicitud a Supabase:', err.message);
+      }
+
     const route = useRoute();
     const projectID = route.params.uuid;
 
-    this.supabase = createDynamicSupabaseClient();
     this.initializeSupabase();
 
     if (projectID) {
@@ -669,6 +869,21 @@ export default {
 
   methods: {
 
+    removeFromFilters(index) {
+    this.filters.splice(index, 1);
+    },
+    applyFilters() {
+    this.filters = [...this.filters, ...this.filterTemp];
+    this.filterTemp = [];
+    this.loadPageData();
+  },
+
+    addFilter() {
+    this.filterTemp.push({ column: null, operator: null, value: null });
+    },
+    removeFilter(index) {
+      this.filterTemp.splice(index, 1);
+    },
 
     initializeSupabase() {
       const route = useRoute();
@@ -1134,7 +1349,8 @@ export default {
       this.loadPageData();
     },
 
-    async loadPageData() {
+  
+  async loadPageData() {
   console.log(
     "Cargando datos de la página:",
     this.pageIndex,
@@ -1145,7 +1361,6 @@ export default {
   this.loading = true;
   try {
     if (!this.supabase || this.selectedTableName === null) {         
-      console.error("Cliente Supabase no disponible o nombre de tabla no seleccionado.");
       return;
     }
 
@@ -1156,15 +1371,21 @@ export default {
       .from(this.selectedTableName)
       .select("*", { count: "exact" });
 
-    if (this.startDate) {
-      let formattedStartDate = this.startDate.toISOString().split("T")[0];
-      query = query.gte("created_at", formattedStartDate);
-    }
 
-    if (this.endDate) {
-      let formattedEndDate = this.endDate.toISOString().split("T")[0];
-      query = query.lte("created_at", formattedEndDate);
-    }
+    console.log("Filtros aplicados:", this.filters);
+
+    console.log(`Rango de consulta: de ${startIndex} a ${endIndex}`);
+
+
+    this.filters.forEach(filter => {
+      if (filter.column?.field && filter.operator?.value && filter.value !== undefined) {
+        const supabaseOperator = operatorMapping[filter.operator.value];
+        if (supabaseOperator) {
+          console.log(`Aplicando filtro: ${filter.column.field} ${supabaseOperator} ${filter.value}`);
+          query = query[supabaseOperator](filter.column.field, filter.value);
+        }
+      }
+    });
 
     let { data, error, count } = await query.range(startIndex, endIndex);
 
@@ -1176,11 +1397,9 @@ export default {
     }));
 
     this.totalRecords = count;
-    console.log(`Datos cargados desde Supabase: ${data.length} registros`);
 
     if (data && data.length > 0) {
       this.columns = this.generateColumns(data[0]);
-      console.log(`Se encontraron ${data.length} registros en la página actual.`);
     } else {
       console.log("No se encontraron registros.");
     }
@@ -1190,14 +1409,14 @@ export default {
   } finally {
     this.loading = false;
   }
-},
-
+}
+,
 
     async fetchDataForCSV() {
       try {
         let records = [];
         let index = 0;
-        const pageSize = 1000; // Tamaño máximo de lote
+        const pageSize = 100000; 
         let fetched = 0;
 
         do {
@@ -1206,15 +1425,14 @@ export default {
             .select("*", { count: "exact" })
             .range(index * pageSize, (index + 1) * pageSize - 1);
 
-          if (this.startDate) {
-            let formattedStartDate = this.startDate.toISOString().split("T")[0];
-            query = query.gte("created_at", formattedStartDate);
-          }
-
-          if (this.endDate) {
-            let formattedEndDate = this.endDate.toISOString().split("T")[0];
-            query = query.lte("created_at", formattedEndDate);
-          }
+          this.filters.forEach(filter => {
+            if (filter.column?.field && filter.operator?.value && filter.value !== undefined) {
+              const supabaseOperator = operatorMapping[filter.operator.value];
+              if (supabaseOperator) {
+                query = query[supabaseOperator](filter.column.field, filter.value);
+              }
+            }
+          });
 
           const { data, error, count } = await query;
           if (error) throw error;
@@ -1241,15 +1459,17 @@ export default {
         return;
       }
 
+      const fechaActual = new Date().toISOString().split('T')[0];
       const csvData = this.convertToCSV(data);
       const blob = new Blob([csvData], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "db-PromoUNO.csv";
+      a.download = `${this.selectedTableName}-${fechaActual}.csv`;      
       a.click();
       window.URL.revokeObjectURL(url);
     },
+
 
     convertToCSV(arr) {
       const array = [Object.keys(arr[0])].concat(arr);
@@ -1261,11 +1481,12 @@ export default {
         .join("\n");
     },
 
-    generateColumns(dataObject) {
-      return Object.keys(dataObject).map((key) => {
-        let icon = "";
-        if (typeof dataObject[key] === "string") {
-          icon = "ph:text-t-thin";
+
+        generateColumns(dataObject) {
+          return Object.keys(dataObject).map((key) => {
+            let icon = "";
+            if (typeof dataObject[key] === "string") {
+              icon = "ph:text-t-thin";
         }
 
         return {
@@ -1314,12 +1535,61 @@ width: 100%;
 
 .p-dropdown {
   width: 100%;
+  display: flex;
+  align-items: center;
+  
+
 }
 
-.p-dropdown-panel .p-dropdown-items{
 
- font-size: 13px!important;
-  height: 35px!important;
+
+.p-dropdown-item{
+  font-size: 11px;
+}
+
+
+
+.filterBar{
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between;
+  border-top-style: solid;
+  border-top-color: rgb(237, 237, 237);
+  border-top-width: 1;
+  padding-top: 10px;
+}
+
+
+.filter-container{
+  display: flex;
+  flex-direction: row;
+}
+
+.filter-column{
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+  padding-right:8px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  padding: 10px;
+  height: 10px;
+  font-size: 11px!important;
+}
+
+
+.borderSelect{
+  border-style:solid; 
+  border-top-width:1px; 
+  border-color: #cdcdcd;
+}
+
+.delete-button{
+background-color: transparent;
+border-style: none;
 }
 
 </style>
