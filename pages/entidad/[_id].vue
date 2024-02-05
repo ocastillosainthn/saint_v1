@@ -24,9 +24,9 @@
     clearButton
   ></k-searchbar>
 
-  <k-list strong-ios outline-ios v-if="divisionesFiltradas.length">
+  <k-list strong-ios outline-ios >
     <k-list-item
-      v-for="division in divisionesFiltradas"
+      v-for="division in divisiones"
       :key="division.id" 
       :title="division.name" 
       :footer="`${division.uuid}`">
@@ -61,7 +61,6 @@ const route = useRoute();
 const router = useRouter();
 const entidad = ref(null);
 const divisiones = ref([]);
-const searchQuery = ref('');
 
 
 const fabText = computed(() => {
@@ -80,14 +79,6 @@ const fabText = computed(() => {
 });
 
 
-const divisionesFiltradas = computed(() => {
-  const filtradas = searchQuery.value.trim() ? 
-    divisiones.value.filter(division =>
-      division.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-    ) : divisiones.value;
-  console.log("Divisiones filtradas:", filtradas); // Verifica los datos filtrados
-  return filtradas;
-});
 
 // Carga inicial de datos
 onMounted(async () => {
