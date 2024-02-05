@@ -25,12 +25,13 @@
   ></k-searchbar>
 
   <k-list strong-ios outline-ios >
-    <k-list-item
-      v-for="division in divisiones"
-      :key="division.id" 
-      :title="division.name" 
-      :footer="`${division.uuid}`">
-    </k-list-item>
+    <k-list-item v-for="division in divisiones" 
+    @click="goToEdit(division.id)"
+    :key="division.id" 
+    :title="division.name" 
+    :footer="`${division.uuid}`">
+  </k-list-item>
+
   </k-list>
 
 
@@ -82,9 +83,11 @@ const fabText = computed(() => {
 
 // Carga inicial de datos
 onMounted(async () => {
+
   const entidadId = route.params._id;
   await cargarEntidad(entidadId);
-  divisiones.value = await cargarDivisiones(entidadId); 
+  await cargarDivisiones(entidadId);
+  
 });
 
 async function cargarDivisiones(entidadId) {
@@ -98,6 +101,7 @@ async function cargarDivisiones(entidadId) {
 
     console.log("Divisiones cargadas:", divisionesData); // Verifica los datos cargados
     divisiones.value = divisionesData;
+    console.log ('divisiones montado',divisiones )
   } catch (error) {
     console.error('Error al obtener las divisiones:', error);
   }
@@ -127,6 +131,11 @@ async function cargarEntidad(entidadId) {
 
 function goBack() {
   router.back();
+}
+
+
+function goToEdit(id) {
+  router.push(`/division_edit/${id}`);
 }
 
 

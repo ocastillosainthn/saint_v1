@@ -15,7 +15,7 @@
   
     </div>
 <div class="container">
-Formulario para editar vision + Agregar usaurio 
+Formulario para editar vision + Agregar usuario 
 </div>
 
   </k-page>
