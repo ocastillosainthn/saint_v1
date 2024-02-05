@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
     padding: 0px;
     margin: 0px;
@@ -9,6 +14,23 @@ body {
     min-width: 60px!important;
 }
 
+.labelapp{
+font-size: 13px;
+margin-bottom: 10px;
+}
+
+.mr-4{
+  margin: 0px!important;
+}
+
+.ml-\34-safe[data-v-e8ce220f] {
+  margin-bottom: 4px;
+}
+
+
+.ml-4{
+  margin: 0px!important;
+}
 
 .header{
     padding: 0px;
@@ -103,6 +125,8 @@ Button{
 margin-left: 5px;
 width: 100%;
 }
+
+
 
 
 .p-column-header-content{

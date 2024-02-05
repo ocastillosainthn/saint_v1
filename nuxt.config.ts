@@ -5,11 +5,19 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  
+  build: {
+    transpile: ['konsta'],
+  },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
   
   plugins: ['~/assets/global-fonts.ts', '~/plugins/supabase.js','~/plugins/vuex.js'],
   
-  modules: ['nuxt-primevue', 'nuxt-icon'], 
+  modules: ['nuxt-primevue', 'nuxt-icon', "@nuxtjs/tailwindcss"], 
   
 
   primevue: {
@@ -18,6 +26,7 @@ export default defineNuxtConfig({
       ripple: true
   },
 
+  
 
  
   components:{
@@ -27,4 +36,3 @@ export default defineNuxtConfig({
 },
   css: ['primevue/resources/themes/md-light-indigo/theme.css', '~/assets/main.css' ]
 })
-

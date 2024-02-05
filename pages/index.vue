@@ -1,67 +1,135 @@
 <template>
-
-
-
-  <div style="display: flex; flex-direction: column;  align-items: flex-end; padding:20px;">
-    <div >
+<k-page style="background-color: rgb(247, 247, 247);">
+<k-navbar 
+      title=""
+      class="top-0 sticky"
+      style="background-color: white;"
+    >
+      
+      <template #right>
        
-       
-       <div class="userButton" @click="toggleUserMenu"> 
-        <div class="Lavatar" v-if="userData">{{ userData.name.charAt(0) }}
-        </div>
-        <Icon name="tabler:menu" style="font-size: 20px; "/>
-       </div>
+        <div >
+         
+         <div class="userButton"  @click="openUserPanel">        
+          <Icon name="tabler:menu" style="font-size: 26px; "/>
+         </div>
+  
+      </div>
+      </template>
 
-
-       <OverlayPanel ref="userMenu">
-            <div class="usertext" >
-              <div v-if="isFetchingData">Cargando usuario...</div>
-              <div  v-if="userData" style="font-size: 15px;">{{ userData.name }} </div>
-              <div style="color: rgb(112, 112, 112);" v-if="userData">{{ userData.email }}   </div>
-              <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
-
-            </div>
-            
-      </OverlayPanel>
 
       
-    </div>
 
-  </div>
+
+    </k-navbar>
+
+    <k-panel v-model:opened="userPanelOpened" side="right"
+          @backdropclick="() => (userPanelOpened = false)">
+          <div style="padding: 20px;">
+            <div class="usertext" >
+                  <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
+                  <div style="color: rgb(112, 112, 112);" v-if="userData">{{ userData.email }}   </div>
+                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+  
+                </div>
+          </div>
+        </k-panel>
+
+  
+
+    
+
+      <div style="background-color:white; padding: 20px; margin-top: 0px;">
+        <img src="../assets/saintLogo.jpg" alt="Logo" style="max-width: 250px; margin-bottom: 20px;" >
+        <div   v-if="userData">Hola  <span style="font-weight: 700;"> {{ userData.name }}  </span>, Bienvenid@ de nuevo  </div> 
+    
+      </div>
+
+  
 
 
   <div class="contenedor" >
-    <div style="display: flex; align; align-items: center;">
+  
+    <div v-if="divisiones.length > 0">
+    <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
 
-    <div class="logo-container">
-      <img v-if="clientData && clientData.image" :src="clientData.image" alt="Logo" class="logo" />
+    <k-card v-for="division in divisiones" :key="division.id" @click="goToDivision(division.id)" style="margin-bottom: 50px;">
+  <div class="tittle">{{ division.name }}  <Icon name="material-symbols-light:arrow-forward-ios-rounded" style="font-size: 17px; "/> <span style="font-size: 15px; color: gray; font-weight: 500;"> {{ division.entidad.name }} </span> </div>
+
+      <div v-if="division.entidad.tipo.id === 1" class="labelType">
+        <img src="../assets/Polygon 7.svg" style="width: 12px; margin-right:6px;">
+        {{ division.entidad.tipo.tipo }}
+      </div>
+
+      <div v-if="division.entidad.tipo.id === 2" class="labelType" style="color:#00CDB8; background-color: #E3FFFC;">
+        <img src="../assets/Polygon 3.svg" style="width: 15px; margin-right:6px;">
+        {{ division.entidad.tipo.tipo }}
+      </div>
+    </k-card>
+    </div>
+
+    <div v-if="empresas.length > 0">  
+      <div class="labelapp"> ADMINISTRA TUS UBICACIONES </div>
+
+      <k-card v-for="empresa in empresas" :key="empresa.name"  @click="navegarADetalle(empresa.id)" >
+        <div class="tittle">{{ empresa.name }}</div>
+        
+        <div  v-if="empresa.tipo.id === 1" class="labelType" > 
+          <img src="../assets/Polygon 7.svg" style="width: 12px; margin-right:6px;">
+          {{ empresa.tipo?.tipo }}
         </div>
-        <p v-if="clientData" style="font-size:45px; font-weight: 500; margin-top: 30px; margin-left: 20px;" > {{ clientData.name }}</p>
 
-  </div>
-   <p v-if="!isAuthenticated">No estás autenticado.</p>
-
-   <div class="project-grid" v-if="projectData && projectData.length">
-      <ProjectCard
-        v-for="project in projectData"
-        :key="project.uuid"
-        :name="project.name"
-        :uuid="project.uuid"
-        :state="project.state"
-        :url="project.url"
-        @click="handleProjectClick(project.uuid, project.id)"
+        <div  v-if="empresa.tipo.id === 2" class="labelType" style="color:#00CDB8; background-color: #E3FFFC;"> 
+          <img src="../assets/Polygon 3.svg" style="width: 1px; margin-right:6px;">
+          {{ empresa.tipo?.tipo }}
+        </div>
 
         
-
-      />
+      </k-card>
     </div>
-    
-  </div>
+
+    </div>
+        
+
   
   
   
+</k-page>
 
 </template>
+
+<script>
+  import { ref } from 'vue';
+  import {
+    kPage,
+    kNavbar,
+    kNavbarBackLink,
+    kPanel,
+    kBlock,
+    kBlockTitle,
+    kLink,
+    kButton,
+    kCard,
+
+  } from 'konsta/vue';
+
+  export default {
+    components: {
+      kPage,
+      kNavbar,
+      kNavbarBackLink,
+      kPanel,
+      kBlock,
+      kBlockTitle,
+      kLink,
+      kButton,
+      kCard,
+
+    },
+  
+  };
+</script>
+
 
 <script setup>
 import supabase from "../db/supabaseClient";
@@ -81,6 +149,13 @@ const userData = ref(null);
 const clientData = ref(null);  // Agrega esta línea
 const projectData = ref(null);
 const userMenu = ref(null);
+const userPanelOpened = ref(false);
+const empresas = ref([]);
+const divisiones = ref([]);
+
+
+
+
 
 
 onMounted(async () => {
@@ -93,51 +168,70 @@ onMounted(async () => {
       .select('name, email')
       .eq('user_id', userUUID.value);
 
+
+
+
     if (userError) {
       console.error('Error al obtener datos de usuario:', userError);
     } else {
       userData.value = userDataResponse[0];
+
     }
 
-    const { data: clientDataResponse, error: clientError } = await supabase
-      .from('client')
-      .select('name, uuid, id, image') 
-      .eq('user_uuid', userUUID.value);
+    const { data: userRoles, error: rolesError } = await supabase
+      .from('userRoles')
+      .select('entidad(*, tipo(tipo,id))')
+      .eq('user', userUUID.value)
+      .eq('rol', 2);
+      
 
-    if (clientError) {
-      console.error('Error al obtener datos del cliente:', clientError);
+      console.log('userRoles:', userRoles);
+      console.log(JSON.stringify(userRoles, null, 2));
+
+      if (rolesError) {
+      console.error('Error obteniendo roles del usuario:', rolesError);
     } else {
-      clientData.value = clientDataResponse[0];
-      console.log("Datos del cliente obtenidos:", clientData.value);
-
+      empresas.value = userRoles.filter(role => role.entidad !== null).map(role => role.entidad);
+      
     }
-    
 
-    
+    const { data: userRolesDivision, error: rolesErrorDivision } = await supabase
+      .from('userRoles')
+      .select('*, division(*,entidad(*,tipo(tipo,id)))')
+      .eq('user', userUUID.value)
+      .eq('rol', 3);
+      ;
 
-    if (clientData.value && 'id' in clientData.value) {
-      console.log("Consultando proyectos para el cliente con ID:", clientData.value.id);
+      console.log('userDivision:', userRolesDivision);
+      console.log(JSON.stringify(userRolesDivision, null, 3));
 
-      // Consulta para projectData
-      const { data: projectDataResponse, error: projectError } = await supabase
-        .from('project')
-        .select('*') // Ajusta según sea necesario
-        .eq('client', clientData.value.id);
-
-      if (projectError) {
-        console.error('Error al obtener datos del proyecto:', projectError);
+      if (rolesErrorDivision) {
+        console.error('Error obteniendo roles de la división:', rolesErrorDivision);
       } else {
-        projectData.value = projectDataResponse;
-        console.log("Datos del proyecto obtenidos:", projectData.value); // Imprime los datos del proyecto obtenidos
-      }
-    } else {
-      console.log("No se puede consultar proyectos, clientData.id no disponible");
+        divisiones.value = userRolesDivision.map(role => role.division).filter(division => division !== null);
+      
     }
 
-    isFetchingData.value = false;
   }
+
+  
+
+
 });
 
+
+function openUserPanel() {
+  userPanelOpened.value = true;
+  
+}
+
+function navegarADetalle(id) {
+  router.push(`/entidad/${id}`);
+}
+
+function goToDivision(id) {
+  router.push(`/division/${id}`);
+}
 
 
 // Función de logout
@@ -163,6 +257,33 @@ function toggleUserMenu() {
 
 <style >
 
+.labelType{
+  font-size: 12px; 
+  font-weight: 150;
+  display: flex;
+  color: #006EAB;
+  background-color: #DFF4FF;
+  font-weight: 500;
+  max-width: fit-content;
+  padding: 5px;
+  border-radius: 10px;
+  padding-right: 10px;
+}
+
+
+
+.tittle{
+  font-size: 18px; 
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.bg-ios-light-surface-1{
+  margin: 0px;
+  margin-bottom: 12px;
+}
+
+
 .usertext{
 font-size: 13px;
 }
@@ -181,7 +302,7 @@ body{
 
 .contenedor{
   max-width: 1200px;
-  padding: 10px;
+  padding: 20px;
   margin: auto;
 }
 
@@ -194,23 +315,20 @@ body{
 
 .userButton{
   
-border-style: solid;
+border-style: none;
 border-width: 1px;
-border-color: rgb(191, 191, 191);
 padding: 3px;
 padding-right: 6px;
 display: flex;
 flex-direction: row;
 border-radius: 20px;
-max-width:65px;
+max-width:85px;
 align-items: center;
 cursor: pointer;
 background-color: transparent;
 }
 
-.userButton:hover {
-    background-color: rgb(239, 239, 239);
-}
+
 
 .Lavatar{
  padding: 5px;

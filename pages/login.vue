@@ -1,17 +1,34 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+
 import supabase from "../db/supabaseClient";
 import { useStore } from 'vuex';
+
 
 const router = useRouter();
 const email = ref('');
 const password = ref('');
 const errorMsg = ref(null);
 const store = useStore();
+const toastMessage = ref('');
+const opened = ref({left: false
+      });
+
+const openToast = (side, message) => {
+  opened.value = { left: false };
+  opened.value[side] = true;
+  toastMessage.value = message; 
+  
+  setTimeout(() => {
+    opened.value[side] = false;
+  }, 3000); 
+};
+     
 
 async function signIn() {
   try {
+
     const { error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
@@ -21,6 +38,7 @@ async function signIn() {
   } catch (error) {
     console.error("Error durante el inicio de sesión:", error);
     errorMsg.value = error.message;
+    openToast('left', error.message);
   }
 }
 
@@ -43,50 +61,182 @@ onMounted(() => {
     }
   });
 });
+
+function testInputs() {
+  console.log("Email:", email.value, "Password:", password.value);
+}
+  
 </script>
 
 
+<script>
+  // Konsta UI components
+  import {
+    kPage,
+    kNavbar,
+    kBlock,
+    kButton,
+    kList,
+    kListItem,
+    kLink,
+    kBlockTitle,
+    kToast,
+    kListInput,
+    
 
+  } from 'konsta/vue';
+
+  export default {
+    components: {
+      kPage,
+      kNavbar,
+      kBlock,
+      kButton,
+      kList,
+      kListItem,
+      kLink,
+      kBlockTitle,
+      kToast,
+      kListInput,
+
+
+    },
+
+
+
+  };
+</script>
 
 <template>
-    <div class="login-container">
-      <div class="login-card">
-        <div class="logo-container">
-          <img src="../assets/LOGO.svg" alt="Logo" class="logo">
-        </div>
-        <form @submit.prevent="signIn" class="login-form">
-          <div class="input-group">
-            <input type="email" id="email" v-model="email" placeholder="Correo electrónico" required>
+
+  <k-page style="display: flex;">
+
+   
+    <div style="width: 90%; margin:auto" >
+
+ 
+
+
+
+     <k-block strong>
+        <div >
+          <div class="logo-container">
+            <img src="../assets/saintLogo.jpg" alt="Logo" class="logo">
           </div>
-          <div class="input-group">
-            <input type="password" id="password" v-model="password" placeholder="Contraseña" required>
-            <span class="password-toggle" @click="togglePasswordVisibility">
-              <!-- Icono para mostrar/ocultar contraseña -->
-            </span>
-          </div>
-          <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
+
+          <form @submit.prevent="signIn" class="login-form">
+            
+            <k-list inset-ios strong-ios> 
+                  <div class="input-group">
+
+                    </div>
+
+                    <div class="input-group">
+                      <k-list-input
+                      style="margin: 0px!important;"
+                      outline
+                      :value="email" 
+                         @input="email = $event.target.value"
+                      label="Correo Electrónico"
+                      type="email"
+                      id="email"
+                      required
+                      placeholder="Correo Electrónico"
+                    >
+                    </k-list-input>
+                  </div>
+
+                    <div class="input-group">
+                      <k-list-input
+                      outline
+                      :value="password" 
+                         @input="password = $event.target.value"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      required
+                      placeholder="Contraseña"
+                    >
+                    </k-list-input>
+
+                      <span class="password-toggle" @click="togglePasswordVisibility">
+                      
+                      </span>
+                    </div>
+                 
+                    
+            </k-list>
+
+                
+
+            
+                 <k-button @click="testInputs"  type="submit"  label="Ingresar" style="width: 100%; height:50px!important;   background-image: linear-gradient(to right, #20C4D6, #0586F0);
+                  " ></k-button>
+  
+                <div style="display: flex; justify-content: space-between;">
 
 
-        <div style="display: flex; justify-content: space-between;">
-            <div class="forgot-password">
-             <a href="#">¿Olvidaste la contraseña?</a>
-            </div>
-
-          <Button type="submit"  label="Ingresar" style="width: 100px;" ></Button>
-
+              <div class="forgot-password">
+              <a href="#">¿Olvidaste la contraseña?</a>
+              
+              </div>
+            
         </div>  
 
-        </form>
-
-       
-      </div>
+          </form>
+        </div>
+     </k-block>
     </div>
+
+    <k-toast position="left" :opened="opened.left">
+    <template #button>
+      <k-button clear inline @click="() => (opened.left = false)">
+        Cerrar
+      </k-button>
+    </template>
+    <div class="shrink">{{ toastMessage }}</div>
+    </k-toast>
+
+  </k-page>
+
   </template>
 
 
 
 
+
 <style scoped>
+
+
+.mr-4{
+  margin-right: 0px!important;
+}
+
+.ml-4{
+  margin-right: 0px!important;
+}
+
+.ps-4-safe{
+  margin-right: 0px!important;
+}
+
+
+.ps-\34-safe {
+  margin:0px!important;
+
+}
+
+.ml-\34-safe {
+  margin-left:0px;
+  margin-right:0px;
+
+}
+
+.container{
+  width: 90%;
+  margin: auto;
+}
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -110,12 +260,12 @@ onMounted(() => {
 .logo-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-top:20px;
 }
 
 .logo {
-  max-width: 100px;
-  margin-bottom: 30px;
+  max-width: 70%;
+  margin-bottom: 0px;
 }
 
 .input-group {
