@@ -29,10 +29,7 @@
       v-for="division in divisionesFiltradas"
       :key="division.id" 
       :title="division.name" 
-      :footer="`${division.uuid}`"
-      @click="navegarADivisionEdit(division.id)"
-      >
-
+      :footer="`${division.uuid}`">
     </k-list-item>
   </k-list>
 
@@ -40,37 +37,16 @@
   <k-fab
   class="fixed right-4-safe bottom-4-safe z-20"
   :text="fabText"
-  style="background-image: linear-gradient(to right, #20C4D6, #0586F0); font-size: 11px!important;"
+  style="background-image: linear-gradient(to right, #20C4D6, #0586F0); font-size: 11px;"
   text-position="after"
-  @click="abrirPopup"
-  >
-
-  <k-popup v-if="popupOpened" @close="popupOpened = false">
-      <k-page>
-        <k-navbar title="Agregar " fabText>
-          <template #right>
-            <k-link navbar @click="() => (popupOpened = false)"> Close </k-link>
-          </template>
-        </k-navbar>
-        <k-block class="space-y-4">
-          <p>
-        Formulario  crear nueva división / residencia
-          </p>
-      
-        </k-block>
-      </k-page>
-    </k-popup>
-
-
+>
   <template>
     <Icon name="material-symbols:add" style="font-size: 17px; "/>
   </template>
 </k-fab>
+
+  
 </div>
-
-
-
-
 </k-page>
 
 </template>
@@ -86,7 +62,7 @@ const router = useRouter();
 const entidad = ref(null);
 const divisiones = ref([]);
 const searchQuery = ref('');
-const popupOpened = ref(true);
+
 
 const fabText = computed(() => {
   
@@ -162,16 +138,7 @@ function goBack() {
   router.back();
 }
 
-function abrirPopup() {
-  popupOpened.value = true;
-  console.log('iniciado Abrir Popup')
-  console.log(popupOpened.value)
-}
 
-
-function navegarADivisionEdit(divisionId) {
-  router.push(`/division_edit/${divisionId}`);
-}
 
 
 
@@ -198,7 +165,6 @@ function navegarADivisionEdit(divisionId) {
     kListItem,
     kSearchbar,
     kFab,
-    kPopup,
 
 
   } from 'konsta/vue';
@@ -219,7 +185,6 @@ function navegarADivisionEdit(divisionId) {
       kListItem,
       kSearchbar,
       kFab,
-      kPopup,
 
 
 
