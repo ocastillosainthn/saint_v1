@@ -45,7 +45,7 @@
   @click="abrirPopup"
   >
 
-  <k-popup v-if="popupOpened=false" @close="popupOpened = false">
+  <k-popup v-if="popupOpened" @close="popupOpened = false">
       <k-page>
         <k-navbar title="Agregar " fabText>
           <template #right>
