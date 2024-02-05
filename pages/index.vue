@@ -28,7 +28,8 @@
           <div style="padding: 20px;">
             <div class="usertext" >
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
-                  <div style="color: rgb(112, 112, 112);" v-if="userData">{{ userData.email }}   </div>
+                  <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
+                  <div st> version dev: 0.2.12  02-05-24</div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
   
                 </div>
