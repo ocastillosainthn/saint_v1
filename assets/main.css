@@ -9,6 +9,10 @@ body {
     background-color: #f8f8f8;
   }
 
+  .text-base{
+    font-size: 0.8rem;
+  }
+
 .frozen-column-border {
     border-right: 2px solid rgb(243, 243, 243);
     min-width: 60px!important;
@@ -17,19 +21,6 @@ body {
 .labelapp{
 font-size: 13px;
 margin-bottom: 10px;
-}
-
-.mr-4{
-  margin: 0px!important;
-}
-
-.ml-\34-safe[data-v-e8ce220f] {
-  margin-bottom: 4px;
-}
-
-
-.ml-4{
-  margin: 0px!important;
 }
 
 .header{

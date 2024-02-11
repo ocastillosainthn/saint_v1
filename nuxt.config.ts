@@ -5,6 +5,19 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  app: {
+    head: {
+      meta: [
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1'
+        }
+        // Otros meta tags aquí
+      ]
+    }
+  },
+
+
   build: {
     transpile: ['konsta'],
   },

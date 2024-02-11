@@ -63,7 +63,7 @@
       </div>
 
       <div v-if="division.entidad.tipo.id === 2" class="labelType" style="color:#00CDB8; background-color: #E3FFFC;">
-        <img src="../assets/Polygon 3.svg" style="width: 15px; margin-right:6px;">
+        <img src="../assets/Polygon 3.svg" style="width: 12px; margin-right:6px;">
         {{ division.entidad.tipo.tipo }}
       </div>
     </k-card>
@@ -81,7 +81,7 @@
         </div>
 
         <div  v-if="empresa.tipo.id === 2" class="labelType" style="color:#00CDB8; background-color: #E3FFFC;"> 
-          <img src="../assets/Polygon 3.svg" style="width: 1px; margin-right:6px;">
+          <img src="../assets/Polygon 3.svg" style="width: 12px; margin-right:6px;">
           {{ empresa.tipo?.tipo }}
         </div>
 

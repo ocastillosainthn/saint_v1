@@ -76,4 +76,9 @@ export default {
 .container {
   padding: 20px;
 }
+
+.shrink {
+font-size: 13px;
+}
+
 </style>

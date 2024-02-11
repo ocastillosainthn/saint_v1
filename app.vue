@@ -1,4 +1,7 @@
 <template>
+
+
+
   <!-- Wrap our app with App component -->
   <k-app theme="ios">
     <NuxtPage />
