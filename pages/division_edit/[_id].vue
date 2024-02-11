@@ -1,5 +1,5 @@
 <template>
-  <k-page v-if="division" style="background-color: rgb(247, 247, 247);">
+  <k-page v-if="division" style="background-color: white;">
     <k-navbar 
       :title="division.name"
       small
@@ -9,39 +9,65 @@
       <template #left>
         <k-navbar-back-link text="" @click="goBack" />
       </template>
+
+     
+
     </k-navbar>
  
     <div> 
   
     </div>
 <div class="container" >
-
-  <k-list  style="width: 100%;" >
+  
+  <k-list  style="width: 100%;  margin-top: 0px; margin-bottom: 0px;" >
     <div class="input-group">
             <k-list-input
-              style="margin: 0px!important; width: 100%;"
+              style="margin: 0px!important; width: 100%; font-size: 14px;"
               floating-label
-              :value="division.name"
+              :value="name"
               @input="name = $event.target.value; console.log('Input event:', $event.target.value);"
               label="Nombre"
               type="text"
               id="name"
-              required
               placeholder="Nombre de la division/casa"
             />
           </div>
         </k-list>
 
-        <FloatLabel>
-          <InputText id="username" v-model="value" />
-          <label for="username">Username</label>
-      </FloatLabel>
+    <k-list  style="width: 100%;  margin-top: 0px; margin-bottom: 0px;" >
+    <div class="input-group">
+            <k-list-input
+              style="margin: 0px!important; width: 100%; font-size: 14px;"
+              floating-label
+              :value="descripcion"
+              @input="descripcion = $event.target.value; console.log('Input event:', $event.target.value);"
+              label="Descripción"
+              type="text"
+              id="descripcion"
+              placeholder="Decripción/Dirección"
+            />
+          </div>
+        </k-list>
+
+
+  <div class="bottomTAB"> 
+    <Button @click="deleteDivision" style="margin-right: 20px; font-size: 14px; color: red;">Eliminar</Button>
+    <Button @click="saveDivision" class="botonSave">GUARDAR</Button>
+  </div>
+
+  <k-toast position="left" :opened="opened.left" :style="{backgroundColor: toastColor}">
+    <template #button>
+      <k-button clear inline @click="() => (opened.left = false)">
+        Cerrar
+      </k-button>
+    </template>
+    <div class="shrink">{{ toastMessage }}</div>
+  </k-toast>
 
 
  <div style="width: 100%;"> 
-    <div class="labelText" style="margin-bottom: 20px;"> {{ division.uuid }} </div>
 
-    <k-block-title style="margin-bottom: 1px;">Usuarios</k-block-title>
+    <k-block-title style="margin-bottom: 5px;">Usuarios</k-block-title>
 
         <k-list strong inset style="width: 100%;">
           <k-list-item 
@@ -50,7 +76,7 @@
             :title="userRole.userData.name" 
             :footer="userRole.userData.email">
             <template #after>
-              <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #4d4d4d;" @click.stop="() => removeUserRole(userRole.id)"/>
+              <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="() => removeUserRole(userRole.id)"/>
             </template>
           </k-list-item>
         </k-list>
@@ -166,9 +192,12 @@
 </template>
 
 <script setup>
+
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
+import PrimeVue from "primevue/config";
+import InputText from 'primevue/inputtext';
 
 const route = useRoute();
 const router = useRouter();
@@ -180,9 +209,27 @@ const popupOpened = ref(false);
 const emailList = ref('');
 const error = ref('');
 const mails = ref([]);
+const edit = ref(false);
+const name = ref('');
+const descripcion = ref('');
+const opened = ref({ left: false });
+const toastMessage = ref('');
+const toastColor = ref('#FFFFFF'); 
 
 
-function openPopup() {
+
+const openToast = (side, message, color) => {
+  opened.value[side] = true;
+  toastMessage.value = message; 
+  toastColor.value = color;
+  
+  setTimeout(() => {
+    opened.value[side] = false;
+  }, 3000); 
+};
+
+
+  function openPopup() {
   popupOpened.value = true;
 }
 
@@ -202,6 +249,8 @@ onMounted(async () => {
 async function cargarDivision(divisionId) {
   if (!divisionId) return;
 
+
+
   try {
     const { data, error } = await supabase
       .from('division')
@@ -211,6 +260,11 @@ async function cargarDivision(divisionId) {
 
     if (error) throw error;
     division.value = data;
+    
+    name.value= division.value.name
+    descripcion.value = division.value.descripcion
+
+    console.log('constDescripcion:', descripcion)
   } catch (error) {
     console.error('Error al obtener la división:', error);
   }
@@ -228,7 +282,9 @@ async function cargarUserRoles(divisionId) {
       return;
     }
 
+
     console.log('Roles de usuario y datos de usuario cargados:', data);
+    
     userRoles.value = data;
   } catch (error) {
     console.error('Error al obtener los roles de usuario y datos de usuario:', error);
@@ -245,7 +301,9 @@ async function cargarInvitaciones(divisionId) {
     
       .from('invitacion') 
       .select(`*`)
-        .eq('division', divisionId);
+      .eq('division', divisionId)
+      .eq('estado', 'enviada');
+  
 
     if (error) throw error;
     console.log('Datos de invitaciones obtenidos:', data);
@@ -383,6 +441,56 @@ function generateInvitationCode() {
 }
 
 
+function toggleEdit() {
+  edit.value = !edit.value;
+}
+
+
+async function saveDivision() {
+  if (!division.value || !division.value.id) {
+    console.error("Información de división no disponible.");
+    return;
+  }
+  
+  const { error } = await supabase
+    .from('division')
+    .update({ name: name.value, descripcion: descripcion.value })
+    .eq('id', division.value.id);
+
+  if (error) {
+    console.error('Error al guardar la división:', error);
+  } else {
+    console.log('División actualizada exitosamente.');
+    openToast('left', 'Acción completada exitosamente.', '#14a248');
+  await cargarDivision(division.value.id);
+  }
+}
+
+const deleteDivision = async () => {
+  if (!division.value || !division.value.id) {
+    console.error("Información de división no disponible.");
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('division')
+      .delete()
+      .eq('id', division.value.id); 
+
+    if (error) throw error;
+
+    console.log('División eliminada exitosamente.');
+    router.back();
+  } catch (error) {
+    console.error('Error al eliminar la división:', error);
+    if (error.code === '23503') {
+      openToast('left', 'La división tiene usuarios o invitaciones activas, debes eliminarlos antes de poder eliminarla.','#D56363');
+    }
+  }
+};
+
+
 
 </script>
 
@@ -432,7 +540,7 @@ function generateInvitationCode() {
       kFab,
       kPopup,
       kListInput,
-      kToast,
+      kToast
     },
 
 
@@ -492,5 +600,27 @@ function generateInvitationCode() {
 }
 
 
+.bottomTAB{
+  display: flex;
+  position:fixed; 
+  bottom: 0px; 
+  left: 0px;
+  z-index: 20;
+  height: 65px; 
+  width: 100%; 
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+
+.botonSave {
+font-size: 12px;
+padding: 10px;
+border-radius: 7px;
+color:white;
+  background-color: rgb(1, 88, 181);
+}
 
 </style>
