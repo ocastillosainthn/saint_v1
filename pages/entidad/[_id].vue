@@ -78,11 +78,11 @@
   <span style="font-weight: 700;"> Crear {{fabText}} </span> <span> <Icon name="material-symbols-light:arrow-right-alt" style="font-size:20px; color: #858585;"/> </span>  <span style="color: #626262;"> {{ entidad.name }}</span> 
 
 </div>
-  <div style="height: 100vh; padding: 25px; padding-top: 0;  marg">
+  <div style="height: 100vh; padding: 25px; padding-top: 0;  margin: 4px;">
       <k-list >
         <div class="input-group">
           <k-list-input
-            style="margin: 0px!important;"
+            style="margin:1px;"
             outline
             :value="name"
             @input="name = $event.target.value;"

@@ -29,7 +29,7 @@
             <div class="usertext" >
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
-                  <div st> version dev: 0.2.13  02-10-24</div>
+                  <div st> version dev: 0.2.15  06-03-24</div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
   
                 </div>
@@ -55,7 +55,7 @@
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
 
     <k-card v-for="division in divisiones" :key="division.id" @click="goToDivision(division.id)" style="margin-bottom: 15px;">
-  <div class="tittle">{{ division.name }}  <Icon name="material-symbols-light:arrow-forward-ios-rounded" style="font-size: 17px; "/> <span style="font-size: 15px; color: gray; font-weight: 500;"> {{ division.entidad.name }} </span> </div>
+  <div class="tittle">{{ division.name }}  <Icon name="solar:arrow-right-linear" style="font-size: 17px; "/> <span style="font-size: 15px; color: gray; font-weight: 500;"> {{ division.entidad.name }} </span> </div>
 
       <div v-if="division.entidad.tipo.id === 1" class="labelType">
         <img src="../assets/Polygon 7.svg" style="width: 12px; margin-right:6px;">
@@ -64,7 +64,7 @@
 
       <div v-if="division.entidad.tipo.id === 2" class="labelType" style="color:#00CDB8; background-color: #E3FFFC;">
         <img src="../assets/Polygon 3.svg" style="width: 12px; margin-right:6px;">
-        {{ division.entidad.tipo.tipo }}
+        {{ division.entidad.tipo.tipo }} 
       </div>
     </k-card>
     </div>

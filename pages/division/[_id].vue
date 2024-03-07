@@ -1,5 +1,5 @@
 <template>
-  <k-page v-if="division" style="background-color: rgb(247, 247, 247);">
+  <k-page v-if="division" style="background-color: #f7f7f7;">
     <k-navbar 
       :title="division.name"
       large
@@ -22,26 +22,44 @@
 
 
 <div class="centerTittleAction"> 
-    <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Mis Vistias  </k-block-title>
+    <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Mis Visitas  </k-block-title>
     
-    <div style="width: 10px0px;">
-            <Calendar v-model="icondisplay"  selectionMode="range"  :manualInput="false" showIcon iconDisplay="input" inputId="icondisplay" />
+    <div style="margin-right: 10px; border-width:0; border-color: red; border-style: hidden;  text-align: center;">
+            <Calendar v-model="filterVisita"  showButtonBar  :manualInput="true" showIcon iconDisplay="input" inputId="icondisplay" />
         </div>
 
         
         
 </div>
 
-  <div  class="center-content" >
+<div style="padding: 10px;" v-show="visitas.length > 0">
+  <div class="card" v-for="visita in visitas" :key="visita.id">
+    <p style="font-weight: 700; font-size: 20px; margin-bottom:7px;">{{ visita.nombre }}</p>
+    <p style="font-size: 14px; color: gray;">       <Icon name="solar:calendar-add-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 7px;" />
+ <span> {{ visita.fecha }}</span> </p>
+    <p style="font-size: 11px; color: gray; margin-top: 20px; margin-bottom: 10px;"> Participantes</p>
 
-      <Icon name="solar:calendar-add-broken" style="font-size:40px; color: #4d4d4d; margin-top: 20px; margin-bottom: 10px;"/>
+    <div class="chips-container">
+  <template v-for="(participante) in visita.participantes.slice(0, 3)" :key="participante.id">
+    <Chip class="chip"> 
+      <span class="labelAvatar">{{ participante.persona.nombre[0] }}</span>
+      <span>{{ participante.persona.nombre }}</span>
+    </Chip>
+  </template>
+  <!-- Mostrar cuántos participantes más hay si el total supera a 3 -->
+  <span v-if="visita.participantes.length > 3" class="chip" style="padding: 2px; margin-top: 5px; background-color: white; border-color: white;">
+    +{{ visita.participantes.length - 3 }}
+  </span>
+</div>
+  </div>
+</div>
+
+    <div class="center-content" v-show="!cargandoVisitas && visitas.length === 0">
+      <Icon name="solar:calendar-add-broken" style="font-size: 40px; color: #4d4d4d; margin-top: 20px; margin-bottom: 10px;" />
       <p>No tienes visitas agendadas</p>
-      
-    
       <div class="addUser">
-      <Button  @click="openAddReunion" > Agregar Visita</Button>
-       </div>
-
+        <Button @click="openAddReunion">Agregar Visita</Button>
+      </div>
     </div>
 
 </div>
@@ -75,15 +93,24 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
+import Chip from 'primevue/chip';
+
 
 const route = useRoute();
 const router = useRouter();
 const division = ref(null);
 const searchQuery = ref('');
+const filterVisita = ref('');
+const visitas = ref([]);
+const participantes = ref([]);
 
 onMounted(async () => {
   const divisionId = route.params._id;
   await cargarDivision(divisionId);
+  await cargarVisita();
+
+  cargarParticipantes();
+
 });
 
 async function cargarDivision(divisionId) {
@@ -102,6 +129,49 @@ async function cargarDivision(divisionId) {
     console.error('Error al obtener la división:', error);
   }
 }
+
+
+async function cargarParticipantes(visitaId) {
+  try {
+    const { data, error } = await supabase
+      .from('participantes') 
+      .select('*,persona(*)')
+      .eq('visita', visitaId);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error al cargar los participantes:', error.message);
+    return []; 
+  }
+}
+
+async function cargarVisita() {
+  try {
+    if (!division.value || !division.value.id) {
+      throw new Error('El ID de la división no está definido o está vacío');
+    }
+
+    const { data, error } = await supabase
+      .from('visita')
+      .select('*')
+      .eq('division', division.value.id);
+
+    if (error) throw error;
+
+    for (const visita of data) {
+      visita.participantes = await cargarParticipantes(visita.id);
+    }
+
+    visitas.value = data;
+
+    console.log('Visitas y participantes cargados:', visitas);
+  } catch (error) {
+    console.error('Error al cargar las visitas y participantes:', error.message);
+  }
+}
+
 
 function openAddReunion() {
   if (division.value && division.value.id) {
