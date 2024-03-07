@@ -72,7 +72,7 @@
   <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
   <p>No se han agregado participantes </p>
 
-  <Button @click="openPopup" > Agregar Participante</Button>
+  <Button @click="openPopup" > Agregar Participante </Button>
 
 </div>
 
