@@ -292,6 +292,13 @@ const convertToImage = () => {
 
 const shareImage = (imageData) => {
   console.log('Imagen para compartir:', imageData);
+
+  if (window.Functions) {
+    window.Functions.shareImage(imageData);
+  } else {
+    console.error("La función de interfaz de Android no está definida.");
+  }
+  
 };
 
 const abrirDialogoConfirmacion = (id) => {
