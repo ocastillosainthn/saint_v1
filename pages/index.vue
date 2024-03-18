@@ -1,6 +1,7 @@
 <template>
 <k-page style="background-color: rgb(247, 247, 247);">
-<k-navbar 
+<!-- 
+  <k-navbar 
       title=""
       class="top-0 sticky"
       style="background-color: white;"
@@ -21,21 +22,22 @@
       
 
 
-    </k-navbar>
+</k-navbar>
 
-    <k-panel v-model:opened="userPanelOpened" side="right"
+
+    <k-panel  side="left" 
           @backdropclick="() => (userPanelOpened = false)">
           <div style="padding: 20px;">
             <div class="usertext" >
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
-                  <div st> version dev: 0.2.15  06-03-24</div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
-  
+                  <div st> version dev: 0.2.15  06-03-24</div>
+
                 </div>
           </div>
         </k-panel>
-
+-->
   
 
     
@@ -69,8 +71,8 @@
     </k-card>
     </div>
 
-    <div v-if="empresas.length > 0">  
-      <div class="labelapp" style="margin-top:0px"> ADMINISTRA TUS UBICACIONES </div>
+    <div v-if="empresas.length > 0" style="margin-bottom: 90px;">  
+      <div class="labelapp" style="margin-top:0px;"> ADMINISTRA TUS UBICACIONES </div>
 
       <k-card v-for="empresa in empresas" :key="empresa.name"  @click="navegarADetalle(empresa.id)" >
         <div class="tittle">{{ empresa.name }}</div>
@@ -122,9 +124,70 @@
 
  </k-popup>
 
+ 
+ <k-sheet
+      class="pb-safe"
+      :opened="sheetOpened"
+      @backdropclick="() => (sheetOpened = false)"
+    >
+      
+      <k-block   style="min-height: 340px; padding: 20px;  " >
+
+        <p style="margin-bottom: 20px;">
+          Selecciona
+        </p>
+
+        <div class="itemAcceso">
+           <div style="background-color: black; padding: 8px; border-radius: 9px; margin-right:10px;">   <Icon name="solar:add-square-outline" style="font-size: 26px; color: white;"/>  </div> 
+           <div class="itemText" > Crear Visita Nueva </div>
+        </div>
+
+
+        <div style="display: flex; padding: 10px; margin-top: 15px; " >
+           <div style="margin-right:15px; margin-left: px; ">  <Icon name="solar:user-broken" style="font-size: 26px; color: gray;"/>  </div> 
+           <div > Crear Persona  </div>
+        </div>
+
+        <div style="display: flex; padding: 10px; margin-top: 6px; margin-bottom: 20px;" >
+           <div style="margin-right:15px; margin-left: 5px; ">  <Icon name="solar:case-linear" style="font-size: 22px; color: gray;"/>  </div> 
+           <div > Crear Empresa  </div>
+        </div>
+     
+        <div style="max-width: 100%;"> </div>
+      </k-block>
+    </k-sheet>
   
-  
+
+    <k-sheet
+    :opened="userPanelOpened"
+      class="pb-safe"
+      @backdropclick="() => (userPanelOpened = false)"
+    >
+      
+      <k-block   style="min-height: 500px; " >
+
+
+
+        <div style="padding: 20px;">
+            <div class="usertext" >
+                  <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
+                  <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
+                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+                  <div st> version dev: 0.3.20  18-03-24</div>
+
+                </div>
+          </div>
+     
+        <div style="max-width: 100%;"> </div>
+      </k-block>
+    </k-sheet>
+
 </k-page>
+
+
+
+
+<tab-bar style="z-index: 32000;" @onItemSelect="handleItemSelect" />
 
 </template>
 
@@ -143,6 +206,7 @@
     kPopup,
     kListInput,
     kToast,
+    kSheet
 
   } from 'konsta/vue';
 
@@ -160,6 +224,7 @@
       kPopup,
     kListInput,
     kToast,
+    kSheet
 
     },
   
@@ -174,6 +239,13 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { ref, onMounted } from 'vue';
 import OverlayPanel from "primevue/overlaypanel";
+import { defineProps, defineEmits } from 'vue'
+import TabBar from '../components/tabBar.vue';
+
+
+
+
+const emit = defineEmits(['update:activeTab'])
 
 
 const router = useRouter();
@@ -190,8 +262,25 @@ const empresas = ref([]);
 const divisiones = ref([]);
 const popupOpened = ref(false);
 const inviteSended = ref(null);
+const sheetOpened = ref(false);
 
 
+
+
+function handleItemSelect(item) {
+  if (item === 3) {
+    openUserPanel();
+    sheetOpened.value = false;
+
+  }else if (item === 1) {
+    userPanelOpened.value = false; 
+    sheetOpened.value = false;
+
+  }else if (item === 2) {
+    userPanelOpened.value = false; 
+    sheetOpened.value = true;
+  }
+}
 
 async function fetchInviteSended() {
   if (!userData.value.email) {
@@ -409,6 +498,9 @@ async function rejectInvitation() {
 
 <style >
 
+.w-72{
+width: 100%;
+}
 .labelType{
   font-size: 12px; 
   font-weight: 150;
@@ -518,6 +610,24 @@ color:white;
     background-color: rgb(67, 38, 199);
 }
 
+.itemAcceso{
+  display:flex;  
+  border-color:rgb(207, 207, 207); 
+  border-width:1px; 
+  border-radius: 5px; 
+  border-style: solid; 
+  padding: 10px;
+}
+
+.itemText{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
 .popSmall{
   height: 40vh;
   top: 80vh;
@@ -532,7 +642,9 @@ color:white;
 
 
 
-
+.pb-safe{
+  width: 100%;
+}
 
 
 </style>

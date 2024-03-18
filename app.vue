@@ -6,11 +6,13 @@
   <k-app theme="ios">
     <NuxtPage />
   </k-app>
+ 
 </template>
 
 <script>
   import { kApp } from 'konsta/vue';
   import './assets/main.css';
+import tabBar from './components/tabBar.vue';
 
   export default {
     components: {

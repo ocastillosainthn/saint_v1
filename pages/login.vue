@@ -12,8 +12,7 @@ const password = ref('');
 const errorMsg = ref(null);
 const store = useStore();
 const toastMessage = ref('');
-const opened = ref({left: false
-      });
+const opened = ref({left: false});
 
 const openToast = (side, message) => {
   opened.value = { left: false };

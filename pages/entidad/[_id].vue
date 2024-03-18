@@ -51,7 +51,7 @@
 
   <k-fab
   class="fixed right-4-safe bottom-4-safe z-20"
-  :text="fabText"
+  :text=" fabText"
   style="background-image: linear-gradient(to right, #20C4D6, #0586F0); font-size: 11px;"
   text-position="after"
   @click="openPopup"

@@ -2,7 +2,7 @@
   <k-page v-if="division" style="background-color: #f7f7f7;">
     <k-navbar 
       :title="division.name"
-      large
+      small
       class="top-0 sticky"
       style="background-color: white;"
     >
@@ -32,8 +32,8 @@
         
 </div>
 
-<div style="padding: 10px;" v-show="visitas.length > 0">
-  <div class="card" v-for="visita in visitas" :key="visita.id">
+<div style="padding: 10px; margin-bottom: 70px;" v-show="visitas.length  > 0">
+  <div class="card" v-for="visita in visitas" :key="visita.id" @click="navigateToVisita(visita.id)">
     <p style="font-weight: 700; font-size: 20px; margin-bottom:7px;">{{ visita.nombre }}</p>
     <p style="font-size: 14px; color: gray;">       <Icon name="solar:calendar-add-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 7px;" />
  <span> {{ visita.fecha }}</span> </p>
@@ -66,6 +66,7 @@
 
 
 
+<div class="tabbar-container"  style="height: 50px; background-color: white;"> 
 
 <k-fab
   class="fixed right-4-safe bottom-4-safe z-20"
@@ -80,7 +81,7 @@
 </k-fab>
 
 
-
+</div>
 
   </k-page>
 
@@ -103,15 +104,20 @@ const searchQuery = ref('');
 const filterVisita = ref('');
 const visitas = ref([]);
 const participantes = ref([]);
+const cargandoVisitas = ref(true);
 
 onMounted(async () => {
   const divisionId = route.params._id;
   await cargarDivision(divisionId);
   await cargarVisita();
 
-  cargarParticipantes();
+  //cargarParticipantes();
 
 });
+
+function navigateToVisita(visitaId) {
+  router.push(`/visita/${visitaId}`);
+}
 
 async function cargarDivision(divisionId) {
   if (!divisionId) return;
@@ -129,6 +135,19 @@ async function cargarDivision(divisionId) {
     console.error('Error al obtener la división:', error);
   }
 }
+
+const cargarDatos = async () => {
+  cargandoVisitas.value = true; 
+  try {
+    await cargarDivision(divisionId);
+    await cargarVisita(); 
+    // Puedes incluir aquí cualquier otra operación de carga necesaria
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+  } finally {
+    cargandoVisitas.value = false; // Finalizamos la carga de datos
+  }
+};
 
 
 async function cargarParticipantes(visitaId) {
@@ -268,5 +287,17 @@ font-size: 13px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
+
+
+.tabbar-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+   
+  }
+
 
 </style>

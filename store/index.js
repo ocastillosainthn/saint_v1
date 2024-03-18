@@ -1,5 +1,6 @@
 // store/index.js
 import { createStore } from 'vuex';
+import  supabase  from '../db/supabaseClient';
 
 export const store = createStore({
   state: {
@@ -19,9 +20,29 @@ export const store = createStore({
     },
   },
   actions: {
-    setAuthenticatedUser({ commit }, { isAuthenticated, user }) {
+    async setAuthenticatedUser({ commit }, { isAuthenticated, user }) {
       commit('setAuth', isAuthenticated);
       commit('setUser', user);
+
+      if (isAuthenticated) {
+        try {
+          // Consultar la tabla userData para obtener los datos basados en user.uuid
+          const { data, error } = await supabase
+            .from('userData')
+            .select('*')
+            .eq('user_id', user.uuid)
+            .single(); 
+
+          if (error) throw error;
+
+          // Guardar el objeto obtenido de userData en el estado de Vuex
+          commit('setUserData', data);
+          console.log(data)
+          localStorage.setItem('userData', JSON.stringify(data));
+        } catch (error) {
+          console.error('Error al obtener userData:', error.message);
+        }
+      }
     },
   },
   getters: {

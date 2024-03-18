@@ -1,5 +1,5 @@
 <template>
-  <k-page v-if="division" style="background-color: rgb(247, 247, 247);">
+  <k-page v-if="visita" style="background-color: rgb(247, 247, 247);">
     <k-navbar 
     :title="dynamicTitle"
       small
@@ -9,6 +9,9 @@
       <template #left>
         <k-navbar-back-link text="" @click="goBack" />
       </template>
+
+   
+
     </k-navbar>
     <div> 
   
@@ -21,7 +24,7 @@
 
     style="margin-bottom: 15px; display: flex;
     justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita personal </span></label>
+      <label style="margin-right: 20px;"> Como <span style="font-weight: 800; color: black;"> Visita personal </span></label>
        
   </div>
 
@@ -38,7 +41,7 @@
 
   <div style="margin-bottom: 10px;">
       <label for="username">Nombre </label>
-      <InputText id="nameVisita" v-model="nameVisita" aria-describedby="username-help" />
+      <InputText id="nameVisita" v-model="nombreVisita" aria-describedby="username-help" />
   </div>
 
 
@@ -46,13 +49,13 @@
 
   <div  style="min-width: 60%; margin-right: 10px;">
       <label for="fehaHoraVisita">Fecha y hora </label>
-      <Calendar showTime v-model="fehaHora" hourFormat="12"  showButtonBar showIcon iconDisplay="input" />
+      <Calendar showTime v-model="fechaHora" hourFormat="12"  showButtonBar showIcon iconDisplay="input" />
   </div>
 
 
   <div style="width: 35%;">
     <label for="duracion">Duración </label>
-    <Dropdown v-model="selectedHour" 
+    <Dropdown v-model="selectedHour"
     :options="hours" optionLabel="name" placeholder="Seleccionar" checkmark :highlightOnSelect="false" class="w-full md:w-14rem" />
 
   </div>
@@ -66,14 +69,24 @@
     <Icon name="solar:add-circle-broken" @click="openPopup" style="font-size:25px; color: #0c2aa4; "/>
 
 </div>
- <div  class="center-content"  v-if="personasSeleccionadas.length == 0">
 
-  <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
-  <p>No se han agregado participantes</p>
 
-  <Button @click="openPopup" >Agregar Participante </Button>
-
+<div style="width: 100%;" v-if="participantes.length > 0">
+    <k-list strong inset style="width: 100%;">
+      <k-list-item 
+      v-for="(participante, index) in participantes" 
+        :key="index" 
+        :title="participante.persona.nombre" 
+        :footer="participante.email">
+        <template #after> 
+          <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click="() => abrirDialogoConfirmacion(participante.id)" />
+        </template>
+      </k-list-item>
+    </k-list>
 </div>
+
+
+
 
 <div class="addUser">
 
@@ -303,7 +316,6 @@
 
 
 <div style="width: 100%;" v-if="personasSeleccionadas.length > 0">
-
     <k-list strong inset style="width: 100%;">
       <k-list-item 
       v-for="(persona, index) in personasSeleccionadas" 
@@ -318,17 +330,36 @@
 </div>
 
 
-<k-button type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+<k-button type="submit" @click="actualizarVisita" label="Guardar " style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
               </k-button>
 
 </div>
 
 
 
+<k-dialog
+        :opened="confirmOpened"
+        @backdropclick="() => (confirmOpened = false)"
+      >
+        <template #title>Eliminar Participante</template>
+        Seguro que deseas eliminar el participante?
+        <template #buttons>
+          <k-dialog-button @click="() => (confirmOpened = false)"
+            >No</k-dialog-button
+          >
+          <k-dialog-button strong @click="eliminarParticipante">
+            Si
+          </k-dialog-button>
+        </template>
+    </k-dialog>
+   
+
 
   </k-page>
 
 
+
+  
 
 
 </template>
@@ -347,13 +378,16 @@ import ListBox from 'primevue/listbox';
 
 
 
-
+const nombreVisita = ref('');
+const fechaHora = ref(null);
+const selectedHour = ref(null);
 
 const openedToast = ref(false);
 const toastMessage = ref('');
 const toastColor = ref('black');
 
 const checked = ref(false);
+
 
 const route = useRoute();
 const router = useRouter();
@@ -364,6 +398,11 @@ const popupOpened = ref(false);
 const popupPersona = ref(false);
 const popupEmpresa = ref(false);
 const personas = ref([]);
+const participates = ref([]);
+const participanteIdParaEliminar = ref(null);
+const confirmOpened = ref(false);
+
+
 
 const selectTipoPersona = ref(null);
 const tipoPersonaOptions = ref([]);
@@ -376,11 +415,14 @@ const selectMunicipio = ref(null);
 const departamentoOptions = ref([]);
 const personasSeleccionadas = ref([]);
 
+
 const municipioOptions = ref([]);
 const empresasActivas = ref([]);
 const selectedEmpresa = ref(null);
 
 const userData = ref(null);
+const visita = ref(null);
+const participantes = ref(null);
 
 
 const puestoEmpresa = ref('');
@@ -391,7 +433,7 @@ const phone = ref('');
 const placa = ref('');
 const fehaHora = ref('');
 
-const selectedHour = ref();
+
 const hours = ref([
     { name: '1 hora', time: 1},
     { name: '2 horas', time: 2 },
@@ -405,7 +447,29 @@ const hours = ref([
 
 
 onMounted(async () => {
-  const divisionId = route.params._id;
+
+ 
+  const visitaId = route.params._id;
+  await cargarVisita(visitaId);
+
+  if (visita.value) {
+    checked.value = !!visita.value.visitaevento;
+    nombreVisita.value = visita.value.nombre;
+
+    fechaHora.value = new Date(visita.value.fecha);
+
+    const duracionEncontrada = hours.value.find(h => h.time === visita.value.duracion);
+    selectedHour.value = duracionEncontrada ? duracionEncontrada : null;
+  }
+
+  console.log('visita cargada',visita._value.division.id)
+  const divisionId = visita._value.division.id
+
+ const datosParticipantes = await cargarParticipantes(route.params._id);
+  participantes.value = datosParticipantes;
+
+
+  
   await cargarDivision(divisionId);
   await cargarTiposPersona();
   cargarTipoEmpresa();
@@ -421,8 +485,56 @@ onMounted(async () => {
   }
 
 
+ 
 
 });
+
+
+async function actualizarVisita() {
+
+  const payload = {
+    nombre: nombreVisita.value,
+    fecha: fechaHora.value.toISOString(),
+    visitaevento: checked.value,
+    duracion: selectedHour.value ? selectedHour.value.time : null,
+  };
+
+  const { data, error } = await supabase
+    .from('visita')
+    .update(payload)
+    .eq('id', visita.value.id);
+
+  if (error) {
+    console.error('Error al actualizar la visita:', error);
+    triggerToast('Error al actualizar la visita', 'red');
+  } else {
+    triggerToast('Visita actualizada exitosamente', 'green');
+
+    const personasSeleccionadasIds = personasSeleccionadas.value.map(persona => persona.id);
+    if (personasSeleccionadasIds.length > 0) {
+      await crearParticipantes(personasSeleccionadasIds, visita.value.id);
+    }
+  }
+}
+
+
+async function cargarVisita(visitaId) {
+  if (!visitaId) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('visita') 
+      .select('*, created_by(*), division(*, entidad(*))')
+      .eq('id', visitaId)
+      .single();
+
+    if (error) throw error;
+    visita.value = data; 
+  } catch (error) {
+    console.error('Error al obtener la visita:', error.message);
+  }
+}
+
 
 
 
@@ -468,69 +580,72 @@ async function crearEmpresa() {
   }
 }
 
-async function crearVisita() {
+async function cargarParticipantes(visitaId) {
   try {
-    
-    const userId = userData.value?.id;
+    const { data, error } = await supabase
+      .from('participantes') 
+      .select('*,persona(*)')
+      .eq('visita', visitaId);
 
-    const personasSeleccionadasArray = personasSeleccionadas._rawValue || personasSeleccionadas._value;
-    const personasSeleccionadasArrayNormalized = Array.isArray(personasSeleccionadasArray) ? personasSeleccionadasArray : [personasSeleccionadasArray];
-    const idsPersonasSeleccionadas = personasSeleccionadasArrayNormalized.map(persona => persona.id);
+    if (error) throw error;
 
-
-    const payload = {
-      nombre: nameVisita.value,
-      fecha: fehaHora.value,
-      duracion: selectedHour.value.time,
-      visitaevento: checked.value,
-      division: division?.value?.id ? division.value.id : null,
-      personas_seleccionadas: idsPersonasSeleccionadas,
-      created_by: userId
-
-      
-    };
-
-    console.log('Payload enviado para crear la visita:', payload);
-
-    const { data: visitaId, error: visitaError } = await supabase.rpc('crear_visita', payload);
-
-    if (visitaError) {
-      console.error('Error al crear visita:', visitaError);
-      throw visitaError;
-    } else if (visitaId) {
-      console.log('ID de la visita creada:', visitaId);
-      triggerToast('Visita Creada exitosamente ', 'green');
-      goBack();
-
-    } else {
-      throw new Error('No se pudo obtener el ID de la visita después de crearla.');
-    }
+    return data;
   } catch (error) {
-    console.error('Error al crear visita:', error);
-    triggerToast('Error al crear visita', 'red');
+    console.error('Error al cargar los participantes:', error.message);
+    return []; 
   }
 }
 
 
-async function crearParticipantes(personasSeleccionadas, visita) {
+async function crearParticipantes(personasSeleccionadasIds, visitaId) {
+  if (personasSeleccionadasIds.length === 0) {
+    console.log('No hay personas seleccionadas para crear participantes.');
+    return; 
+  }
+
   try {
-    if (!personasSeleccionadas || personasSeleccionadas.length === 0) {
-      throw new Error('No hay personas seleccionadas para crear participantes.');
-    }
-
-    for (const personaId of personasSeleccionadas) {
-      const { data, error } = await supabase
-        .from('participantes')
-        .insert([{ persona: personaId, visita: visita }]);
-      
+    for (const personaId of personasSeleccionadasIds) {
+      const { error } = await supabase.from('participantes').insert([{ persona: personaId, visita: visitaId }]);
       if (error) throw error;
-
-      console.log(`Participante creado para persona ${personaId} en la visita ${visita}.`);
     }
+
+    personasSeleccionadas.value = [];
+    participantes.value = await cargarParticipantes(visitaId);
+    triggerToast('Participantes agregados exitosamente', 'green');
   } catch (error) {
     console.error('Error al crear participantes:', error.message);
+    triggerToast('Error al crear participantes', 'red');
   }
 }
+
+const eliminarParticipante = async () => {
+  if (participanteIdParaEliminar.value === null) {
+    console.error('No se ha especificado el ID del participante para eliminar');
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('participantes')
+      .delete()
+      .eq('id', participanteIdParaEliminar.value);
+
+    if (error) throw error;
+
+    participanteIdParaEliminar.value = null;
+    confirmOpened.value = false;
+
+    const datosActualizados = await cargarParticipantes(route.params._id);
+    participantes.value = datosActualizados;
+
+  } catch (error) {
+    console.error('Error al eliminar el participante:', error.message);
+  }
+};
+
+
+
+
 
 async function crearPersona() {
   const payload = {
@@ -561,6 +676,13 @@ async function crearPersona() {
 
   }
 }
+
+
+const abrirDialogoConfirmacion = (id) => {
+  console.log('ID del participante para eliminar:', id); 
+  participanteIdParaEliminar.value = id;
+  confirmOpened.value = true;
+};
 
 
 async function cargarPersonas() {
@@ -750,11 +872,11 @@ const dynamicTitle = computed(() => {
   if (!division.value) return ''; 
   const tipoId = division.value.entidad.tipo.id;
   if (tipoId === 1) {
-    return 'Crear nueva Reunión';
+    return 'Editar Reunión';
   } else if (tipoId === 2) {
-    return 'Crear nueva Visita';
+    return 'Editar Visita';
   } else {
-    return 'Nueva'; 
+    return 'Editar'; 
   }
 });
 </script>
@@ -780,6 +902,8 @@ const dynamicTitle = computed(() => {
     kPopup,
     kListInput,
     kToast,
+    kDialog,
+    kDialogButton
     
 
 
@@ -806,6 +930,8 @@ const dynamicTitle = computed(() => {
       kPopup,
       kListInput,
       kToast,
+      kDialog,
+      kDialogButton
     },
 
 
@@ -887,6 +1013,13 @@ label{
 .columnflex{
   display: flex;
 }
+
+
+.my-8 {
+  margin-top: 0px; 
+  margin-bottom: 0px; 
+}
+
 
 .columnForm{
   margin-bottom: 10px;
