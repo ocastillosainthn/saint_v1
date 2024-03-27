@@ -1,15 +1,14 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router'; // Asegúrate de importar useRouter
 import { Html5Qrcode } from 'html5-qrcode';
 
 const router = useRouter();
 const cameraId = ref('');
 
 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-  // Lógica después de escanear QR, por ejemplo:
   console.log(`QR decoded: ${decodedText}`, decodedResult);
   router.push(`/qr_read/${decodedText}`);
-
 };
 
 let html5QrCode;
@@ -17,7 +16,15 @@ let html5QrCode;
 onMounted(() => {
   Html5Qrcode.getCameras().then((cameras) => {
     if (cameras.length > 0) {
-      cameraId.value = cameras[0].id;
+      // Intenta seleccionar la cámara trasera por defecto
+      const rearCamera = cameras.find(camera => /back|rear|trasera/i.test(camera.label));
+      if (rearCamera) {
+        cameraId.value = rearCamera.id;
+      } else {
+        // Si no se encuentra una cámara trasera, utiliza la primera disponible
+        cameraId.value = cameras[0].id;
+      }
+
       html5QrCode = new Html5Qrcode("qr-reader");
       html5QrCode.start(
         cameraId.value, 
@@ -27,11 +34,9 @@ onMounted(() => {
         },
         qrCodeSuccessCallback,
         (errorMessage) => {
-          // Error handling
           console.log(`QR scanning error: ${errorMessage}`);
         }
       ).catch((err) => {
-        // Start failed
         console.error(`Unable to start QR scanner: ${err}`);
       });
     }
@@ -50,6 +55,7 @@ onUnmounted(() => {
   }
 });
 </script>
+
 
 <template>
   <div>
