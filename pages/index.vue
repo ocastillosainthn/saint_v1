@@ -1,7 +1,9 @@
 <template>
 <k-page style="background-color: rgb(247, 247, 247);">
-<!-- 
-  <k-navbar 
+
+
+
+  <k-navbar  v-if="rol !== 'user'"
       title=""
       class="top-0 sticky"
       style="background-color: white;"
@@ -32,12 +34,12 @@
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
-                  <div st> version dev: 0.2.15  06-03-24</div>
+                  <div st> {{ version}}</div>
 
                 </div>
           </div>
         </k-panel>
--->
+
   
 
     
@@ -49,9 +51,9 @@
       </div>
 
   
+<!-- ADMIN type-->  
 
-
-  <div class="contenedor" >
+ <div v-if="rol === 'admin'" class="contenedor">
   
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -93,8 +95,73 @@
 
     </div>
         
+<!-- USER type-->  
 
-  <k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popSmall">
+    <div v-if="rol === 'user'" class="contenedor" style="padding: 0px!important;">
+
+        <div class="centerTittleAction"> 
+          <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Mis Visitas  </k-block-title>
+          
+          <div style="margin-right: 10px; border-width:0; border-color: red; border-style: hidden;  text-align: center;">
+                  <Calendar v-model="filterVisita"  showButtonBar  :manualInput="true" showIcon iconDisplay="input" inputId="icondisplay" />
+              </div>              
+        </div>
+
+     <div v-if="loading" style="display: flex; width: 100%; justify-content:center;"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
+
+            <div style="padding: 10px; margin-bottom: 70px;" v-show="visitas.length  > 0">
+                  <div class="card" v-for="visita in visitas" :key="visita.id" @click="navigateToVisita(visita.id)">
+                    <p style="font-weight: 700; font-size: 20px; margin-bottom:7px;">{{ visita.nombre }}</p>
+                    <p style="font-size: 14px; color: gray;">       <Icon name="solar:calendar-add-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 7px;" />
+                      <span> {{ formatFechaAmigable(visita.fecha) }}</span>
+ </p>
+                    <p style="font-size: 11px; color: gray; margin-top: 20px; margin-bottom: 10px;"> Participantes</p>
+
+                    <div class="chips-container">
+                  <template v-for="(participante) in visita.participantes.slice(0, 3)" :key="participante.id">
+                    <Chip class="chip"> 
+                      <span class="labelAvatar">{{ participante.persona.nombre[0] }}</span>
+                      <span>{{ participante.persona.nombre }}</span>
+                    </Chip>
+                  </template>
+                  <!-- Mostrar cuántos participantes más hay si el total supera a 3 -->
+                  <span v-if="visita.participantes.length > 3" class="chip" style="padding: 2px; margin-top: 5px; background-color: white; border-color: white;">
+                    +{{ visita.participantes.length - 3 }}
+                  </span>
+                </div>
+                  </div>
+           </div>
+
+
+           <div class="center-content" v-show="visitas.length === 0 && !loading">
+                      <Icon name="solar:calendar-add-broken" style="font-size: 40px; color: #4d4d4d; margin-top: 20px; margin-bottom: 10px;" />
+                      <p>No tienes visitas agendadas</p>
+                      <div class="addUser">
+                      </div>
+                    </div>
+
+
+    </div>
+
+
+
+<!-- USER Guard-->  
+
+<div v-if="rol === 'guard'" class="contenedor" style="padding: 20px!important;">
+
+  <div class="itemQR"  @click="openScan">
+           <div style="background-image: linear-gradient(to right, #20C4D6, #0586F0); padding: 8px; border-radius: 9px; margin-right:10px;">   <Icon name="material-symbols-light:qr-code-scanner" style="font-size: 36px; color: white;"/>  </div> 
+           <div  class="itemText" > Escanear visita</div>
+        </div>
+
+</div>
+
+
+
+
+  <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popSmall">
  
         <k-navbar  
               title=""
@@ -137,21 +204,22 @@
           Selecciona
         </p>
 
-        <div class="itemAcceso">
+        <div class="itemAcceso"  @click="openAddReunion">
            <div style="background-color: black; padding: 8px; border-radius: 9px; margin-right:10px;">   <Icon name="solar:add-square-outline" style="font-size: 26px; color: white;"/>  </div> 
-           <div class="itemText" > Crear Visita Nueva </div>
+           <div  class="itemText" > Crear Visita Nueva </div>
         </div>
 
 
-        <div style="display: flex; padding: 10px; margin-top: 15px; " >
+        <div @click="openAddPersona"  style="display: flex; padding: 10px; margin-top: 15px; " >
            <div style="margin-right:15px; margin-left: px; ">  <Icon name="solar:user-broken" style="font-size: 26px; color: gray;"/>  </div> 
            <div > Crear Persona  </div>
         </div>
-
+<!-- 
         <div style="display: flex; padding: 10px; margin-top: 6px; margin-bottom: 20px;" >
            <div style="margin-right:15px; margin-left: 5px; ">  <Icon name="solar:case-linear" style="font-size: 22px; color: gray;"/>  </div> 
            <div > Crear Empresa  </div>
         </div>
+      -->
      
         <div style="max-width: 100%;"> </div>
       </k-block>
@@ -173,7 +241,7 @@
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
-                  <div st> version dev: 0.3.20  18-03-24</div>
+                  <div st> {{ version }}</div>
 
                 </div>
           </div>
@@ -187,7 +255,7 @@
 
 
 
-<tab-bar style="z-index: 32000;" @onItemSelect="handleItemSelect" />
+<tab-bar style="z-index: 32000;" @onItemSelect="handleItemSelect" v-if="showtab" />
 
 </template>
 
@@ -206,6 +274,7 @@
     kPopup,
     kListInput,
     kToast,
+    kPreloader,
     kSheet
 
   } from 'konsta/vue';
@@ -222,6 +291,7 @@
       kButton,
       kCard,
       kPopup,
+      kPreloader,
     kListInput,
     kToast,
     kSheet
@@ -237,10 +307,11 @@ import supabase from "../db/supabaseClient";
 import { useRouter } from "vue-router";
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import OverlayPanel from "primevue/overlaypanel";
 import { defineProps, defineEmits } from 'vue'
 import TabBar from '../components/tabBar.vue';
+
 
 
 
@@ -263,8 +334,18 @@ const divisiones = ref([]);
 const popupOpened = ref(false);
 const inviteSended = ref(null);
 const sheetOpened = ref(false);
+const visitas = ref([]);
+const filterVisita = ref(getFechaInicialZonaHoraria());
+const loading = ref(false);
+const showtab = ref(false);
+const userRol = ref(null);
+const version = ref ('0.4.11  26-03-24');
 
 
+
+
+
+const rol = ref(null);
 
 
 function handleItemSelect(item) {
@@ -281,6 +362,36 @@ function handleItemSelect(item) {
     sheetOpened.value = true;
   }
 }
+
+
+function formatFechaAmigable(fechaString) {
+  if (!fechaString) return 'Cargando fecha...';
+  const fecha = new Date(fechaString);
+  return fecha.toLocaleDateString('es-ES', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+  }) + ' ' + fecha.toLocaleTimeString('es-ES', {
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
+  });
+}
+
+
+
+function ajustarFechaZonaHoraria(fecha) {
+  const fechaUTC = new Date(fecha);
+  const offset = fechaUTC.getTimezoneOffset() * 60000; // Convertir offset a milisegundos
+  const fechaCST = new Date(fechaUTC.getTime() - offset - (3600000 * 6)); // Ajustar a zona horaria -6
+  return fechaCST.toISOString().split('T')[0];
+}
+
+
+watch(filterVisita, async () => {
+  await cargarVisita();
+}, { immediate: true });
+
 
 async function fetchInviteSended() {
   if (!userData.value.email) {
@@ -314,9 +425,10 @@ async function fetchInviteSended() {
 
 
 onMounted(async () => {
+  loading.value = true;
   userUUID.value = localStorage.getItem('userUUID') || '';
 
-  
+ 
 
   if (userUUID.value) {
 
@@ -350,6 +462,8 @@ onMounted(async () => {
       
     }
 
+    
+
     const { data: userRolesDivision, error: rolesErrorDivision } = await supabase
       .from('userRoles')
       .select('*, division(*,entidad(*,tipo(tipo,id)))')
@@ -367,8 +481,32 @@ onMounted(async () => {
       
     }
 
-    
+    await cargarRolesUsuario();
+          
 
+    if (empresas.value.length === 0 && divisiones.value.length === 0  && userRol.value.length > 0) {
+          rol.value = 'guard';
+        } else if (empresas.value.length > 0 || divisiones.value.length > 1) {
+          rol.value = 'admin';
+        } else if (empresas.value.length === 0 || divisiones.value.length === 1) {
+          rol.value = 'user';
+        }
+
+
+          console.log('Rol asignado:', rol.value);
+
+          if (rol.value === 'user') {
+             showtab.value = true;
+            } else {
+              showtab.value = false;
+            }
+
+
+
+          await cargarVisita();
+         
+
+          loading.value = false;
   }
 
   
@@ -377,9 +515,94 @@ onMounted(async () => {
 });
 
 
+watch(filterVisita, async () => {
+  await cargarVisita();
+});
+
+
+const visitasFiltradas = computed(() => {
+  return visitas.value.filter(visita => {
+    const fechaVisita = new Date(visita.fecha).toISOString().split('T')[0];
+    return fechaVisita === filterVisita.value;
+  });
+});
+
+
+async function cargarRolesUsuario() {
+  const { data: userRoles, error: rolesError } = await supabase
+    .from('userRoles')
+    .select('entidad(*, tipo(tipo,id))')
+    .eq('user', userUUID.value)
+    .eq('rol', 4);
+
+
+  if (rolesError) {
+    console.error('Error obteniendo roles del usuario:', rolesError);
+  } else {
+    userRol.value = userRoles.filter(role => role.entidad !== null).map(role => role.entidad);
+    console.log('userRoles4:', userRol);
+
+  }
+}
+
+
+
+async function cargarParticipantes(visitaId) {
+  try {
+    const { data, error } = await supabase
+      .from('participantes') 
+      .select('*,persona(*)')
+      .eq('visita', visitaId);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error al cargar los participantes:', error.message);
+    return []; 
+  }
+}
+
+async function cargarVisita() {
+  try {
+    if (!divisiones.value.length || !divisiones.value[0].id) {
+      throw new Error('El ID de la primera división no está definido o está vacío');
+    }
+
+    const fechaFiltro = new Date(filterVisita.value).toISOString().split('T')[0];
+
+
+    const { data, error } = await supabase
+      .from('visita')
+      .select('*')
+      .eq('division', divisiones.value[0].id); 
+
+    if (error) throw error;
+
+    const visitasFiltradas = data.filter(visita => {
+      const fechaVisita = new Date(visita.fecha).toISOString().split('T')[0];
+      return fechaVisita === fechaFiltro;
+    });
+
+    for (const visita of visitasFiltradas) {
+      visita.participantes = await cargarParticipantes(visita.id);
+    }
+
+    visitas.value = visitasFiltradas;
+
+    console.log('Visitas y participantes cargados:', visitas);
+  } catch (error) {
+    console.error('Error al cargar las visitas y participantes:', error.message);
+  }
+}
+
 function openUserPanel() {
   userPanelOpened.value = true;
   
+}
+
+function navigateToVisita(visitaId) {
+  router.push(`/visita/${visitaId}`);
 }
 
 function navegarADetalle(id) {
@@ -400,6 +623,16 @@ function logout() {
   router.push('/login');
 }
 
+
+function getFechaInicialZonaHoraria(desfaseHorario = -6) {
+  const ahoraUTC = new Date();
+
+  const desfaseEnMilisegundos = desfaseHorario * 60 * 60 * 1000;
+
+  const fechaZonaHoraria = new Date(ahoraUTC.getTime() + desfaseEnMilisegundos);
+
+  return fechaZonaHoraria.toISOString().split('T')[0];
+}
 function handleProjectClick(uuid,id) {
   router.push(`/${uuid}/prime?id=${id}`);
 }
@@ -493,6 +726,25 @@ async function rejectInvitation() {
 }
 
 
+function openAddReunion() {
+  if (divisiones.value.length > 0 && divisiones.value[0].id) {
+    router.push({ path: `/add_reunion/${divisiones.value[0].id}` });
+  } else {
+    console.error("No hay divisiones disponibles para crear una reunión.");
+  }
+}
+
+function openAddPersona() {
+  if (divisiones.value.length > 0 && divisiones.value[0].id) {
+    router.push({ path: `/add_persona/${divisiones.value[0].id}` });
+  } else {
+    console.error("No hay divisiones disponibles para crear una reunión.");
+  }
+}
+
+function openScan() {
+  router.push('/scan');
+}
 
 </script>
 
@@ -590,6 +842,22 @@ color:white;
   background-color: rgb(0, 0, 0);
 }
 
+.centerTittleAction{
+  display: flex;
+  align-items: center;
+  justify-content:space-between ;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 
 .Lavatar{
  padding: 5px;
@@ -619,6 +887,17 @@ color:white;
   padding: 10px;
 }
 
+.itemQR{
+  display:flex;  
+  border-color:rgb(231, 231, 231); 
+  border-width:1px; 
+  border-radius: 5px; 
+  border-style: solid; 
+  padding: 10px;
+  background-color: white;
+  
+}
+
 .itemText{
   display: flex;
   flex-direction: column;
@@ -631,6 +910,7 @@ color:white;
 .popSmall{
   height: 40vh;
   top: 80vh;
+  z-index: 100000000;
 }
 
 

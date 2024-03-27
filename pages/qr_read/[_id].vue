@@ -1,0 +1,430 @@
+<template>
+    <k-page  style="background-color: #f7f7f7;">
+
+<k-navbar 
+    title=""
+  small
+  class="top-0 sticky"
+  style="background-color: white;"
+>
+  <template #left>
+    <k-navbar-back-link text="" @click="goBack" />
+  </template>
+</k-navbar>
+
+
+
+   <div v-if="visita && visita.division && visita.division.entidad">
+ 
+  <div style="background-color:white; padding: 15px; margin-bottom: 0px;">
+
+    <div>
+        
+       <p class="fontTitle">{{ visita.nombre }} </p>  
+
+            <div style="display:flex; margin-bottom: 15px; margin-top: px; align-items: center; color: gray;"> 
+              <p style="font-size: 13px; font-weight: 500;">{{ visita.division.name }} </p> 
+              <Icon name="solar:arrow-right-linear" style="font-size: 17px; margin-right: 7px; margin-left:7px"/>
+              <p style="font-size: 13px; font-weight: 500;">{{ visita.division.entidad.name }} </p> 
+            </div>
+            <div style="display: flex;"> 
+              <div style="display: flex; flex-direction: column; align-items: center;"> 
+                <Icon name="solar:calendar-add-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-bottom: 3px;" />
+                <div style="width: 1px; height: 34%; background-color:gray; margin-bottom: 3px;"> </div> 
+                <Icon name="solar:stopwatch-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 0px;" />
+              </div> 
+              <div style="font-size: 11px; margin-left: 10px;">  
+                <div>  Válido Desde   </div>
+                <div style="font-size: 15px; margin-bottom: 15px; "> {{ fechaAmigable }} </div>  
+            
+                <div> Hasta    </div>
+                <div style="font-size: 15px;"> {{ fechaFinAmigable }} </div>  
+                
+              </div>  
+            </div>
+
+            <div v-if="fechaFinPasada" class="alert">
+                <Icon name="solar:shield-warning-bold" style="font-size: 22px; color: red; margin-top: 0px; margin-right: 0px;" />
+                Esta visita ya no está disponible 
+         </div>
+            
+            <div style="display: flex; margin-top: 20px;"> 
+              <div style="display: flex; flex-direction: column; align-items: center;"> 
+                <Icon name="solar:user-check-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-bottom: 3px;" />
+              </div> 
+              <div style="font-size: 11px; margin-left: 10px;">  
+                <div>  Invitación creada por   </div>
+                <div style="font-size: 15px; margin-bottom: 15px; "> {{ visita.created_by.name }} </div>  
+              </div>  
+            </div>
+        </div>
+
+
+       
+
+
+
+  </div>
+  
+</div>
+
+<div style="padding: 15px; padding-top: 20px; background-color: white; margin-top: 10px;"> 
+
+<div style="font-weight: 700; margin-bottom: 10px;" > Participantes </div>
+
+    <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
+        <template #option="{ option }">
+
+        <div style="display: flex; justify-content: space-between;" @click="seleccionarParticipante(option)">
+           <div style="width:60%;"> 
+                <div style="display: flex; flex-direction: column; " >
+                    {{ option.persona.nombre }}
+                  <span style="color:gray; font-size: 13px; ">  {{ option.persona.empresa.nombre }}  {{option.persona.puesto }} </span>
+                </div>
+           </div > 
+
+           <kButton v-if="!option.entrada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(option.id)"> ENTRADA </kButton>
+           <kButton  v-if="option.entrada && !option.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(option.id)" > SALIDA </kButton>
+           <Icon v-if="option.salida" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
+
+
+        </div>
+
+        </template>
+    </Listbox>
+
+</div>
+
+</k-page>
+
+
+<k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedia">
+ 
+ <k-navbar  
+       title=""
+       small
+       isTralucent style="background-color: white;">
+       
+     <template #left>
+       <k-link navbar @click="() => (popupOpened = false)">  <Icon name="solar:close-circle-outline" style="font-size:32px; color: #141515;"/>  </k-link>
+     </template>
+   </k-navbar>
+ 
+   <div style="padding: 20px;" v-if="participanteSelected && participanteSelected.persona">
+    <div  style="font-size:17px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content:space-between"> 
+            {{participanteSelected.persona.nombre}}
+            <kButton v-if="!participanteSelected.entrada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(participanteSelected.id)"> ENTRADA </kButton>
+            <kButton  v-if="participanteSelected.entrada && !participanteSelected.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(participanteSelected.id)" > SALIDA </kButton>
+            <Icon v-if="participanteSelected.salida" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
+    </div>
+
+    <div> 
+        <div style="font-size: 11px;">  Entrada   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.entrada }} </div>  
+       <div style="font-size: 11px;">  Salida   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.salida }} </div>          
+    </div>
+
+    <div> 
+        <div style="font-size: 13px; margin-top: 27px; margin-bottom:12px; font-weight: 600;"> DATOS DE VISITANTE</div>
+    </div>
+
+    <div> 
+        <div style="font-size: 11px;"> Número de Identidad   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.persona.dniPasaporte }} </div>  
+       <div style="font-size: 11px;">  Teléfono   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.persona.telefono }} </div>       
+       <div style="font-size: 11px;">  Correo electrónico   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.persona.correo }} </div>  
+       <div style="font-size: 11px;">  Placa   </div>
+       <div style="font-size: 15px; margin-bottom: 7px; "> {{ participanteSelected.persona.placa }} </div>         
+
+    </div>
+        
+
+   </div>
+   
+</k-popup>
+
+
+    
+</template>
+
+
+<script setup>
+
+import { ref, onMounted, computed } from 'vue';
+import { useRoute, useRouter } from 'nuxt/app';
+import supabase from "../db/supabaseClient";
+import { useStore } from 'vuex';
+
+
+
+const route = useRoute();
+const router = useRouter();
+const division = ref(null);
+const visita = ref(null);
+const searchQuery = ref('');
+const participantes = ref([]);
+const popupOpened = ref(false);
+const confirmOpened = ref(false);
+const confirmOpenedVisita = ref(false);
+const participanteSelected= ref(null);
+const loading = ref(false);
+
+const store = useStore();
+const user = store.getters.getUser;
+const userUuid = user.uuid;
+
+
+
+
+onMounted(async () => {
+  if (route.params._id) {
+    await cargarVisita(route.params._id);
+    if (visita.value && visita.value.id) {
+      const datosParticipantes = await cargarParticipantes(visita.value.id);
+      participantes.value = datosParticipantes;
+    }
+  } else {
+    console.error("El ID de la visita no está definido");
+  }
+});
+async function cargarVisita(visitaId) {
+  if (!visitaId) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('visita') 
+      .select('*, created_by(*), division(*, entidad(*))')
+      .eq('uuid', visitaId)
+      .single();
+
+    if (error) throw error;
+    visita.value = data; 
+  } catch (error) {
+    console.error('Error al obtener la visita:', error.message);
+  }
+}
+
+
+function seleccionarParticipante(participante) {
+  participanteSelected.value = participante;
+  popupOpened.value = true;
+}
+
+
+const fechaAmigable = computed(() => {
+  if (!visita.value || !visita.value.fecha) return 'Cargando fecha...';
+  
+  const fecha = new Date(visita.value.fecha);
+  return fecha.toLocaleDateString('es-ES', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+  }) + ' ' + fecha.toLocaleTimeString('es-ES', {
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
+  });
+});
+
+
+const fechaFinAmigable = computed(() => {
+  if (!visita.value || !visita.value.fecha || !visita.value.duracion) return 'Cargando fecha de fin...';
+  
+  const fechaInicio = new Date(visita.value.fecha);
+  const fechaFin = new Date(fechaInicio.getTime() + visita.value.duracion * 60 * 60 * 1000);
+
+  return fechaFin.toLocaleDateString('es-ES', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+  }) + ' ' + fechaFin.toLocaleTimeString('es-ES', {
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true
+  });
+});
+
+
+const fechaFinPasada = computed(() => {
+  if (!visita.value || !visita.value.fecha || !visita.value.duracion) return false;
+  
+  const fechaInicio = new Date(visita.value.fecha);
+  const fechaFin = new Date(fechaInicio.getTime() + visita.value.duracion * 60 * 60 * 1000);
+  const ahora = new Date();
+
+  return fechaFin < ahora;
+});
+
+
+
+async function cargarParticipantes(visitaId) {
+  try {
+    const { data, error } = await supabase
+      .from('participantes') 
+      .select('*,persona(*, empresa(*))')
+      .eq('visita', visitaId);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error al cargar los participantes:', error.message);
+    return []; 
+  }
+}
+
+async function marcarEntrada(participanteId) {
+  if (!participanteId) return;
+
+  // Ejemplo de cómo actualizar y devolver el registro actualizado
+  const { data, error } = await supabase
+    .from('participantes')
+    .update({ entrada: new Date().toISOString() })
+    .eq('id', participanteId)
+    .select(); 
+
+  if (error) {
+    console.error('Error al actualizar la entrada del participante:', error);
+  } else if (data && data.length > 0) {
+    const updatedParticipante = participantes.value.find(p => p.id === participanteId);
+    if (updatedParticipante) {
+      updatedParticipante.entrada = data[0].entrada;
+    }
+    console.log('Entrada del participante actualizada:', data[0]);
+  } else {
+    console.log('No se devolvieron datos tras la actualización');
+  }
+}
+
+
+async function marcarSalida(participanteId) {
+  const { data, error } = await supabase
+    .from('participantes')
+    .update({ salida: new Date().toISOString() })
+    .eq('id', participanteId)
+    .select();
+
+  if (error) {
+    console.error('Error al marcar la salida del participante:', error);
+    return;
+  }
+
+  // Actualizar el objeto de participantes con los datos de la salida
+  const participanteIndex = participantes.value.findIndex((p) => p.id === participanteId);
+  if (participanteIndex !== -1 && data && data.length > 0) {
+    participantes.value[participanteIndex] = { ...participantes.value[participanteIndex], salida: data[0].salida };
+  }
+}
+
+
+
+
+
+function goBack() {
+  router.back();
+}
+
+</script>
+
+
+
+
+<script>
+  import { ref } from 'vue';
+  import {
+    kPage,
+    kNavbar,
+    kPanel,
+    kBlock,
+    kBlockTitle,
+    kLink,
+    kButton,
+    kCard,
+    kNavbarBackLink,
+    kList,
+    kListGroup,
+    kListItem,
+    kSearchbar,
+    kFab,
+    kPopup,
+    kListInput,
+    kToast,
+    kPreloader
+
+
+
+  } from 'konsta/vue';
+
+  export default {
+    components: {
+      kPage,
+      kNavbar,
+      kNavbarBackLink,
+      kPanel,
+      kBlock,
+      kBlockTitle,
+      kLink,
+      kButton,
+      kCard,
+      kList,
+      kListGroup,
+      kListItem,
+      kSearchbar,
+      kFab,
+      kPopup,
+      kListInput,
+      kPreloader,
+
+      kToast,
+    },
+
+
+
+  
+
+  };
+</script>
+
+
+
+<style>
+input{
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(209, 209, 209);
+}
+
+.fontTitle{
+    margin-top: 15px; 
+    font-size: 30px;  
+    line-height: 1 ; 
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.alert{
+    width:100%;
+    padding: 10px;
+    background-color: rgba(255, 0, 0, 0.126) ;
+    border-color: rgb(233, 72, 72);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 7px;
+    margin-top: 15px;
+    color: red;
+    font-weight: 700;
+    font-size: 12px;
+    text-align:center;
+}
+
+
+.popMedia{
+  height: 65vh!important;
+  top: 70Vh;
+}
+
+
+</style>

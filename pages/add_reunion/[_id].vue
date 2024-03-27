@@ -37,7 +37,7 @@
 
 
   <div style="margin-bottom: 10px;">
-      <label for="username">Nombre </label>
+      <label for="username">Motivo de la visita </label>
       <InputText id="nameVisita" v-model="nameVisita" aria-describedby="username-help" />
   </div>
 
@@ -63,7 +63,7 @@
 
 <div class="centerTittleAction"> 
     <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
-    <Icon name="solar:add-circle-broken" @click="openPopup" style="font-size:25px; color: #0c2aa4; "/>
+    <Icon name="solar:add-circle-bold" @click="openPopup" style="font-size:28px; color: #0586F0; "/>
 
 </div>
  <div  class="center-content"  v-if="personasSeleccionadas.length == 0">
@@ -134,8 +134,9 @@
                 <Dropdown v-model="selectedEmpresa" editable :options="empresasActivas" optionLabel="name" placeholder="Buscar empresa" class="w-full md:w-14rem" />
             </div>
 
-              <Icon name="solar:add-circle-broken" @click="openEmpresa" style="font-size:25px; color: #0c2aa4; margin-top: 29px; margin-left:25px"/>
-          </div>
+              <Icon name="solar:add-circle-bold" @click="openEmpresa" style="font-size:25px; color: #0586F0; margin-top: 29px; margin-left:25px"/>
+
+            </div>
             
               <div style="margin-top: 10px;">
                 <label for="puestoEmpresa"> Puesto </label>
@@ -399,7 +400,8 @@ const hours = ref([
     { name: '4 horas', time: 4 },
     { name: '5 horas', time: 5},
     { name: '6 horas', time: 6},
-    { name: 'Indefinido', time: 100}
+    { name: '8 horas', time: 8},
+    { name: '12 horas', time: 12}
 ]);
 
 
@@ -471,6 +473,11 @@ async function crearEmpresa() {
 async function crearVisita() {
   try {
     
+    if (!nameVisita.value || !fehaHora.value || !selectedHour.value) { 
+      triggerToast('Nombre, fecha y dirección son campos requeridos', 'red');
+      return; 
+    }
+
     const userId = userData.value?.id;
 
     const personasSeleccionadasArray = personasSeleccionadas._rawValue || personasSeleccionadas._value;
@@ -500,7 +507,7 @@ async function crearVisita() {
     } else if (visitaId) {
       console.log('ID de la visita creada:', visitaId);
       triggerToast('Visita Creada exitosamente ', 'green');
-      goBack();
+      navigateToVisita(visitaId);
 
     } else {
       throw new Error('No se pudo obtener el ID de la visita después de crearla.');
@@ -706,6 +713,10 @@ async function cargarTipoEmpresa() {
   }
 }
 
+
+function navigateToVisita(visitaId) {
+  router.push(`/visita/${visitaId}`);
+}
 
 
 watch(() => empresaData.value.selectDepartamento, (newValue) => {

@@ -32,11 +32,16 @@
         
 </div>
 
+<div v-if="loading" style="display: flex; width: 100%; justify-content:center;"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
+
 <div style="padding: 10px; margin-bottom: 70px;" v-show="visitas.length  > 0">
   <div class="card" v-for="visita in visitas" :key="visita.id" @click="navigateToVisita(visita.id)">
     <p style="font-weight: 700; font-size: 20px; margin-bottom:7px;">{{ visita.nombre }}</p>
     <p style="font-size: 14px; color: gray;">       <Icon name="solar:calendar-add-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 7px;" />
- <span> {{ visita.fecha }}</span> </p>
+      <span> {{ formatFechaAmigable(visita.fecha) }}</span>
+</p>
     <p style="font-size: 11px; color: gray; margin-top: 20px; margin-bottom: 10px;"> Participantes</p>
 
     <div class="chips-container">
@@ -105,19 +110,44 @@ const filterVisita = ref('');
 const visitas = ref([]);
 const participantes = ref([]);
 const cargandoVisitas = ref(true);
+const loading = ref(false);
+
 
 onMounted(async () => {
+  loading.value = true;
+
   const divisionId = route.params._id;
   await cargarDivision(divisionId);
   await cargarVisita();
 
+  loading.value = false;
+
+
   //cargarParticipantes();
+   
 
 });
 
 function navigateToVisita(visitaId) {
   router.push(`/visita/${visitaId}`);
 }
+
+
+function formatFechaAmigable(fechaString) {
+  if (!fechaString) return 'Cargando fecha...';
+  const fecha = new Date(fechaString);
+  return fecha.toLocaleDateString('es-ES', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+  }) + ' ' + fecha.toLocaleTimeString('es-ES', {
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
+  });
+}
+
+
 
 async function cargarDivision(divisionId) {
   if (!divisionId) return;
@@ -226,6 +256,7 @@ function goBack() {
     kPopup,
     kListInput,
     kToast,
+    kPreloader
 
 
 
@@ -249,6 +280,8 @@ function goBack() {
       kFab,
       kPopup,
       kListInput,
+      kPreloader,
+
       kToast,
     },
 

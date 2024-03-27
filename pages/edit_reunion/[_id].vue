@@ -40,7 +40,7 @@
 
 
   <div style="margin-bottom: 10px;">
-      <label for="username">Nombre </label>
+      <label for="username">Motivo de la visita </label>
       <InputText id="nameVisita" v-model="nombreVisita" aria-describedby="username-help" />
   </div>
 
@@ -59,15 +59,16 @@
     :options="hours" optionLabel="name" placeholder="Seleccionar" checkmark :highlightOnSelect="false" class="w-full md:w-14rem" />
 
   </div>
-
+x 
 
 </div> 
 
 
 <div class="centerTittleAction"> 
     <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
-    <Icon name="solar:add-circle-broken" @click="openPopup" style="font-size:25px; color: #0c2aa4; "/>
-
+    <Icon name="solar:add-circle-bold" @click="openPopup" style="font-size:28px; color: #0586F0; "/>
+  
+   
 </div>
 
 
@@ -147,8 +148,9 @@
                 <Dropdown v-model="selectedEmpresa" editable :options="empresasActivas" optionLabel="name" placeholder="Buscar empresa" class="w-full md:w-14rem" />
             </div>
 
-              <Icon name="solar:add-circle-broken" @click="openEmpresa" style="font-size:25px; color: #0c2aa4; margin-top: 29px; margin-left:25px"/>
-          </div>
+              <Icon name="solar:add-circle-bold" @click="openEmpresa" style="font-size:25px; color: #0586F0; margin-top: 29px; margin-left:25px"/>
+
+            </div>
             
               <div style="margin-top: 10px;">
                 <label for="puestoEmpresa"> Puesto </label>
@@ -211,7 +213,7 @@
         <template #item="slotProps">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             {{ slotProps.option.name }}
-            <Icon name="solar:check-circle-bold" style="font-size:25px; color: red;" />
+            <Icon name="solar:check-circle-bold" style="font-size:28px; color: red;" />
           </div>
         </template>
       </ListBox>
@@ -441,8 +443,9 @@ const hours = ref([
     { name: '4 horas', time: 4 },
     { name: '5 horas', time: 5},
     { name: '6 horas', time: 6},
-    { name: 'Indefinido', time: 100}
-]);
+    { name: '8 horas', time: 8},
+    { name: '12 horas', time: 12}
+  ]);
 
 
 
