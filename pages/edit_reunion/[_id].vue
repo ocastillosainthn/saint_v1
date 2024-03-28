@@ -48,8 +48,8 @@
  <div style="display: flex; margin-bottom: 10px;">
 
   <div  style="min-width: 60%; margin-right: 10px;">
-      <label for="fehaHoraVisita">Fecha y hora </label>
-      <Calendar showTime v-model="fechaHora" hourFormat="12"  showButtonBar showIcon iconDisplay="input" />
+      <label for="fehaHoraVisita">Fecha y hora</label>
+      <Calendar  :disabled="visita.estado === 'iniciada'"  showTime v-model="fechaHora" hourFormat="12"  showButtonBar showIcon iconDisplay="input" />
   </div>
 
 
@@ -59,15 +59,15 @@
     :options="hours" optionLabel="name" placeholder="Seleccionar" checkmark :highlightOnSelect="false" class="w-full md:w-14rem" />
 
   </div>
-x 
+
 
 </div> 
 
 
 <div class="centerTittleAction"> 
     <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
-    <Icon name="solar:add-circle-bold" @click="openPopup" style="font-size:28px; color: #0586F0; "/>
-  
+    <Icon v-if="mostrarIcono" name="solar:add-circle-bold" @click="openPopup" style="font-size:28px; color: #0586F0; "/>
+ 
    
 </div>
 
@@ -80,7 +80,7 @@ x
         :title="participante.persona.nombre" 
         :footer="participante.email">
         <template #after> 
-          <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click="() => abrirDialogoConfirmacion(participante.id)" />
+          <Icon  v-if="!participante.entrada" name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click="() => abrirDialogoConfirmacion(participante.id)" />
         </template>
       </k-list-item>
     </k-list>
@@ -434,6 +434,7 @@ const dniPasaporte = ref('');
 const phone = ref('');
 const placa = ref('');
 const fehaHora = ref('');
+const fechasalida = ref('');
 
 
 const hours = ref([
@@ -519,6 +520,35 @@ async function actualizarVisita() {
     }
   }
 }
+
+
+const fechaSalida = computed(() => {
+  if (!fechaHora.value || !selectedHour.value) return '';
+  const salida = new Date(fechaHora.value.getTime());
+  salida.setHours(salida.getHours() + selectedHour.value.time);
+  return salida.toLocaleString();
+});
+
+const fechaSalidaObj = computed(() => {
+  if (!fechaHora.value || !selectedHour.value) return null;
+  const salida = new Date(fechaHora.value.getTime());
+  salida.setHours(salida.getHours() + selectedHour.value.time);
+  
+
+
+  return salida;
+});
+
+
+
+const mostrarIcono = computed(() => {
+  const ahora = new Date();
+  const debeMostrarse = fechaSalidaObj.value && fechaSalidaObj.value > ahora;
+
+  return debeMostrarse;
+});
+
+
 
 
 async function cargarVisita(visitaId) {

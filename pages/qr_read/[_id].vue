@@ -282,7 +282,10 @@ async function marcarEntrada(participanteId) {
   // Ejemplo de cómo actualizar y devolver el registro actualizado
   const { data, error } = await supabase
     .from('participantes')
-    .update({ entrada: new Date().toISOString() })
+    .update({ 
+      entrada: new Date().toISOString(), 
+      estado: "iniciada"
+      })
     .eq('id', participanteId)
     .select(); 
 

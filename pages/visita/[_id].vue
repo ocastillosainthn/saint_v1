@@ -97,6 +97,7 @@
               </div>  
             </div>
           </div>
+        
         </div>
 
         <div class="borderTop" style="font-size: 15px;">
@@ -110,9 +111,10 @@
           </div>
         </div>
       </div>
-          <div style="margin-top: 50px; color: red; font-size: 13px; text-align: center;" @click="() => dialogoDeleteVisita(visita.id)" > 
-          Eliminar visita
-          </div>
+      
+            <div v-if="visita.estado === 'creada'" style="margin-top: 50px; color: red; font-size: 13px; text-align: center;" @click="() => dialogoDeleteVisita(visita.id)">
+        Eliminar visita
+      </div>
     </div>
 
 
@@ -139,8 +141,18 @@
             <template #option="{ option }">
               <div style="display: flex; justify-content: space-between;">
                 <span>{{ option.persona.nombre }}</span>
-                <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #ef5a5a; margin-right: 8px;" @click="() => abrirDialogoConfirmacion(option.id)" />
+                <Icon v-if="!option.entrada" name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #ef5a5a; margin-right: 8px;" @click="() => abrirDialogoConfirmacion(option.id)" />
               </div>
+              <div style="font-size: 13px" >
+              <div > 
+                Entrada: {{ option.entrada}}
+              </div>
+              <div> 
+                Salida: {{ option.salida}}
+              </div>
+            </div>
+              
+             
             </template>
           </Listbox>
 
@@ -222,6 +234,7 @@ const participanteIdParaEliminar = ref(null);
 const visitaIdParaEliminar = ref(null);
 const contentToShare = ref(null);
 const loading = ref(false);
+
 
 const store = useStore();
 const user = store.getters.getUser;
@@ -332,6 +345,7 @@ const fechaAmigable = computed(() => {
     hour12: true 
   });
 });
+
 
 
 const fechaFinAmigable = computed(() => {
