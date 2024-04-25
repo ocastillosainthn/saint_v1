@@ -587,7 +587,7 @@ async function cargarRolesUsuario() {
     console.error('Error obteniendo roles del usuario:', rolesError);
   } else {
     userRol.value = userRoles.filter(role => role.entidad !== null).map(role => role.entidad);
-    console.log('userRoles4:', userRol);
+
 
   }
 }
@@ -826,14 +826,13 @@ async function insertPlayerId(playerID) {
 async function updateUserData(userDataID, playerID) {
     const { data, error } = await supabase
         .from('userData')
-        .update({ player_id: playerID })
+        .update({ player_id: playerID.value })
         .eq('id', userDataID.value);
     if (error) {
         console.error('Error actualizando la tabla userData:', error);
        
         return null;
     }
-    console.log('userData actualizado con player',userDataID, playerID )
     return data;
 }
 
