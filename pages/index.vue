@@ -54,13 +54,14 @@
         <div   v-if="userData">Hola  <span style="font-weight: 700;"> {{ userData.name }}  </span>, Bienvenid@ de nuevo  </div> 
     
       </div>
-
+DataID
+      {{ userDataID }}
   
+      PlayerID {{ playerID }}
 <!-- ADMIN type-->  
 
  <div v-if="rol === 'admin'" class="contenedor">
 
-  
 
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -809,10 +810,11 @@ function openScan() {
 }
 
 async function insertPlayerId(playerID) {
+  const player_id = playerID._value;
     const { data, error } = await supabase
         .from('playerId')
         .insert([
-            { player_id: playerID }
+            { player_id: player_id }
         ]);
 
     if (error) {
@@ -833,6 +835,7 @@ async function updateUserData(userDataID, playerID) {
         console.error('Error actualizando la tabla userData:', error);
         return null;
     }
+    console.log('userData actualizado con player',userDataID, playerID )
     return data;
 }
 
