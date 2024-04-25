@@ -30,10 +30,15 @@
     <k-panel  side="left" 
           @backdropclick="() => (userPanelOpened = false)">
           <div style="padding: 20px;">
+
+          
             <div class="usertext" >
+   
+            sda
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
-                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión - </button>
+
                   <div st> {{ version}}</div>
 
                 </div>
@@ -54,6 +59,8 @@
 <!-- ADMIN type-->  
 
  <div v-if="rol === 'admin'" class="contenedor">
+  
+  {{ playerID }}
   
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -238,10 +245,41 @@
 
         <div style="padding: 20px;">
             <div class="usertext" >
+             
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
-                  <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
-                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión</button>
+                  <div style="color: rgb(112, 112, 112); margin-bottom: 10px;" v-if="userData">{{ userData.email }}   </div>
+
+                  <button class="lightButton" style="margin-bottom: 10px;"> Editar perfil </button> 
+
+          <div> 
+
+          
+    <div class="cardRol" v-if="userRol"  style="margin-top:15px" > 
+      
+        Persmisos asignados 
+        <div   style="font-size:20px; margin-top: 7px; font-weight: 700; " >  
+                {{ userRol[0].division.name }}
+
+                {{ userRol[0].tipo }}
+
+                <div class="flex" style="font-size: 15px; font-weight: 400; margin-top:5px; color:gray " > 
+              <Icon name="material-symbols-light:arrow-forward-rounded" />
+              <div style=" margin-top:-3px" > {{ userRol[0].division.entidad.name }} </div>
+                </div>
+      </div>
+
+
+
+</div> 
+
+</div>
+
+
+
+                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión </button>
                   <div st> {{ version }}</div>
+
+
 
                 </div>
           </div>
@@ -338,14 +376,17 @@ const visitas = ref([]);
 const filterVisita = ref(getFechaInicialZonaHoraria());
 const loading = ref(false);
 const showtab = ref(false);
-const userRol = ref(null);
+const userRol= ref(null);
 const version = ref ('0.4.11  26-03-24');
+const userRolesById = ref([]);
+const playerID = ref ('')
 
 
 
 
 
 const rol = ref(null);
+
 
 
 function handleItemSelect(item) {
@@ -427,6 +468,7 @@ async function fetchInviteSended() {
 onMounted(async () => {
   loading.value = true;
   userUUID.value = localStorage.getItem('userUUID') || '';
+  playerID.value = localStorage.getItem('playerID') || '';
 
  
 
@@ -484,14 +526,15 @@ onMounted(async () => {
     await cargarRolesUsuario();
           
 
-    if (empresas.value.length === 0 && divisiones.value.length === 0  && userRol.value.length > 0) {
-          rol.value = 'guard';
+    if (empresas.value.length === 0 && divisiones.value.length === 0 && userRol.value.length === 0) {
+            rol.value = 'empty';
+        } else if (empresas.value.length === 0 && divisiones.value.length === 0 && userRol.value.length > 0) {
+            rol.value = 'guard';
         } else if (empresas.value.length > 0 || divisiones.value.length > 1) {
-          rol.value = 'admin';
+            rol.value = 'admin';
         } else if (empresas.value.length === 0 || divisiones.value.length === 1) {
-          rol.value = 'user';
+            rol.value = 'user';
         }
-
 
           console.log('Rol asignado:', rol.value);
 
@@ -505,6 +548,7 @@ onMounted(async () => {
 
           await cargarVisita();
          
+          rolesByUsuario();
 
           loading.value = false;
   }
@@ -545,6 +589,21 @@ async function cargarRolesUsuario() {
   }
 }
 
+
+async function rolesByUsuario() {
+  const { data: userRoles, error: rolesError } = await supabase
+    .from('userRoles')
+    .select(' *, division(*, entidad(*)), entidad(*)')
+    .eq('user', userUUID.value)
+    
+
+  if (rolesError) {
+    console.error('Error obteniendo roles del usuario:', rolesError);
+  } else {
+    userRol.value = userRoles
+console.log('userRol by user', userRol )
+  }
+}
 
 
 async function cargarParticipantes(visitaId) {
@@ -644,7 +703,6 @@ function toggleUserMenu() {
 }
 
 async function acceptInvitation() {
-  // Verifica si inviteSended y userUUID están definidos
   if (!inviteSended.value || !userUUID.value) {
     console.error("Datos necesarios para aceptar la invitación no están disponibles.");
     return;
@@ -679,7 +737,6 @@ async function acceptInvitation() {
   }
 
 
-  console.log('Nuevo rol de usuario creado:', newUserRole);
    const { data: userRolesDivision, error: rolesErrorDivision } = await supabase
       .from('userRoles')
       .select('*, division(*,entidad(*,tipo(tipo,id)))')
@@ -696,8 +753,9 @@ async function acceptInvitation() {
         divisiones.value = userRolesDivision.map(role => role.division).filter(division => division !== null);
       
     }
-
+   
     popupOpened.value = false;
+    refreshData ();
 }
 
 
@@ -746,6 +804,12 @@ function openScan() {
   router.push('/scan');
 }
 
+
+
+function refreshData() {
+  const { nuxt } = useNuxtApp();
+  nuxt.refresh();
+}
 </script>
 
 <style >

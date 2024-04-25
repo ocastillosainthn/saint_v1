@@ -20,49 +20,79 @@
       </template>
     </k-navbar>
  
-<div > 
-  <k-searchbar
-    v-model="searchQuery"
-    placeholder="Buscar"
-    clearButton
-  ></k-searchbar>
+<div> 
+
+  <TabView>
+    <TabPanel style="background-color: red; width: 100%">
+      <template #header>
+            <div class="flex" style="min-width:37vw;">
+              {{fabText}}            </div>
+        </template>
+
+      <div  style="margin-top: 20px;"> 
+
+            <k-searchbar
+              v-model="searchQuery"
+              placeholder="Buscar"
+              clearButton
+            ></k-searchbar>
+
+            <div  >
+
+              <div style="width: 100%; margin-top: 20px;"> 
+
+              <k-list strong inset>
+                <k-list-item 
+                v-for="division in divisiones" 
+                @click="goToEdit(division.id)"
+                :key="division.id" 
+                :title="division.name" 
+                :footer="`${division.uuid}`">
+                <template #after>
+                          <Icon name="solar:arrow-right-linear" style="font-size:17px; color: #4d4d4d;" @click.stop="() => removeUserRole(userRole.id)"/>
+                </template>
+              </k-list-item>
+              </k-list>
+
+            </div>
+
+            </div>
+
+            <k-fab
+            class="fixed right-4-safe bottom-4-safe z-20"
+            :text=" fabText"
+            style="background-image: linear-gradient(to right, #20C4D6, #0586F0); font-size: 11px;"
+            text-position="after"
+            @click="openPopup"
+            >
+            <template>
+              <Icon name="material-symbols:add" style="font-size: 17px; "/>
+            </template>
+            </k-fab>
 
 
-  <div class="container" >
+            </div>
 
-    <div style="width: 100%;"> 
 
-    <k-list strong inset>
-      <k-list-item 
-      v-for="division in divisiones" 
-      @click="goToEdit(division.id)"
-      :key="division.id" 
-      :title="division.name" 
-      :footer="`${division.uuid}`">
-      <template #after>
-                <Icon name="solar:arrow-right-linear" style="font-size:17px; color: #4d4d4d;" @click.stop="() => removeUserRole(userRole.id)"/>
-      </template>
-    </k-list-item>
-    </k-list>
+    </TabPanel>
 
-  </div>
+    <TabPanel >
+        
+      <template #header>
+            <div class="flex" style="min-width: 37vw;">
+             Seguridad         </div>
+        </template>
+
+
+
+      </TabPanel>
+
+  </TabView>
 
 </div>
 
-  <k-fab
-  class="fixed right-4-safe bottom-4-safe z-20"
-  :text=" fabText"
-  style="background-image: linear-gradient(to right, #20C4D6, #0586F0); font-size: 11px;"
-  text-position="after"
-  @click="openPopup"
->
-  <template>
-    <Icon name="material-symbols:add" style="font-size: 17px; "/>
-  </template>
-</k-fab>
 
-  
-</div>
+
 
 
 <k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)">
@@ -161,6 +191,8 @@ import supabase from "../db/supabaseClient";
 import { watch } from 'vue';
 import AddDivision from '../../components/addDivision.vue';
 import Button from 'primevue/button';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 
 const route = useRoute();

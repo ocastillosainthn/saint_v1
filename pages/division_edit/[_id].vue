@@ -16,23 +16,182 @@
  
     <div> 
   
-    </div>
-<div class="container" >
+      <TabView >
+
+
+    <TabPanel header="Visitas">
+    
+        
+             <div style="width: 100%;"> 
+        
+                  
+                        <k-list strong inset style="width: 100%;">
+                          <k-list-item 
+                          
+                            v-for="(visitaDivision, index) in visitaDivisions" 
+                            :key="index" 
+                            :title="visitaDivision.nombre" 
+                            @click="navigateToVisita(visitaDivision.id)"
+                            >
+                            <template #footer>
+
+                            <div> Creado por  <span style="font-weight: bold;"> {{ visitaDivision.created_by.name }} </span> </div> 
+                            <div><Icon name="material-symbols-light:calendar-today-outline-rounded" style="font-size:17px;" />  {{ formatDate(visitaDivision.fecha) }} </div>
+                            </template>
+
+                            <template #after>
+                              <Icon name="material-symbols-light:arrow-right-alt" style="font-size:17px;" /> 
+                            </template>
+                          </k-list-item>
+                        </k-list>
+                    </div>
+        
+                    
   
-  <k-list  style="width: 100%;  margin-top: 0px; margin-bottom: 0px;" >
-    <div class="input-group">
-            <k-list-input
-              style="margin: 0px!important; width: 100%; font-size: 14px;"
-              floating-label
-              :value="name"
-              @input="name = $event.target.value; console.log('Input event:', $event.target.value);"
-              label="Nombre"
-              type="text"
-              id="name"
-              placeholder="Nombre de la division/casa"
-            />
+        
+        
+              </TabPanel>
+
+    <TabPanel header="Usuarios">
+    
+    <div style="width: 100%;"> 
+
+        
+              <k-list strong inset style="width: 100%;">
+                <k-list-item 
+                  v-for="(userRole, index) in userRoles" 
+                  :key="index" 
+                  :title="userRole.userData.name" 
+                  :footer="userRole.userData.email">
+                  <template #after>
+                    <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="() => removeUserRole(userRole.id)"/>
+                  </template>
+                </k-list-item>
+              </k-list>
           </div>
-        </k-list>
+
+          <div v-if="userRoles.length === 0" class="center-content">
+          <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
+          <p>No se encontraron usuarios</p>
+          </div>
+
+          <div class="addUser">
+          <Button @click="openPopup" > Agregar usuario</Button>
+
+
+
+          <k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedio">
+
+          <k-navbar  
+            title="Inivitar Usuario"
+            small
+            isTralucent style="background-color: white;">
+            
+          <template #left>
+            <k-link navbar @click="() => (popupOpened = false)">  <Icon name="material-symbols-light:cancel" style="font-size:32px; color: #31b4e0;"/>  </k-link>
+          </template>
+          </k-navbar>
+
+          <div style="padding: 25px; padding-bottom: 10px;">
+
+          <k-list>
+            <div style="display: flex; align-items: center; width: 100%; margin-top: 15px;">
+            
+                <div :key="index" class="input-group" style="width: 100%;">
+                  <div class="input-group">
+                  <k-list-input
+                    style="margin: 0px!important; width: 100%;"
+                    outline
+                    :value="emailList"
+                    @input="emailList = $event.target.value; console.log('Input event:', $event.target.value);"
+                    label="Invita usuarios"
+                    type="text"
+                    id="emails"
+                    required
+                    placeholder="Escribe los correos separados por comas"
+                  />
+                </div>
+              </div>
+
+              <button class="iconButton" @click="submitEmails">
+                <Icon name="solar:user-plus-broken" style="font-size:30px; color: white;"/>
+              </button>
+
+              
+          </div>
+          </k-list>
+
+          <div style="margin-bottom: 20px;" v-if="mails.length > 0"> 
+
+              <k-block-title>Invitaciones </k-block-title>
+              <k-list strong inset>
+                <k-list-item 
+                  v-for="(mail, index) in mails" 
+                  :key="index" 
+                  :title="mail">
+                  <template #after>
+                    <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #ef5a5a;" @click.stop="removeEmail(index)"/>
+                  </template>
+                </k-list-item>
+              </k-list>
+
+              </div>
+
+              <k-button 
+              v-if="mails.length > 0"
+              @click="addInvitations"  type="submit" label="Invitar" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+            </k-button>
+
+
+          </div>
+
+
+
+
+          </k-popup>
+
+
+          </div>
+
+          <div  v-if="invitaciones.length > 0"> 
+          <k-block-title style="margin-bottom: 1px;">Invitaciones pendientes</k-block-title>
+
+              <k-list strong inset style="width: 100%;">
+                <k-list-item 
+                  v-for="(invitacion, index) in invitaciones" 
+                  :key="index" 
+                  :title="invitacion.email" 
+                  :footer="formatearFecha(invitacion.created_at)">
+                  <template #after>
+                    <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #e43e3e;" @click.stop="() => removeInvitation(invitacion.id)"/>
+                  </template>
+                </k-list-item>
+              </k-list>
+            </div>
+
+
+    </TabPanel>
+
+
+    <TabPanel header="Información" class="backgroundTab">
+        
+
+      <div class="" >
+  
+        <k-list  style="width: 100%;  margin-top: 0px; margin-bottom: 0px;" >
+          <div class="input-group">
+                  <k-list-input
+                    style="margin: 0px!important; width: 100%; font-size: 14px;"
+                    floating-label
+                    :value="name"
+                    @input="name = $event.target.value; console.log('Input event:', $event.target.value);"
+                    label="Nombre"
+                    type="text"
+                    id="name"
+                    placeholder="Nombre de la division/casa"
+                  />
+                </div>
+              </k-list>
 
     <k-list  style="width: 100%;  margin-top: 0px; margin-bottom: 0px;" >
     <div class="input-group">
@@ -65,123 +224,21 @@
   </k-toast>
 
 
- <div style="width: 100%;"> 
 
-    <k-block-title style="margin-bottom: 5px;">Usuarios</k-block-title>
 
-        <k-list strong inset style="width: 100%;">
-          <k-list-item 
-            v-for="(userRole, index) in userRoles" 
-            :key="index" 
-            :title="userRole.userData.name" 
-            :footer="userRole.userData.email">
-            <template #after>
-              <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="() => removeUserRole(userRole.id)"/>
-            </template>
-          </k-list-item>
-        </k-list>
- </div>
-
- <div v-if="userRoles.length === 0" class="center-content">
-  <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
-  <p>No se encontraron usuarios</p>
 </div>
 
-<div class="addUser">
 
-  <Button @click="openPopup" > Agregar usuario</Button>
-  
+     
 
+    </TabPanel>
 
-  <k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedio">
- 
- <k-navbar  
-      title="Inivitar Usuario"
-      small
-       isTralucent style="background-color: white;">
-      
-     <template #left>
-       <k-link navbar @click="() => (popupOpened = false)">  <Icon name="material-symbols-light:cancel" style="font-size:32px; color: #31b4e0;"/>  </k-link>
-     </template>
-   </k-navbar>
- 
- <div style="padding: 25px; padding-bottom: 10px;">
- 
-    <k-list>
-      <div style="display: flex; align-items: center; width: 100%; margin-top: 15px;">
-      
-          <div :key="index" class="input-group" style="width: 100%;">
-            <div class="input-group">
-            <k-list-input
-              style="margin: 0px!important; width: 100%;"
-              outline
-              :value="emailList"
-              @input="emailList = $event.target.value; console.log('Input event:', $event.target.value);"
-              label="Invita usuarios"
-              type="text"
-              id="emails"
-              required
-              placeholder="Escribe los correos separados por comas"
-            />
-          </div>
-        </div>
+    
 
-        <button class="iconButton" @click="submitEmails">
-          <Icon name="solar:user-plus-broken" style="font-size:30px; color: white;"/>
-        </button>
-
-        
-    </div>
-    </k-list>
-
-    <div style="margin-bottom: 20px;" v-if="mails.length > 0"> 
-
-        <k-block-title>Invitaciones </k-block-title>
-        <k-list strong inset>
-          <k-list-item 
-            v-for="(mail, index) in mails" 
-            :key="index" 
-            :title="mail">
-            <template #after>
-              <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #ef5a5a;" @click.stop="removeEmail(index)"/>
-            </template>
-          </k-list-item>
-        </k-list>
-
-        </div>
-
-        <k-button 
-        v-if="mails.length > 0"
-        @click="addInvitations"  type="submit" label="Invitar" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
-      </k-button>
+  </TabView>
 
 
     </div>
- 
-
-
- 
- </k-popup>
-
-
-</div>
-
-<div  v-if="invitaciones.length > 0"> 
-<k-block-title style="margin-bottom: 1px;">Invitaciones pendientes</k-block-title>
-
-        <k-list strong inset style="width: 100%;">
-          <k-list-item 
-            v-for="(invitacion, index) in invitaciones" 
-            :key="index" 
-            :title="invitacion.email" 
-            :footer="formatearFecha(invitacion.created_at)">
-            <template #after>
-              <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #e43e3e;" @click.stop="() => removeInvitation(invitacion.id)"/>
-            </template>
-          </k-list-item>
-        </k-list>
-      </div>
-</div>
 
 
 
@@ -198,6 +255,8 @@ import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
 import PrimeVue from "primevue/config";
 import InputText from 'primevue/inputtext';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const route = useRoute();
 const router = useRouter();
@@ -215,7 +274,7 @@ const descripcion = ref('');
 const opened = ref({ left: false });
 const toastMessage = ref('');
 const toastColor = ref('#FFFFFF'); 
-
+const visitaDivisions = ref([]);
 
 
 const openToast = (side, message, color) => {
@@ -239,6 +298,7 @@ onMounted(async () => {
   if (divisionId) {
     await cargarDivision(divisionId);
     await cargarUserRoles(divisionId); 
+    await cargarVisitas(divisionId)
     await cargarInvitaciones(divisionId); 
 
   } else {
@@ -290,6 +350,31 @@ async function cargarUserRoles(divisionId) {
     console.error('Error al obtener los roles de usuario y datos de usuario:', error);
   }
 }
+
+
+async function cargarVisitas(divisionId) {
+  try {
+    const { data, error } = await supabase
+      .from('visita')
+      .select(`*, division(*), created_by(*)`)
+      .eq('division', divisionId)
+      .order('fecha', { ascending: false });
+
+    if (error) {
+      console.error('Error al obtener las visitas:', error);
+      return;
+    }
+
+
+    console.log('Visitas de division:', data);
+    
+    visitaDivisions.value = data;
+  } catch (error) {
+    console.error('Error al obtener los roles de usuario y datos de usuario:', error);
+  }
+}
+
+
 
 
 async function cargarInvitaciones(divisionId) {
@@ -367,6 +452,11 @@ const formatearFecha = (fecha) => {
 
   return `${fechaFormateada}, ${horaFormateada}`;
 };
+
+
+function navigateToVisita(visitaId) {
+  router.push(`/visita/${visitaId}`);
+}
 
 
 async function addInvitations() {
@@ -490,6 +580,11 @@ const deleteDivision = async () => {
   }
 };
 
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return format(date, "PPpp", { locale: es });
+};
 
 
 </script>
