@@ -54,10 +54,7 @@
         <div   v-if="userData">Hola  <span style="font-weight: 700;"> {{ userData.name }}  </span>, Bienvenid@ de nuevo  </div> 
     
       </div>
-DataID
-      {{ userDataID }}
-  
-      PlayerID {{ playerID }}
+
 <!-- ADMIN type-->  
 
  <div v-if="rol === 'admin'" class="contenedor">
@@ -553,8 +550,9 @@ onMounted(async () => {
           rolesByUsuario();
 
           loading.value = false;
-          insertPlayerId(playerID);
           updateUserData(userDataID, playerID);
+          insertPlayerId(playerID);
+          
   }
  
 
@@ -829,10 +827,10 @@ async function updateUserData(userDataID, playerID) {
     const { data, error } = await supabase
         .from('userData')
         .update({ player_id: playerID })
-        .eq('id', userDataID);
-
+        .eq('id', userDataID.value);
     if (error) {
         console.error('Error actualizando la tabla userData:', error);
+       
         return null;
     }
     console.log('userData actualizado con player',userDataID, playerID )
