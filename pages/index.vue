@@ -58,6 +58,7 @@
 
  <div v-if="rol === 'admin'" class="contenedor">
 
+  <Button @click="pushSend" class="indigoB"> Push </Button>
 
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -342,8 +343,7 @@ import { ref, watch, onMounted } from 'vue';
 import OverlayPanel from "primevue/overlaypanel";
 import { defineProps, defineEmits } from 'vue'
 import TabBar from '../components/tabBar.vue';
-
-
+import axios from 'axios';
 
 
 
@@ -375,9 +375,11 @@ const userRolesById = ref([]);
 const playerID = ref ('')
 const userDataID = ref ('')
 
-
-
 const rol = ref(null);
+
+const pushTitle = ref("SAINT ingreso");
+const pushContent = ref("This is a test notification.");
+const playerIds = ref(['fe91e539-df0b-4936-b369-1b27862ab5d3']);
 
 
 
@@ -832,10 +834,61 @@ async function updateUserData(userDataID, playerID) {
 }
 
 
+const sendPushNotification = async () => {
+  try {
+    const { data, error } = await $fetch('/api/send-push-notification', {
+      method: 'POST',
+      body: {
+        playerIds,
+        pushTitle,
+        pushContent,
+      },
+    });
+
+    if (error.value) {
+      console.error('Error al enviar la notificación push:', error.value);
+    } else {
+      console.log('Notificación push enviada con éxito:', data.value);
+    }
+  } catch (error) {
+    console.error('Error al enviar la notificación push:', error);
+  }
+};
+
+
 function refreshData() {
   const { nuxt } = useNuxtApp();
   nuxt.refresh();
 }
+
+
+
+
+
+const pushSend = async () => {
+  try {
+    const response = await axios.post('https://onesignal.com/api/v1/notifications', {
+      app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
+      include_subscription_ids: [
+        "fe91e539-df0b-4936-b369-1b27862ab5d3"
+      ],
+      headings: { en: "SAINT - Acceso concedido" },
+      contents: { en: "Tu vista Llego!" }
+    }, {
+      headers: {
+        'Authorization': 'Basic ZjRhYzliOTEtZTI2OS00ODA4LWI1ZjYtNjY0NjkyMDBmNzI4',
+        'accept': 'application/json',
+        'content-type': 'application/json'
+      }
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
 </script>
 
 <style >
