@@ -59,9 +59,9 @@
 <!-- ADMIN type-->  
 
  <div v-if="rol === 'admin'" class="contenedor">
-  
+  player ID
   {{ playerID }}
-  
+
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
 
@@ -468,9 +468,9 @@ async function fetchInviteSended() {
 onMounted(async () => {
   loading.value = true;
   userUUID.value = localStorage.getItem('userUUID') || '';
-  playerID.value = localStorage.getItem('playerID') || '';
+  playerID.value = localStorage.getItem('playerId') || '';
 
- 
+ console.log('playerStorage', playerID)
 
   if (userUUID.value) {
 
