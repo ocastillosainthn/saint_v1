@@ -827,7 +827,7 @@ async function updateUserData(userDataID, playerID) {
     const { data, error } = await supabase
         .from('userData')
         .update({ player_id: playerID })
-        .eq('id', userDataId);
+        .eq('id', userDataID);
 
     if (error) {
         console.error('Error actualizando la tabla userData:', error);
