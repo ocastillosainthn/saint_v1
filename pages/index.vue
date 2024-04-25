@@ -34,7 +34,6 @@
           
             <div class="usertext" >
    
-            sda
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión - </button>
@@ -256,9 +255,8 @@
       
         Persmisos asignados 
         <div   style="font-size:20px; margin-top: 7px; font-weight: 700; " >  
-                {{ userRol[0].division.name }}
-
-                {{ userRol[0].tipo }}
+                {{ userRol[0]?.division?.name }}
+                {{ userRol[0]?.tipo }}
 
                 <div class="flex" style="font-size: 15px; font-weight: 400; margin-top:5px; color:gray " > 
               <Icon name="material-symbols-light:arrow-forward-rounded" />
@@ -271,9 +269,6 @@
 </div> 
 
 </div>
-
-
-
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión </button>
                   <div st> {{ version }}</div>
 
