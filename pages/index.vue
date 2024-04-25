@@ -59,8 +59,8 @@
 <!-- ADMIN type-->  
 
  <div v-if="rol === 'admin'" class="contenedor">
-  player ID
-  {{ playerID }}
+
+  
 
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -380,8 +380,7 @@ const userRol= ref(null);
 const version = ref ('0.4.11  26-03-24');
 const userRolesById = ref([]);
 const playerID = ref ('')
-
-
+const userDataID = ref ('')
 
 
 
@@ -484,6 +483,8 @@ onMounted(async () => {
       console.error('Error al obtener datos de usuario:', userError);
     } else {
       userData.value = userDataResponse[0];
+      userDataID.value = userDataResponse[0].id;
+    
       await fetchInviteSended();
 
     }
@@ -551,10 +552,13 @@ onMounted(async () => {
           rolesByUsuario();
 
           loading.value = false;
+          insertPlayerId(playerID);
+          updateUserData(userDataID, playerID);
   }
+ 
 
   
-
+  
 
 });
 
@@ -804,6 +808,33 @@ function openScan() {
   router.push('/scan');
 }
 
+async function insertPlayerId(playerID) {
+    const { data, error } = await supabase
+        .from('playerId')
+        .insert([
+            { player_id: playerID }
+        ]);
+
+    if (error) {
+        console.error('Error insertando en la tabla playerId:', error);
+        return null;
+    }
+    return data;
+}
+
+
+async function updateUserData(userDataID, playerID) {
+    const { data, error } = await supabase
+        .from('userData')
+        .update({ player_id: playerID })
+        .eq('id', userDataId);
+
+    if (error) {
+        console.error('Error actualizando la tabla userData:', error);
+        return null;
+    }
+    return data;
+}
 
 
 function refreshData() {
