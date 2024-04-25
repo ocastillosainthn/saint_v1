@@ -297,6 +297,19 @@ async function marcarEntrada(participanteId) {
       updatedParticipante.entrada = data[0].entrada;
     }
     console.log('Entrada del participante actualizada:', data[0]);
+
+
+    const pushTitle = "SAINT - confirmación de visita";
+    const pushContent = "Tu visita acaba de llegar";
+    const playerIDs = [visita.created_by.player_id];  // Convierte en array si es necesario
+
+    try {
+      await pushSend(pushTitle, pushContent, playerIDs);
+    } catch (error) {
+      console.error("Error al enviar la notificación:", error);
+    }
+
+
   } else {
     console.log('No se devolvieron datos tras la actualización');
   }
@@ -320,10 +333,41 @@ async function marcarSalida(participanteId) {
   if (participanteIndex !== -1 && data && data.length > 0) {
     participantes.value[participanteIndex] = { ...participantes.value[participanteIndex], salida: data[0].salida };
   }
+
+
+  const pushTitle = "SAINT - confirmación de visita";
+    const pushContent = "Tu visita ha salido ";
+    const playerIDs = [visita.created_by.player_id];  // Convierte en array si es necesario
+
+    try {
+      await pushSend(pushTitle, pushContent, playerIDs);
+    } catch (error) {
+      console.error("Error al enviar la notificación:", error);
+    }
+
+
 }
 
 
-
+const pushSend = async (pushTitle, pushContent, playerIDs) => {
+  try {
+    const response = await axios.post('https://onesignal.com/api/v1/notifications', {
+      app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
+      include_subscription_ids: playerIDs,
+      headings: { en: pushTitle },
+      contents: { en: pushContent }
+    }, {
+      headers: {
+        'Authorization': 'Basic ZjRhYzliOTEtZTI2OS00ODA4LWI1ZjYtNjY0NjkyMDBmNzI4',
+        'accept': 'application/json',
+        'content-type': 'application/json'
+      }
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 
 function goBack() {

@@ -58,7 +58,6 @@
 
  <div v-if="rol === 'admin'" class="contenedor">
 
-  <Button @click="pushSend" class="indigoB"> Push </Button>
 
     <div v-if="divisiones.length > 0">
     <div class="labelapp"> CREA VISTIAS Y REUNIONES </div>
@@ -377,9 +376,6 @@ const userDataID = ref ('')
 
 const rol = ref(null);
 
-const pushTitle = ref("SAINT ingreso");
-const pushContent = ref("This is a test notification.");
-const playerIds = ref(['fe91e539-df0b-4936-b369-1b27862ab5d3']);
 
 
 
@@ -865,15 +861,13 @@ function refreshData() {
 
 
 
-const pushSend = async () => {
+const pushSend = async (pushTitle, pushContent, playerIDs) => {
   try {
     const response = await axios.post('https://onesignal.com/api/v1/notifications', {
       app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
-      include_subscription_ids: [
-        "fe91e539-df0b-4936-b369-1b27862ab5d3"
-      ],
-      headings: { en: "SAINT - Acceso concedido" },
-      contents: { en: "Tu vista Llego!" }
+      include_subscription_ids: playerIDs,
+      headings: { en: pushTitle },
+      contents: { en: pushContent }
     }, {
       headers: {
         'Authorization': 'Basic ZjRhYzliOTEtZTI2OS00ODA4LWI1ZjYtNjY0NjkyMDBmNzI4',
@@ -886,7 +880,6 @@ const pushSend = async () => {
     console.error(error);
   }
 }
-
 
 
 </script>
