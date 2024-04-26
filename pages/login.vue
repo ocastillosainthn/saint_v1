@@ -284,7 +284,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
       
 
-    <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popSmall">
+    <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedium">
  
         <k-navbar  
               title=""
