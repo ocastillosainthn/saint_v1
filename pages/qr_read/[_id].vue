@@ -72,6 +72,8 @@
 
 <div style="font-weight: 700; margin-bottom: 10px;" > Participantes </div>
 
+{{ visita?.created_by?.player_id }}
+
     <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
         <template #option="{ option }">
 
@@ -159,6 +161,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
 import { useStore } from 'vuex';
+import axios from 'axios';
 
 
 
@@ -303,15 +306,19 @@ async function marcarEntrada(participanteId) {
     if (updatedParticipante) {
       updatedParticipante.entrada = data[0].entrada;
     }
-    console.log('Entrada del participante actualizada:', data[0]);
 
 
     const pushTitle = "SAINT - confirmación de visita";
     const pushContent = "Tu visita acaba de llegar";
-    const playerIDs = [visita.created_by.player_id];  // Convierte en array si es necesario
+    const playerIDs = "1dfce5db-44dd-4ef5-a865-42a0f2c9c576"
+    
+    console.log("player",playerIDs)
+    console.log('Entrada del participante actualizada:', data[0]);
+
 
     try {
-      await pushSend(pushTitle, pushContent, playerIDs);
+      await pushSend();
+
     } catch (error) {
       console.error("Error al enviar la notificación:", error);
     }
@@ -326,8 +333,12 @@ async function marcarEntrada(participanteId) {
 async function marcarSalida(participanteId) {
   const { data, error } = await supabase
     .from('participantes')
-    .update({ salida: new Date().toISOString() })
+    .update({ 
+      salida: new Date().toISOString(),
+      estado: "salida"
+    })
     .eq('id', participanteId)
+    
     .select();
 
   if (error) {
@@ -344,23 +355,27 @@ async function marcarSalida(participanteId) {
 
   const pushTitle = "SAINT - confirmación de visita";
     const pushContent = "Tu visita ha salido ";
-    const playerIDs = [visita.created_by.player_id];  // Convierte en array si es necesario
-
-    try {
-      await pushSend(pushTitle, pushContent, playerIDs);
-    } catch (error) {
-      console.error("Error al enviar la notificación:", error);
-    }
-
+    const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
+      console.log('Player IDs:', playerIDs);
+      try {
+        await pushSend();
+      } catch (error) {
+        console.error("Error al enviar la notificación:", error);
+      }
 
 }
 
 
-const pushSend = async (pushTitle, pushContent, playerIDs) => {
+const pushSend = async () => {
+  const pushTitle = "SAINT - confirmación de visita";
+  const pushContent = "Tu visita ha sido registrada correctamente";
+  const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
+
+
   try {
     const response = await axios.post('https://onesignal.com/api/v1/notifications', {
       app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
-      include_subscription_ids: playerIDs,
+      include_player_ids: playerIDs,
       headings: { en: pushTitle },
       contents: { en: pushContent }
     }, {
@@ -370,12 +385,20 @@ const pushSend = async (pushTitle, pushContent, playerIDs) => {
         'content-type': 'application/json'
       }
     });
-    console.log(response.data);
+    console.log('Notification sent successfully:', response.data);
   } catch (error) {
-    console.error(error);
+    console.error('Error while sending notification:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+    } else if (error.request) {
+      console.error('No response received:', error.request);
+    } else {
+      console.error('Request setup error:', error.message);
+    }
   }
-}
-
+};
 
 function goBack() {
   router.back();
