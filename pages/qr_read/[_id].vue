@@ -75,13 +75,15 @@
     <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
         <template #option="{ option }">
 
-        <div style="display: flex; justify-content: space-between;" @click="seleccionarParticipante(option)">
-           <div style="width:60%;"> 
-                <div style="display: flex; flex-direction: column; " >
-                    {{ option.persona.nombre }}
-                  <span style="color:gray; font-size: 13px; ">  {{ option.persona.empresa.nombre }}  {{option.persona.puesto }} </span>
-                </div>
-           </div > 
+          <div style="display: flex; justify-content: space-between;" @click="seleccionarParticipante(option)">
+       <div style="width:60%;"> 
+            <div style="display: flex; flex-direction: column; ">
+                {{ option.persona.nombre }}
+                <span style="color:gray; font-size: 13px;">
+                    {{ option.persona.empresa ? option.persona.empresa.nombre : '' }}  {{ option.persona.puesto }}
+                </span>
+            </div>
+       </div>
 
            <kButton v-if="!option.entrada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(option.id)"> ENTRADA </kButton>
            <kButton  v-if="option.entrada && !option.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(option.id)" > SALIDA </kButton>
@@ -183,7 +185,10 @@ onMounted(async () => {
   if (route.params._id) {
     await cargarVisita(route.params._id);
     if (visita.value && visita.value.id) {
+      console.log('visita id', visita.value.id)
       const datosParticipantes = await cargarParticipantes(visita.value.id);
+
+      
       participantes.value = datosParticipantes;
     }
   } else {
@@ -202,6 +207,7 @@ async function cargarVisita(visitaId) {
 
     if (error) throw error;
     visita.value = data; 
+    console.log('datos de Visita OK', visita)
   } catch (error) {
     console.error('Error al obtener la visita:', error.message);
   }
@@ -268,8 +274,9 @@ async function cargarParticipantes(visitaId) {
       .eq('visita', visitaId);
 
     if (error) throw error;
-
+    console.log('resultadoCargar particpantes', data)
     return data;
+   
   } catch (error) {
     console.error('Error al cargar los participantes:', error.message);
     return []; 
