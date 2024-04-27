@@ -343,7 +343,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
                 
                 -->
   
-<div :style="{ marginBottom: `${keyboardHeight}px` }" >
+<div >
                <div v-if="codeActive"> 
 
                     <form @submit.prevent="register" class="login-form">
