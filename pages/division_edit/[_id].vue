@@ -1,4 +1,10 @@
 <template>
+
+<div v-if="loading"  class="loadingPage"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
+
+
   <k-page v-if="division" style="background-color: white;">
     <k-navbar 
       :title="division.name"
@@ -275,6 +281,7 @@ const opened = ref({ left: false });
 const toastMessage = ref('');
 const toastColor = ref('#FFFFFF'); 
 const visitaDivisions = ref([]);
+const loading = ref(false);
 
 
 const openToast = (side, message, color) => {
@@ -294,12 +301,15 @@ const openToast = (side, message, color) => {
 
 
 onMounted(async () => {
+  loading.value = true;
+
   const divisionId = route.params._id;
   if (divisionId) {
     await cargarDivision(divisionId);
     await cargarUserRoles(divisionId); 
     await cargarVisitas(divisionId)
     await cargarInvitaciones(divisionId); 
+    loading.value = false;
 
   } else {
     console.error('No se proporcionó divisionId.');
@@ -521,7 +531,7 @@ async function removeInvitation(invitacionId) {
 
 
 function generateInvitationCode() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#*';
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789@#*';
   let result = '';
   const charactersLength = characters.length;
   for (let i = 0; i < 5; i++) {
@@ -529,6 +539,7 @@ function generateInvitationCode() {
   }
   return result;
 }
+
 
 
 function toggleEdit() {

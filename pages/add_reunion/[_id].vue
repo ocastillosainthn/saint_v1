@@ -71,7 +71,7 @@
   <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
   <p>No se han agregado participantes</p>
 
-  <Button @click="openPopup" >Agregar Participante </Button>
+  <Button @click="openPopup"  style="color:#0586F0; font-size: 15px; font-weight: 600; margin-bottom: 40px">Agregar Participante </Button>
 
 </div>
 
@@ -94,6 +94,14 @@
 
         <div > 
 
+              <k-fab
+              v-if="personasSeleccionadas.length > 0"
+                class="fixed left-1/2 bottom-4-safe transform -translate-x-1/2 z-20 "
+                text="Agregar "
+                text-position="after"
+                @click="() => (popupOpened = false)"
+                >
+              </k-fab>
 
               <k-fab
                   class="fixed right-4-safe bottom-4-safe z-20"

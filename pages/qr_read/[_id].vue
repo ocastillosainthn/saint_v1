@@ -1,6 +1,9 @@
 <template>
     <k-page  style="background-color: #f7f7f7;">
 
+    
+
+
 <k-navbar 
     title=""
   small
@@ -72,7 +75,6 @@
 
 <div style="font-weight: 700; margin-bottom: 10px;" > Participantes </div>
 
-{{ visita?.created_by?.player_id }}
 
     <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
         <template #option="{ option }">

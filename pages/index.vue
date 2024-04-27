@@ -1,7 +1,10 @@
 <template>
+  
 <k-page style="background-color: rgb(247, 247, 247);">
 
-
+  <div v-if="loading"  class="loadingPage"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
 
   <k-navbar  v-if="rol !== 'user'"
       title=""
@@ -53,6 +56,8 @@
         <div   v-if="userData">Hola  <span style="font-weight: 700;"> {{ userData.name }}  </span>, Bienvenid@ de nuevo  </div> 
     
       </div>
+
+     
 
 <!-- ADMIN type-->  
 
@@ -163,9 +168,21 @@
 </div>
 
 
+<div  v-if="rol !== 'guard' && rol !== 'user' && rol !== 'admin' && !loading">
+>
+  <div class="sinPermiso"> 
+    <div>  No se te ha asignado ningun permiso</div>
+   
+    <div @click="refreshview" class="refreshB"> <span> 
+      <Icon name="ic:baseline-refresh" style="font-size:24px; margin-right: 10px; "/> 
+    </span>Refrescar Vista</div>
+  </div>
+</div>
+
+  
 
 
-  <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popSmall">
+  <k-popup style="z-index:10000000" :opened="popupOpened"  class="popSmall">
  
         <k-navbar  
               title=""
@@ -679,6 +696,7 @@ function logout() {
 }
 
 
+
 function getFechaInicialZonaHoraria(desfaseHorario = -6) {
   const ahoraUTC = new Date();
 
@@ -795,6 +813,10 @@ function openAddPersona() {
     console.error("No hay divisiones disponibles para crear una reunión.");
   }
 }
+
+const refreshview = () => {
+    window.location.reload();
+};
 
 function openScan() {
   router.push('/scan');

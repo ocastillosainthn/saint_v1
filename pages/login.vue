@@ -311,7 +311,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
 
               <div class="flex"> 
-                <InputOtp
+                <InputText
                   id="code"
                   v-model="code"
                   :length="5"
