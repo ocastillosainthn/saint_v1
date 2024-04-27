@@ -1,5 +1,11 @@
 <template>
   <k-page v-if="division" style="background-color: rgb(247, 247, 247);">
+
+    <div v-if="loading"  class="loadingPage"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
+
+
     <k-navbar 
     :title="dynamicTitle"
       small
@@ -46,7 +52,17 @@
 
   <div  style="min-width: 60%; margin-right: 10px;">
       <label for="fehaHoraVisita">Fecha y hora </label>
-      <Calendar showTime v-model="fehaHora" hourFormat="12"  showButtonBar showIcon iconDisplay="input" />
+      <Calendar 
+      ref="calendarRef"
+      showTime v-model="fehaHora" hourFormat="12"  
+      showButtonBar showIcon iconDisplay="input">
+
+      <template v-if="fehaHora" #footer>
+      <Button class="closeCalendar" @click="closeCalendar" >Confirmar fecha</Button>
+    </template>
+
+    </Calendar> 
+      
   </div>
 
 
@@ -190,7 +206,7 @@
                 <InputText id="placa" v-model="placa" aria-describedby="placa-help" />
             </div>
 
-            <k-button type="submit" @click="crearPersona" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+            <k-button v-if="!loading" type="submit" @click="crearPersona" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
               </k-button>
 
               </div>
@@ -327,7 +343,7 @@
 </div>
 
 
-<k-button type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+<k-button v-if="!loading" type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
               </k-button>
 
 </div>
@@ -373,6 +389,7 @@ const popupOpened = ref(false);
 const popupPersona = ref(false);
 const popupEmpresa = ref(false);
 const personas = ref([]);
+const loading = ref(false);
 
 const selectTipoPersona = ref(null);
 const tipoPersonaOptions = ref([]);
@@ -384,7 +401,6 @@ const selectDepartamento = ref(null);
 const selectMunicipio = ref(null);
 const departamentoOptions = ref([]);
 const personasSeleccionadas = ref([]);
-
 const municipioOptions = ref([]);
 const empresasActivas = ref([]);
 const selectedEmpresa = ref(null);
@@ -399,6 +415,12 @@ const dniPasaporte = ref('');
 const phone = ref('');
 const placa = ref('');
 const fehaHora = ref('');
+
+const calendarRef = ref(null);
+
+const closeCalendar = () => {
+  calendarRef.value.overlayVisible = false;
+};
 
 const selectedHour = ref();
 const hours = ref([
@@ -448,6 +470,7 @@ onMounted(async () => {
 });
 
 async function crearEmpresa() {
+  loading.value = true;
   const departamentoID = empresaData.value.selectDepartamento; 
   const municipioID = empresaData.value.selectMunicipio.value;
   const tipoEmpresaID = empresaData.value.tipoEmpresa.value;
@@ -463,6 +486,7 @@ async function crearEmpresa() {
     municipio: municipioID,
     paginaWeb: empresaData.value.paginaWeb,
     direccion: empresaData.value.direccion
+   
   };
 
 
@@ -475,10 +499,12 @@ async function crearEmpresa() {
     triggerToast('Empresa creada exitosamente', 'black');
     popupEmpresa.value = false; 
     cargarEmpresasActivas();
+    loading.value = false;
   }
 }
 
 async function crearVisita() {
+  loading.value = true;
   try {
     
     if (!nameVisita.value || !fehaHora.value || !selectedHour.value) { 
@@ -516,6 +542,7 @@ async function crearVisita() {
       console.log('ID de la visita creada:', visitaId);
       triggerToast('Visita Creada exitosamente ', 'green');
       navigateToVisita(visitaId);
+      loading.value = false;
 
     } else {
       throw new Error('No se pudo obtener el ID de la visita después de crearla.');
@@ -548,6 +575,8 @@ async function crearParticipantes(personasSeleccionadas, visita) {
 }
 
 async function crearPersona() {
+  loading.value = true;
+
   const payload = {
     empresa: selectedEmpresa?.value?.value === "" ? null : selectedEmpresa?.value?.value,
     puesto: puestoEmpresa.value || '',
@@ -573,6 +602,7 @@ async function crearPersona() {
     cargarPersonas();
     triggerToast('Persona creada exitosamente', 'green');
     popupPersona.value = false;
+    loading.value = false;
 
   }
 }
@@ -669,6 +699,7 @@ async function cargarDivision(divisionId) {
     console.error('Error al obtener la división:', error);
   }
 }
+
 
 function goBack() {
   router.back();

@@ -83,6 +83,21 @@ padding-right: 9px;
   align-items: center;
 }
 
+
+.closeCalendar{
+  margin-top: -10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgb(255, 255, 255);
+ width: 100%; 
+ margin-top: 10px; 
+ height:50px!important; 
+ background-image: linear-gradient(to right, #20C4D6, #0586F0);
+ display: flex;
+    justify-content: center;
+
+}
+
 .refreshB{
  border-color: #0b75cc;
  border-width: 1px;
