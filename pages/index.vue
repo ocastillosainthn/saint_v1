@@ -175,7 +175,7 @@
    
     <div @click="refreshview" class="refreshB"> <span> 
       <Icon name="ic:baseline-refresh" style="font-size:24px; margin-right: 10px; "/> 
-    </span>Actualizar Acceso </div>
+    </span>Confirmar Acceso </div>
   </div>
 </div>
 
