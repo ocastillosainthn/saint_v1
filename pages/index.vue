@@ -169,13 +169,13 @@
 
 
 <div  v-if="rol !== 'guard' && rol !== 'user' && rol !== 'admin' && !loading">
->
+
   <div class="sinPermiso"> 
-    <div>  No se te ha asignado ningun permiso</div>
+    <div> Hemos finalizado de configurar el acceso a tu usuario.</div>
    
     <div @click="refreshview" class="refreshB"> <span> 
       <Icon name="ic:baseline-refresh" style="font-size:24px; margin-right: 10px; "/> 
-    </span>Refrescar Vista</div>
+    </span>Actualizar Acceso </div>
   </div>
 </div>
 
@@ -489,6 +489,7 @@ onMounted(async () => {
 
     if (userError) {
       console.error('Error al obtener datos de usuario:', userError);
+      refreshview();
     } else {
       userData.value = userDataResponse[0];
       userDataID.value = userDataResponse[0].id;
@@ -508,6 +509,7 @@ onMounted(async () => {
 
       if (rolesError) {
       console.error('Error obteniendo roles del usuario:', rolesError);
+      console();
     } else {
       empresas.value = userRoles.filter(role => role.entidad !== null).map(role => role.entidad);
       
@@ -770,6 +772,7 @@ async function acceptInvitation() {
    
     popupOpened.value = false;
     refreshData ();
+    refreshview();
 }
 
 
