@@ -823,18 +823,24 @@ function openScan() {
 }
 
 async function insertPlayerId(playerID) {
+  // Verificar que playerID._value no está vacío y es un valor válido.
   const player_id = playerID._value;
-    const { data, error } = await supabase
-        .from('playerId')
-        .insert([
-            { player_id: player_id }
-        ]);
+  if (!player_id) {
+    console.error('El valor de player_id está vacío o es inválido.');
+    return null; // Retorna null si el valor es vacío o inválido.
+  }
 
-    if (error) {
-        console.error('Error insertando en la tabla playerId:', error);
-        return null;
-    }
-    return data;
+  const { data, error } = await supabase
+    .from('playerId')
+    .insert([
+      { player_id: player_id }
+    ]);
+
+  if (error) {
+    console.error('Error insertando en la tabla playerId:', error);
+    return null;
+  }
+  return data;
 }
 
 

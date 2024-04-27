@@ -465,6 +465,7 @@ const formatearFecha = (fecha) => {
 
 
 function navigateToVisita(visitaId) {
+  loading.value = true;
   router.push(`/visita/${visitaId}`);
 }
 
