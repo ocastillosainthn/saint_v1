@@ -309,12 +309,6 @@ async function marcarEntrada(participanteId) {
       updatedParticipante.entrada = data[0].entrada;
     }
 
-
-    const pushTitle = "SAINT - confirmación de visita";
-    const pushContent = "Tu visita acaba de llegar";
-    const playerIDs = "1dfce5db-44dd-4ef5-a865-42a0f2c9c576"
-    
-    console.log("player",playerIDs)
     console.log('Entrada del participante actualizada:', data[0]);
 
 
@@ -360,7 +354,7 @@ async function marcarSalida(participanteId) {
     const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
       console.log('Player IDs:', playerIDs);
       try {
-        await pushSend();
+        await pushOut();
       } catch (error) {
         console.error("Error al enviar la notificación:", error);
       }
@@ -370,7 +364,7 @@ async function marcarSalida(participanteId) {
 
 const pushSend = async () => {
   const pushTitle = "SAINT - confirmación de visita";
-  const pushContent = "Tu visita ha sido registrada correctamente";
+  const pushContent = "Tu visita ha ingresado a la residencial";
   const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
 
 
@@ -401,6 +395,42 @@ const pushSend = async () => {
     }
   }
 };
+
+
+const pushOut = async () => {
+  const pushTitle = "SAINT - confirmación de salida de visita";
+  const pushContent = "Tu visita ha salido de la residencial";
+  const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
+
+
+  try {
+    const response = await axios.post('https://onesignal.com/api/v1/notifications', {
+      app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
+      include_player_ids: playerIDs,
+      headings: { en: pushTitle },
+      contents: { en: pushContent }
+    }, {
+      headers: {
+        'Authorization': 'Basic ZjRhYzliOTEtZTI2OS00ODA4LWI1ZjYtNjY0NjkyMDBmNzI4',
+        'accept': 'application/json',
+        'content-type': 'application/json'
+      }
+    });
+    console.log('Notification sent successfully:', response.data);
+  } catch (error) {
+    console.error('Error while sending notification:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+    } else if (error.request) {
+      console.error('No response received:', error.request);
+    } else {
+      console.error('Request setup error:', error.message);
+    }
+  }
+};
+
 
 function goBack() {
   router.back();
