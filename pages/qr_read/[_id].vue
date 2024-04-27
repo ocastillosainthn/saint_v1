@@ -57,9 +57,14 @@
               </div> 
               <div style="font-size: 11px; margin-left: 10px;">  
                 <div>  Invitación creada por   </div>
-                <div style="font-size: 15px; margin-bottom: 15px; "> {{ visita.created_by.name }} </div>  
+                <div style="font-size: 15px; margin-bottom: 1px; "> {{ visita.created_by.name }} </div>  
+                <p v-if="visita && visita.created_by">
+                {{ visita.created_by.player_id }}
+              </p>
               </div>  
+             
             </div>
+            
         </div>
 
 
@@ -73,7 +78,10 @@
 
 <div style="padding: 15px; padding-top: 20px; background-color: white; margin-top: 10px;"> 
 
-<div style="font-weight: 700; margin-bottom: 10px;" > Participantes </div>
+  <div style="font-weight: 700; margin-bottom: 10px;" > Participantes </div>
+
+  
+
 
 
     <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
@@ -365,13 +373,17 @@ async function marcarSalida(participanteId) {
 const pushSend = async () => {
   const pushTitle = "SAINT - confirmación de visita";
   const pushContent = "Tu visita ha ingresado a la residencial";
-  const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
+  const playerIDsA = [visita.value.created_by.player_id];
+  console.log('player id:', playerIDsA)
 
 
   try {
     const response = await axios.post('https://onesignal.com/api/v1/notifications', {
+
+      
       app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
-      include_player_ids: playerIDs,
+      
+      include_player_ids: playerIDsA,
       headings: { en: pushTitle },
       contents: { en: pushContent }
     }, {
@@ -400,13 +412,14 @@ const pushSend = async () => {
 const pushOut = async () => {
   const pushTitle = "SAINT - confirmación de salida de visita";
   const pushContent = "Tu visita ha salido de la residencial";
-  const playerIDs = [visita.value?.created_by?.player_id].filter(id => id);
+  const playerIDsA = [visita.value.created_by.player_id];
+  console.log('player id:', playerIDsA)
 
 
   try {
     const response = await axios.post('https://onesignal.com/api/v1/notifications', {
       app_id: "0cad61c6-60db-4baf-94ed-02e0b602dcc6",
-      include_player_ids: playerIDs,
+      include_player_ids: playerIDsA,
       headings: { en: pushTitle },
       contents: { en: pushContent }
     }, {
