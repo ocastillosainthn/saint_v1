@@ -31,6 +31,7 @@ const emailRegister = ref('');
 const passwordRegister = ref('');
 const nameRegister = ref('');
 const celRegister = ref('');
+const keyboardHeight = ref(0)
 
 const openToast = (message) => {
   opened.value = { left: false, right: false, top: false, bottom: false };
@@ -136,6 +137,14 @@ async function fetchInvitationCode(invitationCode) {
     codeActive.value= null;
     resetCode();
 
+  }
+}
+
+const handleKeydown = (event) => {
+  if (event.key === 'Tab') {
+    keyboardHeight.value = window.innerHeight * 0.3 // Ajusta este valor según tus necesidades
+  } else {
+    keyboardHeight.value = 0
   }
 }
 
@@ -284,7 +293,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
       
 
-    <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedium">
+    <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" >
  
         <k-navbar  
               title=""
@@ -334,7 +343,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
                 
                 -->
   
-
+<div :style="{ marginBottom: `${keyboardHeight}px` }" >
                <div v-if="codeActive"> 
 
                     <form @submit.prevent="register" class="login-form">
@@ -364,7 +373,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
                </div>
             
-             
+              </div>        
 
 
           </div>
