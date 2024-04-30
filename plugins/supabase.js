@@ -6,13 +6,15 @@ export default ({ $router }) => {
     const isAuthenticated = session !== null;
     store.commit('setAuth', isAuthenticated);
 
+    const currentPath = $router.currentRoute.value.path;
+
     // Si el usuario está autenticado y actualmente se encuentra en la página de login
-    if (isAuthenticated && $router.currentRoute.value.path === '/login') {
+    if (isAuthenticated && currentPath === '/login') {
       $router.push('/'); // Redirige a la página principal
     }
 
-    // Si el usuario no está autenticado y no está en la página de login
-    if (!isAuthenticated && $router.currentRoute.value.path !== '/login') {
+    // Si el usuario no está autenticado y no está en la página de login ni en la de recuperación
+    if (!isAuthenticated && currentPath !== '/login' && currentPath !== '/recovery') {
       $router.push('/login'); // Redirige a la página de login
     }
   });

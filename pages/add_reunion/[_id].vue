@@ -43,6 +43,7 @@
 
 
   <div style="margin-bottom: 10px;">
+
       <label for="username">Motivo de la visita </label>
       <InputText id="nameVisita" v-model="nameVisita" aria-describedby="username-help" />
   </div>

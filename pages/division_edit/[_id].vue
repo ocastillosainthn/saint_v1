@@ -263,6 +263,8 @@ import PrimeVue from "primevue/config";
 import InputText from 'primevue/inputtext';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import axios from 'axios';
+
 
 const route = useRoute();
 const router = useRouter();
@@ -501,6 +503,8 @@ async function addInvitations() {
       console.error('Error al insertar invitación en Supabase:', invitationError);
       return;
     }
+
+    await sendEmail(mail, invitationCode);
   }
 
   console.log('Invitaciones creadas exitosamente para todos los correos.');
@@ -597,6 +601,43 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return format(date, "PPpp", { locale: es });
 };
+
+
+async function sendEmail(mail, invitationCode) {
+  const emailHtml = `
+    <div>
+      <div style="background-color:#F2F2F2; min-height:400px; padding-top:20px">
+        <div style="max-width:500px; margin: auto; text-align: center; background-color:white; padding:20px; margin-top:20px">
+          <img src="https://saintapp.up.railway.app/_nuxt/saintLogo.DvkUeMPE.jpg" style="width:45%">
+          <div style="background-color:white; text-align: center;">
+            <h2>Código de Activación de cuenta</h2>
+            <p style="margin-top:30px">Haz sido invitado a administrar una vivienda, ingresa el siguiente código en el APP SAINT para iniciar tu registro.</p>
+            <p><div style="background-color: #F2F2F2; font-size:40px; color: black !important; font-weight:900; padding:20px; border-radius:5px;">${invitationCode}</div></p>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+    try {
+    const response = await axios.post('/api/emails', {
+      from: "SAINT HN <noreplay@sainthn.com>",
+      to: [mail],
+      subject: "Código de activación",
+      html: emailHtml
+    }, {
+      headers: {
+        'Authorization': 'Bearer re_gU5tiyA7_FkumLijHkufAuV64c4w3bk8B',
+        'Content-Type': 'application/json',
+        'X-Entity-Ref-ID': '123'
+      }
+    });
+    console.log('Correo enviado con éxito a:', mail);
+  } catch (error) {
+    console.error('Error enviando el correo:', error.message);
+  }
+}
+
+
 
 
 </script>

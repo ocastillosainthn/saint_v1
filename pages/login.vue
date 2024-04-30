@@ -32,6 +32,7 @@ const passwordRegister = ref('');
 const nameRegister = ref('');
 const celRegister = ref('');
 const keyboardHeight = ref(0)
+const popupRecoveryOpened = ref(false);
 
 const openToast = (message) => {
   opened.value = { left: false, right: false, top: false, bottom: false };
@@ -208,6 +209,21 @@ async function signUpAndSetupUserData() {
   
 }
 
+
+async function sendPasswordResetEmail() {
+  console.log('email de user', email.value)
+  const { error } = await supabase.auth.resetPasswordForEmail(email.value);
+  if (error) {
+    alert(error.message);
+
+    console.error('Error enviando el correo de recuperación:', error.message);
+  } else {
+    popupRecoveryOpened.value = false
+    alert('Correo de recuperación enviado. Por favor, verifica tu bandeja de entrada.');
+
+  }
+}
+
 async function setupUserData(userId, name, email, phone, entidad, division) {
   console.log('Inicio de inserción en userData');
   const { error } = await supabase.from('userData').insert([
@@ -292,7 +308,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
     <div style="width: 90%; margin:auto" >
 
       
-
+<!-- CODIGO -->
     <k-popup style="z-index:10000000" :opened="popupOpened" @backdropclick="() => (popupOpened = false)" >
  
         <k-navbar  
@@ -368,6 +384,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
                       " ></k-button>
 
 
+
               </form>
 
 
@@ -377,14 +394,11 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
 
           </div>
-            
-   
-         
     </k-popup>
 
       
    
-
+<!-- LOGIN -->
      <k-block strong>
         <div >
           <div class="logo-container" style="margin-bottom: 50px;">
@@ -422,7 +436,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
                 <div style="display: flex; justify-content: space-between;">
 
 
-              <div class="forgot-password">
+              <div @click="() => (popupRecoveryOpened = true)"  class="forgot-password">
               <a href="#">¿Olvidaste la contraseña?</a>
               </div>
             
@@ -450,6 +464,37 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
     <div class="shrink">{{ toastMessage }}</div>
     </k-toast>
 
+
+<!-- Recuperar -->
+
+
+
+
+ <k-popup style="z-index:10000000" :opened="popupRecoveryOpened" @backdropclick="() => (popupRecoveryOpened = false)" >
+ 
+ <k-navbar  
+       title="Recuperar contraseña"
+       small
+       isTralucent style="background-color: white;">
+       
+     <template #left>
+       <k-link navbar @click="() => (popupRecoveryOpened = false)">  <Icon name="solar:close-circle-outline" style="font-size:32px; color: #141515;"/>  </k-link>
+     </template>
+   </k-navbar>
+
+
+   <div class="paddingbig"> 
+
+
+  <div class="input-group">
+                      <InputText id="emailRecovery" v-model="email" label="Correo Electrónico" type="email"  required placeholder="Correo Electrónico"/>
+                    </div>
+
+                    <k-button @click="sendPasswordResetEmail"   label="Recuperar contraseña" style="width: 100%; height:50px!important;   background-image: linear-gradient(to right, #20C4D6, #0586F0);
+                      " ></k-button>
+
+   </div>
+</k-popup>
 
 
 

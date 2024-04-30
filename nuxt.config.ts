@@ -31,8 +31,17 @@ export default defineNuxtConfig({
   
   plugins: ['~/assets/global-fonts.ts', '~/plugins/supabase.js','~/plugins/vuex.js'],
   
-  modules: ['nuxt-primevue', 'nuxt-icon', "@nuxtjs/tailwindcss"], 
-  
+  modules: ['nuxt-primevue', 'nuxt-icon', '@nuxtjs/tailwindcss'], 
+
+  nitro: {
+    preset: 'node-server',
+    devProxy: {
+      '/api/': {
+        target: 'https://api.resend.com',
+        changeOrigin: true
+      }
+    }
+  },
 
   primevue: {
     usePrimeVue: true,
