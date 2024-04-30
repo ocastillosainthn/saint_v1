@@ -263,7 +263,7 @@
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
                   <div style="color: rgb(112, 112, 112); margin-bottom: 10px;" v-if="userData">{{ userData.email }}   </div>
 
-                  <button class="lightButton" style="margin-bottom: 10px;"> Editar perfil </button> 
+                 <!--  <button class="lightButton" style="margin-bottom: 10px;"> Editar perfil </button>  -->
 
           <div> 
 
