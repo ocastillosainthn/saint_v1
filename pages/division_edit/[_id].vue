@@ -632,6 +632,9 @@ async function sendEmail(mail, invitationCode) {
       }
     });
     console.log('Correo enviado con éxito a:', mail);
+    alert("se envio el correo y se envio a:", mail);
+    alert("este fue el mensjae que enviamos", html);
+
   } catch (error) {
     console.error('Error enviando el correo:', error.message);
     alert(error.message);
