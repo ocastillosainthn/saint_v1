@@ -503,6 +503,7 @@ async function addInvitations() {
       console.error('Error al insertar invitación en Supabase:', invitationError);
       return;
     }
+    
 
     await sendEmail(mail, invitationCode);
   }
@@ -605,6 +606,7 @@ const formatDate = (dateString) => {
 
 
 async function sendEmail(mail, invitationCode) {
+  alert("1. enviando email a", mail);
   const emailHtml = `
     <div>
       <div style="background-color:#F2F2F2; min-height:400px; padding-top:20px">
@@ -618,6 +620,7 @@ async function sendEmail(mail, invitationCode) {
         </div>
       </div>
     </div>`;
+    alert("2. este es el cuerpo html", emailHtml);
 
     try {
     const response = await axios.post('/api/emails', {
@@ -633,8 +636,8 @@ async function sendEmail(mail, invitationCode) {
       }
     });
     console.log('Correo enviado con éxito a:', mail);
-    alert("se envio el correo y se envio a:", mail);
-    alert("este fue el mensjae que enviamos", html);
+    alert("3. se envio el correo y se envio a:", mail);
+    alert("4. este fue el mensjae que enviamos", invitationCode);
 
   } catch (error) {
     console.error('Error enviando el correo:', error.message);
