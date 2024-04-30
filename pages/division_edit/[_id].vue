@@ -488,6 +488,10 @@ async function addInvitations() {
     const invitationCode = generateInvitationCode();
     const userUUID = localStorage.getItem('userUUID');
 
+    await sendEmail(mail, invitationCode);
+
+    alert('0. mandaos sendmail antes:', mail)
+
     const { error: invitationError } = await supabase
       .from('invitacion')
       .insert([{
@@ -503,9 +507,9 @@ async function addInvitations() {
       console.error('Error al insertar invitación en Supabase:', invitationError);
       return;
     }
-    alert('0. sale antes de la funcion sendmail:', mail)
+    
 
-    await sendEmail(mail, invitationCode);
+    
   }
 
   console.log('Invitaciones creadas exitosamente para todos los correos.');
