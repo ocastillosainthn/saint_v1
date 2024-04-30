@@ -634,6 +634,7 @@ async function sendEmail(mail, invitationCode) {
     console.log('Correo enviado con éxito a:', mail);
   } catch (error) {
     console.error('Error enviando el correo:', error.message);
+    alert(error.message);
   }
 }
 
