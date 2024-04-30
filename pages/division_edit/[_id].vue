@@ -509,9 +509,10 @@ async function addInvitations() {
 
   console.log('Invitaciones creadas exitosamente para todos los correos.');
 
-  mails.value = [];
-  emailList.value = '';
-  popupOpened.value = false;
+  
+  //  mails.value = [];
+  //emailList.value = '';
+  //popupOpened.value = false;
 
   await cargarInvitaciones(division.value.id);
 }
