@@ -503,7 +503,6 @@ async function addInvitations() {
       console.error('Error al insertar invitación en Supabase:', invitationError);
       return;
     }
-    alert('0. sale antes de la funcion sendmail:', mail)
     console.log('sendmail',mail)
     await sendEmail(mail, invitationCode);
   }
