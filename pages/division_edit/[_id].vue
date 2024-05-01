@@ -511,9 +511,9 @@ async function addInvitations() {
   console.log('Invitaciones creadas exitosamente para todos los correos.');
 
   
-  //  mails.value = [];
-  //emailList.value = '';
-  //popupOpened.value = false;
+   mails.value = [];
+  emailList.value = '';
+  popupOpened.value = false;
 
   await cargarInvitaciones(division.value.id);
 }
@@ -606,7 +606,6 @@ const formatDate = (dateString) => {
 
 
 async function sendEmail(mail, invitationCode) {
-  alert("1. enviando email a", mail);
   const emailHtml = `
     <div>
       <div style="background-color:#F2F2F2; min-height:400px; padding-top:20px">
@@ -620,7 +619,6 @@ async function sendEmail(mail, invitationCode) {
         </div>
       </div>
     </div>`;
-    alert("2. este es el cuerpo html", emailHtml);
 
     try {
     const response = await axios.post('/api/emails', {
@@ -636,8 +634,6 @@ async function sendEmail(mail, invitationCode) {
       }
     });
     console.log('Correo enviado con éxito a:', mail);
-    alert("3. se envio el correo y se envio a:", mail);
-    alert("4. este fue el mensjae que enviamos", invitationCode);
 
   } catch (error) {
     console.error('Error enviando el correo:', error.message);
