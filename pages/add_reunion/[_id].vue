@@ -527,6 +527,7 @@ async function crearVisita() {
       visitaevento: checked.value,
       division: division?.value?.id ? division.value.id : null,
       personas_seleccionadas: idsPersonasSeleccionadas,
+      entidad: entidad.value,
       created_by: userId
 
       
