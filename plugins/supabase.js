@@ -9,13 +9,14 @@ export default ({ $router }) => {
     const currentPath = $router.currentRoute.value.path;
 
     // Si el usuario está autenticado y actualmente se encuentra en la página de login
-    if (isAuthenticated && currentPath === '/login') {
-      $router.push('/'); // Redirige a la página principal
-    }
+//    if (isAuthenticated && currentPath === '/login') {
+  //    $router.push('/'); // Redirige a la página principal
+    //}
 
     // Si el usuario no está autenticado y no está en la página de login ni en la de recuperación
-    if (!isAuthenticated && currentPath !== '/login' && currentPath !== '/recovery') {
-      $router.push('/login'); // Redirige a la página de login
-    }
+ //   if (!isAuthenticated && currentPath !== '/login' && currentPath !== '/recovery') {
+   //   $router.push('/login'); // Redirige a la página de login
+  //  }
+  
   });
 };
