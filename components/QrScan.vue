@@ -18,7 +18,7 @@ onMounted(() => {
     cameraId.value = rearCamera ? rearCamera.id : cameras.value[0].id;
     startScanning();
   });
-});
+});  
 
 function startScanning() {
   html5QrCode = new Html5Qrcode("qr-reader");
