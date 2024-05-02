@@ -54,8 +54,14 @@ onUnmounted(() => {
 <template>
   <div>
     <div id="qr-reader" style=" width:100%; height: 65vh;"></div>
-    <button @click="switchCamera" style="margin-top: 20px;">Cambiar Cámara</button>
+    <div class="cameraContainer" style="margin: 10px; display: flex; color:white;"> 
 
+
+     <div class="cameraB" @click="switchCamera" >
+      <span>     <Icon name="material-symbols:flip-camera-ios-outline-rounded"  style="font-size:28px; color: white; "/></span>
+      Cambiar Cámaras</div>
+
+  </div>
   </div>
 </template>
 

@@ -19,6 +19,7 @@
     <div>
      
       <QrScannerComponent />   
+
       <div style="background-color:white; padding: 50px; margin-bottom: 0px;">
         <img src="../assets/saintLogo.jpg" alt="Logo" style="max-width: 250px; margin-bottom: 20px;" >
     
@@ -35,6 +36,7 @@
   import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
+import SelectButton from 'primevue/selectbutton';
 
 
 
