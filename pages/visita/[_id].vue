@@ -286,7 +286,7 @@ async function cargarVisita(visitaId) {
 const convertToImage = () => {
   if (!contentToShare.value) return;
 
-  loading.value = true; 
+  loading.value = true;
 
   domtoimage.toPng(contentToShare.value)
     .then((dataUrl) => {
@@ -298,21 +298,25 @@ const convertToImage = () => {
     })
     .finally(() => {
       loading.value = false; 
-    })
-    ;
+    });
 };
+
 
 
 const shareImage = (imageData) => {
   console.log('Imagen para compartir:', imageData);
 
-  if (window.Functions) {
+  // Verifica si el dispositivo es iOS y envía el mensaje a través de messageHandlers
+  if (window.webkit && window.webkit.messageHandlers.shareImage) {
+    window.webkit.messageHandlers.shareImage.postMessage(imageData);
+  } else if (window.Functions) {
+    // Esto es para Android como ya tienes configurado
     window.Functions.shareImage(imageData);
   } else {
-    console.error("La función de interfaz de Android no está definida.");
+    console.error("La función de interfaz para compartir no está definida.");
   }
-  
 };
+
 
 const abrirDialogoConfirmacion = (id) => {
   console.log('ID del participante para eliminar:', id); 

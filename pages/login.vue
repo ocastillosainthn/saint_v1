@@ -25,6 +25,7 @@ const popupOpened = ref(false);
 const loading = ref(false);
 const code = ref('');
 const codeActive = ref(null);
+const codeError = ref(false);
 const registerUser = ref(null);
 const response = ref(null);
 const emailRegister = ref('');
@@ -120,9 +121,10 @@ async function fetchInvitationCode(invitationCode) {
         errorMsg.value = 'No se encontró el código de invitación';
         openToast( 'No se encontró el código de invitación');
         loading.value = false;
-        popupOpened.value= false; 
-        codeActive.value= null;
-        resetCode();
+       // popupOpened.value= false; 
+        //codeActive.value= null;
+       // resetCode();
+       codeError.value = true
 
       } else {
         console.log('Data de invitación', data);
@@ -134,9 +136,10 @@ async function fetchInvitationCode(invitationCode) {
     loading.value = false;
     errorMsg.value = ('Error buscando el código de invitación');
     openToast( errorMsg);
-    popupOpened.value= false; 
-    codeActive.value= null;
-    resetCode();
+   // popupOpened.value= false; 
+    //codeActive.value= null;
+    codeError.value = true
+    //resetCode();
 
   }
 }
@@ -348,6 +351,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
                   animationDuration=".5s" aria-label="Custom ProgressSpinner" />
                 
                   <Icon  v-if="codeActive" name="solar:check-square-bold" style="font-size: 40px; color: green; margin-left: 10px;" />
+                  <Icon  v-if="codeError" name="material-symbols:error" style="font-size: 40px; color: red; margin-left: 10px;" />
 
 
                 </div>

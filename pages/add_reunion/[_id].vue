@@ -34,9 +34,8 @@
   <div  v-if="division && division.entidad.tipo.id === 2" class="flex align-items-center" 
     style="margin-bottom: 15px; display: flex;
     justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Evento </span></label>
-  </div>
-    
+      <label style="margin-right: 20px;"> Crear  <span style="font-weight: 800; color: black;"> Visita Privada </span></label>
+  </div>  
   <Checkbox v-model="checked" :binary="true" />
   
 </div>
@@ -538,6 +537,8 @@ async function crearVisita() {
     const { data: visitaId, error: visitaError } = await supabase.rpc('crear_visita', payload);
 
     if (visitaError) {
+      loading.value = false;
+
       console.error('Error al crear visita:', visitaError);
       throw visitaError;
     } else if (visitaId) {
@@ -547,9 +548,13 @@ async function crearVisita() {
       loading.value = false;
 
     } else {
+      loading.value = false;
+
       throw new Error('No se pudo obtener el ID de la visita después de crearla.');
     }
   } catch (error) {
+    loading.value = false;
+
     console.error('Error al crear visita:', error);
     triggerToast('Error al crear visita', 'red');
   }
