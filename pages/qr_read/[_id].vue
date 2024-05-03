@@ -172,8 +172,7 @@ import { useRoute, useRouter } from 'nuxt/app';
 import supabase from "../db/supabaseClient";
 import { useStore } from 'vuex';
 import axios from 'axios';
-
-
+ 
 
 const route = useRoute();
 const router = useRouter();
