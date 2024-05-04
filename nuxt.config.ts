@@ -8,12 +8,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      title: 'SAINT - Sistemas de accesos inteligentes',
       meta: [
-        {
-          name: 'viewport',
-          content: 'width=device-width, initial-scale=1'
-        }
-        // Otros meta tags aquí
+        { name: 'viewport', 
+        content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
+
       ]
     }
   },
