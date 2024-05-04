@@ -108,6 +108,8 @@
 
     <div v-if="rol === 'user'" class="contenedor" style="padding: 0px!important;">
 
+    {{ playerID }}
+
         <div class="centerTittleAction"> 
           <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Mis Visitas  </k-block-title>
           
