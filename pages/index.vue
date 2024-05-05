@@ -667,7 +667,7 @@ async function cargarVisita() {
 
     // Actualizar el estado con las visitas filtradas
     visitas.value = visitasFiltradas;
-
+haptic(medium);
     console.log('Visitas y participantes cargados:', visitas);
   } catch (error) {
     console.error('Error al cargar las visitas y participantes:', error.message);
@@ -676,22 +676,41 @@ async function cargarVisita() {
 
 
 
+function haptic(style) {
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.messageHandler) {
+    window.webkit.messageHandlers.messageHandler.postMessage({
+      action: 'haptic',
+      style: style
+    });
+  } else {
+    console.error("El manejador de mensajes de iOS no está disponible.");
+  }
+}
+
 
 function openUserPanel() {
   userPanelOpened.value = true;
+  haptic(medium);
+
   
 }
 
 function navigateToVisita(visitaId) {
   router.push(`/visita/${visitaId}`);
+  haptic(medium);
+
 }
 
 function navegarADetalle(id) {
   router.push(`/entidad/${id}`);
+  haptic(medium);
+
 }
 
 function goToDivision(id) {
   router.push(`/division/${id}`);
+  haptic(medium);
+
 }
 
 
@@ -702,6 +721,8 @@ function logout() {
   localStorage.removeItem('userUUID');
   store.dispatch('clearAuthentication');
   router.push('/login');
+  haptic(error);
+
 }
 
 
@@ -722,6 +743,8 @@ function handleProjectClick(uuid,id) {
 function toggleUserMenu() {
   if (userMenu.value) {
     userMenu.value.toggle(event);
+    haptic(medium);
+
   }
 }
 
@@ -776,7 +799,8 @@ async function acceptInvitation() {
         divisiones.value = userRolesDivision.map(role => role.division).filter(division => division !== null);
       
     }
-   
+    haptic(medium);
+
     popupOpened.value = false;
     refreshData ();
     refreshview();
@@ -811,6 +835,8 @@ async function rejectInvitation() {
 function openAddReunion() {
   if (divisiones.value.length > 0 && divisiones.value[0].id) {
     router.push({ path: `/add_reunion/${divisiones.value[0].id}` });
+    haptic(medium);
+
   } else {
     console.error("No hay divisiones disponibles para crear una reunión.");
   }
@@ -819,6 +845,8 @@ function openAddReunion() {
 function openAddPersona() {
   if (divisiones.value.length > 0 && divisiones.value[0].id) {
     router.push({ path: `/add_persona/${divisiones.value[0].id}` });
+    haptic(medium);
+
   } else {
     console.error("No hay divisiones disponibles para crear una reunión.");
   }
@@ -826,10 +854,14 @@ function openAddPersona() {
 
 const refreshview = () => {
     window.location.reload();
+    haptic(medium);
+
 };
 
 function openScan() {
   router.push('/scan');
+  haptic(medium);
+
 }
 
 async function insertPlayerId(playerID) {
