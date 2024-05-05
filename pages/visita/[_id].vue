@@ -290,7 +290,7 @@ const convertToImage = () => {
 
   domtoimage.toPng(contentToShare.value)
     .then((dataUrl) => {
-      haptic(heavy);
+      haptic('heavy');
       shareImage(dataUrl);
     })
     .catch((error) => {
@@ -325,7 +325,7 @@ const abrirDialogoConfirmacion = (id) => {
   console.log('ID del participante para eliminar:', id); 
   participanteIdParaEliminar.value = id;
   confirmOpened.value = true;
-  haptic(soft);
+  haptic('soft');
 
 };
 
@@ -334,13 +334,13 @@ const dialogoDeleteVisita = (id) => {
   console.log('ID del participante para eliminar:', id); 
   visitaIdParaEliminar.value = id;
   confirmOpenedVisita.value = true;
-  haptic(soft);
+  haptic('soft');
 
 };
 
 function openPopup() {
   popupOpened.value = true;
-  haptic(soft);
+  haptic('soft');
 
 }
 
@@ -417,7 +417,7 @@ const eliminarParticipante = async () => {
 
     const datosActualizados = await cargarParticipantes(route.params._id);
     participantes.value = datosActualizados;
-    haptic(soft);
+    haptic('soft');
 
 
   } catch (error) {
@@ -449,7 +449,7 @@ const eliminarVisita = async () => {
 
     visitaIdParaEliminar.value = null;
     confirmOpenedVisita.value = false;
-    haptic(soft);
+    haptic('soft');
 
     await goBack();
 
@@ -460,20 +460,19 @@ const eliminarVisita = async () => {
 
 
 function goBack() {
-  haptic(soft);
+  haptic('soft');
 
   router.back();
 }
 
 function goEdit() {
-  haptic(soft);
+  haptic('soft');
 
   router.push(`/edit_reunion/${route.params._id}`);
 
 }
 
 function haptic(style) {
-  haptic(soft);
 
   try {
     window.webkit.messageHandlers.connectHandler.postMessage({
