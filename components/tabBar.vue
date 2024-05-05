@@ -37,7 +37,23 @@ const emit = defineEmits(['onItemSelect']);
 
 function handleItemClick(item) {
   emit('onItemSelect', item);
+  haptic('soft');
 }
+
+
+function haptic(style) {
+  try {
+    window.webkit.messageHandlers.connectHandler.postMessage({
+      action: 'haptic',
+      style: style
+    });
+    console.log('Haptic ejecutado con estilo:', style);
+  } catch (error) {
+    console.error("El manejador de mensajes de iOS no está disponible.", error);
+  }
+}
+
+
 
 
 </script>

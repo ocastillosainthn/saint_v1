@@ -227,13 +227,13 @@
           Selecciona
         </p>
 
-        <div class="itemAcceso"  @click="openAddReunion">
+        <div class="itemAcceso"  @click="openAddReunion, haptic('soft')">
            <div style="background-color: black; padding: 8px; border-radius: 9px; margin-right:10px;">   <Icon name="solar:add-square-outline" style="font-size: 26px; color: white;"/>  </div> 
            <div  class="itemText" > Crear Visita Nueva </div>
         </div>
 
 
-        <div @click="openAddPersona"  style="display: flex; padding: 10px; margin-top: 15px; " >
+        <div @click="openAddPersona, haptic('soft')"  style="display: flex; padding: 10px; margin-top: 15px; " >
            <div style="margin-right:15px; margin-left: px; ">  <Icon name="solar:user-broken" style="font-size: 26px; color: gray;"/>  </div> 
            <div > Crear Persona  </div>
         </div>

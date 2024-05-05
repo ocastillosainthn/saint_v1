@@ -290,6 +290,7 @@ const convertToImage = () => {
 
   domtoimage.toPng(contentToShare.value)
     .then((dataUrl) => {
+      haptic(heavy);
       shareImage(dataUrl);
     })
     .catch((error) => {
@@ -324,6 +325,8 @@ const abrirDialogoConfirmacion = (id) => {
   console.log('ID del participante para eliminar:', id); 
   participanteIdParaEliminar.value = id;
   confirmOpened.value = true;
+  haptic(soft);
+
 };
 
 
@@ -331,10 +334,14 @@ const dialogoDeleteVisita = (id) => {
   console.log('ID del participante para eliminar:', id); 
   visitaIdParaEliminar.value = id;
   confirmOpenedVisita.value = true;
+  haptic(soft);
+
 };
 
 function openPopup() {
   popupOpened.value = true;
+  haptic(soft);
+
 }
 
 const fechaAmigable = computed(() => {
@@ -410,6 +417,8 @@ const eliminarParticipante = async () => {
 
     const datosActualizados = await cargarParticipantes(route.params._id);
     participantes.value = datosActualizados;
+    haptic(soft);
+
 
   } catch (error) {
     console.error('Error al eliminar el participante:', error.message);
@@ -440,6 +449,7 @@ const eliminarVisita = async () => {
 
     visitaIdParaEliminar.value = null;
     confirmOpenedVisita.value = false;
+    haptic(soft);
 
     await goBack();
 
@@ -450,13 +460,33 @@ const eliminarVisita = async () => {
 
 
 function goBack() {
+  haptic(soft);
+
   router.back();
 }
 
 function goEdit() {
+  haptic(soft);
+
   router.push(`/edit_reunion/${route.params._id}`);
 
 }
+
+function haptic(style) {
+  haptic(soft);
+
+  try {
+    window.webkit.messageHandlers.connectHandler.postMessage({
+      action: 'haptic',
+      style: style
+    });
+    console.log('Haptic ejecutado con estilo:', style);
+
+  } catch (error) {
+    console.error("El manejador de mensajes de iOS no está disponible.", error);
+  }
+}
+
 
 </script>
 
