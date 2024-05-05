@@ -27,7 +27,7 @@
 
     style="margin-bottom: 15px; display: flex;
     justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita personal </span></label>
+      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita Privada </span></label>
        
   </div>
 
@@ -496,6 +496,8 @@ async function crearEmpresa() {
   if (error) {
     console.error('Error al crear empresa:', error);
     triggerToast('Error al crear empresa', 'red');
+    loading.value = false;
+
   } else {
     triggerToast('Empresa creada exitosamente', 'black');
     popupEmpresa.value = false; 
@@ -548,10 +550,14 @@ async function crearVisita() {
 
     } else {
       throw new Error('No se pudo obtener el ID de la visita después de crearla.');
+      loading.value = false;
+
     }
   } catch (error) {
     console.error('Error al crear visita:', error);
     triggerToast('Error al crear visita', 'red');
+    loading.value = false;
+
   }
 }
 
@@ -570,9 +576,13 @@ async function crearParticipantes(personasSeleccionadas, visita) {
       if (error) throw error;
 
       console.log(`Participante creado para persona ${personaId} en la visita ${visita}.`);
+      loading.value = false;
+
     }
   } catch (error) {
     console.error('Error al crear participantes:', error.message);
+    loading.value = false;
+
   }
 }
 
@@ -599,6 +609,8 @@ async function crearPersona() {
   if (error) {
     console.error('Error al crear persona:', error);
     triggerToast('Error al crear persona', 'red');
+    loading.value = false;
+
   } else {
    
     cargarPersonas();
@@ -631,12 +643,18 @@ async function cargarPersonas() {
 
     if (error) {
       console.error('Error al cargar personas:', error);
+      loading.value = false;
+
     } else {
       personas.value = data;
       console.log('personas', personas);
+      loading.value = false;
+
     }
   } catch (error) {
     console.error('Error al cargar personas:', error);
+    loading.value = false;
+
   }
 }
 
@@ -650,8 +668,12 @@ async function cargarEmpresasActivas() {
 
   if (error) {
     console.error('Error al cargar empresas:', error);
+    loading.value = false;
+
   } else {
     console.log('Listado empresas:', error);
+    loading.value = false;
+
 
     empresasActivas.value = empresas.map(empresa => ({
       name: empresa.nombre, 
@@ -699,6 +721,8 @@ async function cargarDivision(divisionId) {
     entidad.value = data.entidad.id;
   } catch (error) {
     console.error('Error al obtener la división:', error);
+    loading.value = false;
+
   }
 }
 
