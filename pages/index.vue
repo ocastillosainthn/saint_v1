@@ -691,31 +691,32 @@ function haptic(style) {
   } else {
     console.error("El manejador de mensajes de iOS no está disponible.");
   }
+  console.log('se ejecuto el haptic')
 }
 
 
 function openUserPanel() {
   userPanelOpened.value = true;
-  haptic(medium);
+  haptic('medium');
 
   
 }
 
 function navigateToVisita(visitaId) {
   router.push(`/visita/${visitaId}`);
-  haptic(medium);
+  haptic('medium');
 
 }
 
 function navegarADetalle(id) {
   router.push(`/entidad/${id}`);
-  haptic(medium);
+  haptic('medium');
 
 }
 
 function goToDivision(id) {
   router.push(`/division/${id}`);
-  haptic(medium);
+  haptic('medium');
 
 }
 
@@ -749,7 +750,7 @@ function handleProjectClick(uuid,id) {
 function toggleUserMenu() {
   if (userMenu.value) {
     userMenu.value.toggle(event);
-    haptic(medium);
+    haptic('medium');
 
   }
 }
@@ -805,7 +806,7 @@ async function acceptInvitation() {
         divisiones.value = userRolesDivision.map(role => role.division).filter(division => division !== null);
       
     }
-    haptic(medium);
+    haptic('medium');
 
     popupOpened.value = false;
     refreshData ();
@@ -851,7 +852,7 @@ function openAddReunion() {
 function openAddPersona() {
   if (divisiones.value.length > 0 && divisiones.value[0].id) {
     router.push({ path: `/add_persona/${divisiones.value[0].id}` });
-    haptic(medium);
+    haptic('medium');
 
   } else {
     console.error("No hay divisiones disponibles para crear una reunión.");
@@ -860,13 +861,13 @@ function openAddPersona() {
 
 const refreshview = () => {
     window.location.reload();
-    haptic(medium);
+    haptic('medium');
 
 };
 
 function openScan() {
   router.push('/scan');
-  haptic(medium);
+  haptic('medium');
 
 }
 
