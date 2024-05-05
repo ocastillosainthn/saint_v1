@@ -695,14 +695,9 @@ function haptic(style) {
 }
 
 
-
-
-
 function openUserPanel() {
   userPanelOpened.value = true;
-  haptic('medium');
 
-  
 }
 
 function navigateToVisita(visitaId) {
