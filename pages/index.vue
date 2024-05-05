@@ -683,16 +683,19 @@ async function cargarVisita() {
 
 
 function haptic(style) {
-  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.messageHandler) {
-    window.webkit.messageHandlers.messageHandler.postMessage({
+  try {
+    window.webkit.messageHandlers.connectHandler.postMessage({
       action: 'haptic',
       style: style
     });
-  } else {
-    console.error("El manejador de mensajes de iOS no está disponible.");
+    console.log('Haptic ejecutado con estilo:', style);
+  } catch (error) {
+    console.error("El manejador de mensajes de iOS no está disponible.", error);
   }
-  console.log('se ejecuto el haptic')
 }
+
+
+
 
 
 function openUserPanel() {
