@@ -108,10 +108,9 @@
 
     <div v-if="rol === 'user'" class="contenedor" style="padding: 0px!important;">
 
-    {{ playerID }}
 
         <div class="centerTittleAction"> 
-          <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Mis Visitas  </k-block-title>
+          <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Próximas Visitas  </k-block-title>
           
           <div style="margin-right: 10px; border-width:0; border-color: red; border-style: hidden;  text-align: center;">
                   <Calendar v-model="filterVisita"  showButtonBar  :manualInput="true" showIcon iconDisplay="input" inputId="icondisplay" />
@@ -384,7 +383,7 @@ const popupOpened = ref(false);
 const inviteSended = ref(null);
 const sheetOpened = ref(false);
 const visitas = ref([]);
-const filterVisita = ref(getFechaInicialZonaHoraria());
+const filterVisita = ref((''));
 const loading = ref(false);
 const showtab = ref(false);
 const userRol= ref(null);
@@ -438,12 +437,9 @@ function ajustarFechaZonaHoraria(fecha) {
 }
 
 
-watch(filterVisita, async () => {
-  await cargarVisita();
-}, { immediate: true });
 
 
-async function fetchInviteSended() {
+async function fetchInviteSended() { 
   if (!userData.value.email) {
     console.error("Email del usuario no disponible.");
     return;
@@ -576,18 +572,6 @@ onMounted(async () => {
 });
 
 
-watch(filterVisita, async () => {
-  await cargarVisita();
-});
-
-
-const visitasFiltradas = computed(() => {
-  return visitas.value.filter(visita => {
-    const fechaVisita = new Date(visita.fecha).toISOString().split('T')[0];
-    return fechaVisita === filterVisita.value;
-  });
-});
-
 
 async function cargarRolesUsuario() {
   const { data: userRoles, error: rolesError } = await supabase
@@ -639,31 +623,49 @@ async function cargarParticipantes(visitaId) {
   }
 }
 
+watch(filterVisita, async () => {
+  await cargarVisita();
+}, { immediate: true });
+
+
+
 async function cargarVisita() {
   try {
     if (!divisiones.value.length || !divisiones.value[0].id) {
       throw new Error('El ID de la primera división no está definido o está vacío');
     }
 
-    const fechaFiltro = new Date(filterVisita.value).toISOString().split('T')[0];
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Establece la hora al inicio del día
+    const fechaHoy = hoy.toISOString().split('T')[0];
 
-
+    // Consulta para traer todas las visitas desde hoy en adelante
     const { data, error } = await supabase
       .from('visita')
       .select('*')
-      .eq('division', divisiones.value[0].id); 
+      .eq('division', divisiones.value[0].id)
+      .gte('fecha', fechaHoy); // Filtra desde hoy en adelante
 
     if (error) throw error;
 
-    const visitasFiltradas = data.filter(visita => {
-      const fechaVisita = new Date(visita.fecha).toISOString().split('T')[0];
-      return fechaVisita === fechaFiltro;
-    });
+    console.log('Visitas desde hoy:', data);
 
+    let visitasFiltradas;
+    if (filterVisita.value) {
+      const fechaFiltro = new Date(filterVisita.value).toISOString().split('T')[0];
+      // Filtra las visitas por la fecha especificada en el filtro
+      visitasFiltradas = data.filter(visita => new Date(visita.fecha).toISOString().split('T')[0] === fechaFiltro);
+    } else {
+      // Si no se especifica una fecha, muestra todas las visitas desde hoy
+      visitasFiltradas = data;
+    }
+
+    // Cargar participantes para cada visita filtrada
     for (const visita of visitasFiltradas) {
       visita.participantes = await cargarParticipantes(visita.id);
     }
 
+    // Actualizar el estado con las visitas filtradas
     visitas.value = visitasFiltradas;
 
     console.log('Visitas y participantes cargados:', visitas);
@@ -671,6 +673,9 @@ async function cargarVisita() {
     console.error('Error al cargar las visitas y participantes:', error.message);
   }
 }
+
+
+
 
 function openUserPanel() {
   userPanelOpened.value = true;

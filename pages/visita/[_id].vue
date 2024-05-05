@@ -298,21 +298,27 @@ const convertToImage = () => {
     })
     .finally(() => {
       loading.value = false; 
-    })
-    ;
+    });
 };
-
 
 const shareImage = (imageData) => {
   console.log('Imagen para compartir:', imageData);
 
+  // Intenta llamar a la función de Android si está disponible
   if (window.Functions) {
     window.Functions.shareImage(imageData);
-  } else {
-    console.error("La función de interfaz de Android no está definida.");
   }
-  
+  // De lo contrario, intenta la función para iOS si está disponible
+  else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.connectHandler) {
+    window.webkit.messageHandlers.connectHandler.postMessage({
+      action: 'shareImage',
+      data: imageData.split(',')[1]  // Solo la parte base64 de la Data URL
+    });
+  } else {
+    console.error("La función de interfaz de Android no está definida y la función de iOS tampoco está disponible.");
+  }
 };
+
 
 const abrirDialogoConfirmacion = (id) => {
   console.log('ID del participante para eliminar:', id); 
