@@ -51,7 +51,7 @@
 
     
 
-      <div style="background-color:white; padding: 20px; margin-top: 0px;">
+      <div style="background-color:white; padding: 20px; margin-top: 10px;">
         <img src="../assets/saintLogo.jpg" alt="Logo" style="max-width: 250px; margin-bottom: 20px;" >
         <div   v-if="userData">Hola  <span style="font-weight: 700;"> {{ userData.name }}  </span>, Bienvenid@ de nuevo  </div> 
     
