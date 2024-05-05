@@ -14,7 +14,7 @@
     <div style="padding: 10px; margin-bottom: 30px; margin-top: 10px;">
       
       <div class="card" style="padding: 0px;">
-        <img src="../../assets/saintLogo.jpg" alt="Logo" style="max-width: 200px; margin:auto; margin-top:10px;" >
+        <img src="https://ciibnnxvxsaqfcdsgrkf.supabase.co/storage/v1/object/public/storage/saintLogo.jpg" alt="Logo" style="max-width: 200px; margin:auto; margin-top:10px;" >
         <div style="padding: 15px;">
           <div style="display: flex; justify-content: center;">
             <img style="margin: 20px; min-height: 220px;" :src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + visita.uuid" alt="Código QR de la Visita" />
