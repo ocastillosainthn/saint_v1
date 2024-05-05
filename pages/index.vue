@@ -660,6 +660,11 @@ async function cargarVisita() {
       visitasFiltradas = data;
     }
 
+    // Ordenar visitas filtradas por fecha, de la más cercana a la más lejana
+    visitasFiltradas.sort((a, b) => {
+      return new Date(a.fecha) - new Date(b.fecha);
+    });
+
     // Cargar participantes para cada visita filtrada
     for (const visita of visitasFiltradas) {
       visita.participantes = await cargarParticipantes(visita.id);
@@ -667,12 +672,13 @@ async function cargarVisita() {
 
     // Actualizar el estado con las visitas filtradas
     visitas.value = visitasFiltradas;
-haptic(medium);
+    haptic('medium');
     console.log('Visitas y participantes cargados:', visitas);
   } catch (error) {
     console.error('Error al cargar las visitas y participantes:', error.message);
   }
 }
+
 
 
 
