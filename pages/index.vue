@@ -872,6 +872,7 @@ function openScan() {
 }
 
 async function insertPlayerId(playerID) {
+console.log('user data', userData.value.id)
   const player_id = playerID._value;
   if (!player_id) {
     console.error('El valor de player_id está vacío o es inválido.');
@@ -882,7 +883,7 @@ async function insertPlayerId(playerID) {
     .from('playerId')
     .insert([
       { player_id: player_id,
-        user: userData.id  }
+        user: userData.value.id  }
     ]);
 
   if (error) {
