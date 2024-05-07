@@ -34,7 +34,7 @@
   <div  v-if="division && division.entidad.tipo.id === 2" class="flex align-items-center" 
     style="margin-bottom: 15px; display: flex;
     justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Evento </span></label>
+      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita Privada </span></label>
   </div>
     
   <Checkbox v-model="checked" :binary="true" />
