@@ -160,6 +160,11 @@ function onOtpInput(value) {
 }
 
 
+function goToCode() {
+  router.push(`/code`);
+  haptic('medium');
+}
+
 
 function resetCode() {
   code.value = ''; 
@@ -447,7 +452,7 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
           
 <div> 
-          <Button  @click="() => (popupOpened = true)"    label="INGRESAR CON CÓDIGO" class="whiteB" style="margin-top: 40px;"
+          <Button  @click="goToCode"    label="INGRESAR CON CÓDIGO" class="whiteB" style="margin-top: 40px;"
                    ></Button>
                   </div>
 
