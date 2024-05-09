@@ -112,9 +112,9 @@ async function fetchInvitationCode(invitationCode) {
     if (error) throw error;
 
     if (!data) {
-        console.log('No se encontró el código de invitación');
-        errorMsg.value = 'No se encontró el código de invitación';
-        openToast( 'No se encontró el código de invitación');
+        console.log('Ingresa código valido de de 5 dígitos');
+        errorMsg.value = 'Ingresa código valido de de 5 dígitos';
+        openToast( 'Ingresa código valido de de 5 dígitos');
         loading.value = false;
         codeActive.value= 'error';
         errorCode.value = true;

@@ -256,6 +256,14 @@ Button{
 
 }
 
+
+.cameraB{
+  background-color: #0b75cc;
+  padding: 5px;
+  border-radius: 5px;
+  
+}
+
 .p-calendar{
 margin-left: 5px;
 width: 100%;
