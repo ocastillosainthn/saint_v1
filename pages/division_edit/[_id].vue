@@ -504,6 +504,7 @@ async function addInvitations() {
       return;
     }
     console.log('sendmail',mail)
+    
     await sendEmail(mail, invitationCode);
   }
 
