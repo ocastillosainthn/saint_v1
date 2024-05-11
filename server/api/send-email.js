@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     const response = await resend.emails.send({
       from: 'noreply@sainthn.com',
       to: [email],
-      subject: 'hello world',
+      subject: 'SAINT - Código de activación',
       html: emailHtml,
     
     });
