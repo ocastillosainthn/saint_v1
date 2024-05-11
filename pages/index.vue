@@ -951,9 +951,11 @@ console.log('user data', userData.value.id)
 
 
 async function updateUserData(userDataID, playerID) {
+  const player_id = playerID._value;
+
     const { data, error } = await supabase
         .from('userData')
-        .update({ player_id: playerID.value })
+        .update({ player_id: player_id})
         .eq('id', userDataID.value);
     if (error) {
         console.error('Error actualizando la tabla userData:', error);
