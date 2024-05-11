@@ -196,9 +196,10 @@
             </template>
           </k-navbar>
         
-          <div v-if="inviteSended" style="padding: 25px;" class="acceptInvitacion">
-
-            <div style="  display: flex; justify-content: center; margin-bottom:20px "> <Icon name="solar:bell-broken" style="font-size:25px; color: #141515;"/> </div>
+          <div v-if="inviteSended && inviteSended.guard === false" style="padding: 25px;" class="acceptInvitacion">
+            <div style="display: flex; justify-content: center; margin-bottom:20px">
+              <Icon name="solar:bell-broken" style="font-size:25px; color: #141515;"/>
+            </div>
 
             Has recibido una invitación para administrar <span style="font-weight: 700;">{{ inviteSended.division.name }}</span>
             <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
@@ -206,6 +207,20 @@
               <Button @click="acceptInvitation" class="botonInvitacion" style="margin-left: 20px;">Aceptar Invitación</Button>
             </div>
           </div>
+
+
+          <div v-if="inviteSended && inviteSended.guard === true" style="padding: 25px;" class="acceptInvitacion">
+            <div style="display: flex; justify-content: center; margin-bottom:20px">
+              <Icon name="solar:bell-broken" style="font-size:25px; color: #141515;"/>
+            </div>  
+
+            Has recibido una invitación ser guardia de  <span style="font-weight: 700;"> {{inviteSended.entidad.name}} </span>
+            <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+              <Button @click="acceptInvitationGuard" class="botonInvitacion" style="margin-left: 20px;">Aceptar Invitación</Button>
+            </div>
+          </div>
+
+         
           
      
         
@@ -272,7 +287,7 @@
           
     <div class="cardRol" v-if="userRol"  style="margin-top:15px" > 
       
-        Persmisos asignados 
+        Permisos asignados 
         <div   style="font-size:20px; margin-top: 7px; font-weight: 700; " >  
                 {{ userRol[0]?.division?.name }}
                 {{ userRol[0]?.tipo }}
@@ -449,7 +464,7 @@ async function fetchInviteSended() {
   try {
     const { data, error } = await supabase
       .from('invitacion')
-      .select('*,division(*)')
+      .select('*,division(*),entidad(*)')
       .eq('estado', 'enviada')
       .eq('email', userData.value.email)
       .limit(1)
@@ -482,7 +497,7 @@ onMounted(async () => {
 
     const { data: userDataResponse, error: userError } = await supabase
       .from('userData')
-      .select('name, email,id')
+      .select('name, email, id')
       .eq('user_id', userUUID.value);
 
 
@@ -811,6 +826,47 @@ async function acceptInvitation() {
     popupOpened.value = false;
     refreshData ();
     refreshview();
+}
+
+async function acceptInvitationGuard() {
+  if (!inviteSended.value || !userUUID.value) {
+    console.error("Datos necesarios para aceptar la invitación no están disponibles.");
+    return;
+  }
+
+  const { data: updatedInvite, error: updateError } = await supabase
+    .from('invitacion')
+    .update({ estado: 'aceptada' }) 
+    .eq('id', inviteSended.value.id); 
+
+  if (updateError) {
+    console.error('Error al actualizar la invitación:', updateError);
+    return;
+  }
+
+  console.log('Invitación actualizada:', updatedInvite);
+
+  const { data: newUserRole, error: createUserRoleError } = await supabase
+    .from('userRoles')
+    .insert([
+      {
+        user: userUUID.value,
+        rol: 4,
+        entidad: inviteSended.value.entidad.id,
+        userData: userData.value.id,
+      },
+    ]);
+
+  if (createUserRoleError) {
+    console.error('Error al crear el rol de usuario:', createUserRoleError);
+    return;
+  }
+
+    haptic('medium');
+
+    popupOpened.value = false;
+    refreshData ();
+    refreshview ();
 }
 
 

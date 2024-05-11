@@ -257,6 +257,17 @@ Button{
 }
 
 
+.cardCompany{
+  padding: 8px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 13px;
+  background-color: white;
+  
+}
+
+
 .cameraB{
   background-color: #0b75cc;
   padding: 5px;

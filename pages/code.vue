@@ -207,14 +207,101 @@ async function signUpAndSetupUserData() {
     await setupUserData(data.user.id, nameRegister.value, codeActive.value.email, celRegister.value, codeActive.value.entidad, codeActive.value.division);
 
     // Redirección a la página principal
-    router.push('/');
   } catch (error) {
     console.error(error.message);
     openToast(error.message);
   } finally {
     loading.value = false;
+
+    supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      localStorage.setItem('authToken', session.access_token);
+      localStorage.setItem('userUUID', session.user.id);
+
+      store.dispatch('setAuthenticatedUser', {
+        isAuthenticated: true,
+        user: {
+          uuid: session.user.id,
+        },
+      });
+
+      router.push('/');
+    }
+  });
   }
 }
+
+
+async function signUpGuard() {
+  loading.value = true;
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: codeActive.value.email,
+      password: codeActive.value.access
+    });
+
+    if (error) {
+      throw new Error('Error registering user: ' + error.message);
+    }
+
+    console.log('User registered:', data);
+
+    const { data: guardiaData, error: guardiaError } = await supabase
+      .from('guardias')
+      .select('*') 
+      .eq('invitacion', codeActive.value.id)
+      .single(); 
+
+    if (guardiaError || !guardiaData) {
+      throw new Error('Error fetching guard data: ' + (guardiaError.message || 'No guard data found'));
+    }
+
+    const selectGuardiaId = guardiaData.guardia;
+    console.log('Guardia encontrado:', selectGuardiaId);
+
+
+    const { error: updateError } = await supabase
+      .from('userData')
+      .update({ 
+        user_id: data.user.id,
+        estado:'activo'
+      }) 
+      .eq('id', selectGuardiaId);
+
+    if (updateError) {
+      throw new Error('Error updating user data: ' + updateError.message);
+    }
+
+    console.log('User data updated successfully');
+
+  } catch (error) {
+    console.error(error.message);
+    openToast(error.message);
+  } finally {
+    loading.value = false;
+
+
+    supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      localStorage.setItem('authToken', session.access_token);
+      localStorage.setItem('userUUID', session.user.id);
+
+      store.dispatch('setAuthenticatedUser', {
+        isAuthenticated: true,
+        user: {
+          uuid: session.user.id,
+        },
+      });
+
+      router.push('/');
+    }
+  });
+
+
+  }
+}
+
 
 
 
@@ -342,8 +429,10 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
             <ProgressSpinner v-if="loading"  style="width: 30px; height: 30px" strokeWidth="5" fill="var(--surface-ground)"
             animationDuration=".5s" aria-label="Custom ProgressSpinner" />
           
-            <Icon  v-if="codeActive" name="solar:check-square-bold" style="font-size: 40px; color: green; margin-left: 10px;" />
-
+            <div   v-if="codeActive" > 
+            <Icon  v-if="codeActive?.estado === 'enviada'" name="solar:check-square-bold" style="font-size: 40px; color: green; margin-left: 10px;" />
+            <Icon  v-if="codeActive?.estado !== 'enviada'" name="tdesign:error-triangle" style="font-size: 40px; color: orange; margin-left: 10px;" />
+          </div>
 
           </div>
           </div>
@@ -355,7 +444,9 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
           -->
 
 <div >
-         <div v-if="codeActive"> 
+  <!-- REGULAR USER -->
+      <div v-if="codeActive && codeActive.guard === false && codeActive?.estado === 'enviada'"> 
+
 
               <form @submit.prevent="register" class="login-form">
               <div class="input-group">
@@ -386,7 +477,41 @@ async function setupUserData(userId, name, email, phone, entidad, division) {
 
 
          </div>
+
+    <!-- GUARD USER -->
+    
+    <div v-if="codeActive && codeActive.guard === true && codeActive?.estado === 'enviada'"> 
+
+          <form @submit.prevent="register" class="login-form">
+          <div class="input-group">
+            Correo Electrónico
+
+            <InputText id="emailR" v-model="codeActive.email" label="Correo Electrónico" type="email" disabled required placeholder="Correo Electrónico"/>
+          </div>
+
+          <div class="input-group">
+            Tu contraseña
+            <InputText id="passwordR" v-model="codeActive.access" label="Contraseña" type="text" disabled required placeholder="Contraseña"/>
+          </div>
+    
+
+          <k-button @click="signUpGuard"  type="submit"  label="Registrar" style="width: 100%; height:50px!important;   background-image: linear-gradient(to right, #20C4D6, #0586F0);
+            " ></k-button>
+              <ProgressSpinner v-if="loading"  style="width: 30px; height: 30px" strokeWidth="5" fill="var(--surface-ground)"
+          animationDuration=".5s" aria-label="Custom ProgressSpinner" />
+
+
+
+          </form>
+
+
+          </div>
       
+<!-- Ya existe codigo -->
+<div v-if="codeActive && codeActive.guard === true && codeActive?.estado !== 'enviada'"> 
+El codigo ya no es válido.
+</div>
+
         </div>        
 
 
