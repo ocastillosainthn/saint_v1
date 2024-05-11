@@ -26,7 +26,8 @@
 
 
     <TabPanel header="Visitas">
-    
+     
+      <div @click="sendEmail('ronyjmolina@gmail.com', '74663')"> test SenMail</div>
         
              <div style="width: 100%;"> 
         
