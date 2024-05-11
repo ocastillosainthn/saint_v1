@@ -41,7 +41,7 @@
                   <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión - </button>
 
-                  <div st> {{ version}}</div>
+                
 
                 </div>
           </div>
