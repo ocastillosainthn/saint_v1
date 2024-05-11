@@ -279,6 +279,8 @@
                       <div class="flex" style="font-size: 15px; font-weight: 400; margin-top:5px; color:gray " > 
                     <Icon name="material-symbols-light:arrow-forward-rounded" />
                     <div style=" margin-top:-3px" > {{ userRol[0].division?.entidad?.name }} </div>
+                    <div style=" margin-top:-3px" > {{ userRol[0].entidad?.name }} </div>
+
                       </div>
                       
             </div>
