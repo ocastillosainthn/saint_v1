@@ -30,26 +30,9 @@
 </k-navbar>
 
 
-    <k-panel  side="left" 
-          @backdropclick="() => (userPanelOpened = false)">
-          <div style="padding: 20px;">
-
-          
-            <div class="usertext" >
    
-                  <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
-                  <div style="color: rgb(112, 112, 112); margin-bottom: 20px;" v-if="userData">{{ userData.email }}   </div>
-                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión - </button>
-
-                
-
-                </div>
-          </div>
-        </k-panel>
-
   
 
-    
 
       <div style="background-color:white; padding: 20px; margin-top: 0px;">
         <div style="height: 60px; width:100%; "> </div>
@@ -278,29 +261,31 @@
             <div class="usertext" >
              
                   <div  v-if="userData" style="font-size: 20px;">{{ userData.name }} </div>
-                  <div style="color: rgb(112, 112, 112); margin-bottom: 10px;" v-if="userData">{{ userData.email }}   </div>
+                  <div style="color: rgb(112, 112, 112); margin-bottom: 10px;" v-if="userData">{{ userData.email }}  </div>
 
                  <!--  <button class="lightButton" style="margin-bottom: 10px;"> Editar perfil </button>  -->
 
           <div> 
 
           
-    <div class="cardRol" v-if="userRol"  style="margin-top:15px" > 
       
-        Permisos asignados 
-        <div   style="font-size:20px; margin-top: 7px; font-weight: 700; " >  
-                {{ userRol[0]?.division?.name }}
-                {{ userRol[0]?.tipo }}
+          <div class="cardRol" v-if="userRol"  style="margin-top:15px" > 
 
-                <div class="flex" style="font-size: 15px; font-weight: 400; margin-top:5px; color:gray " > 
-              <Icon name="material-symbols-light:arrow-forward-rounded" />
-              <div style=" margin-top:-3px" > {{ userRol[0].division.entidad.name }} </div>
-                </div>
-      </div>
+              Permisos asignados 
+              <div   style="font-size:20px; margin-top: 7px; font-weight: 700; " >  
+                      {{ userRol[0]?.division?.name }}
+                      {{ userRol[0]?.tipo }}
+
+                      <div class="flex" style="font-size: 15px; font-weight: 400; margin-top:5px; color:gray " > 
+                    <Icon name="material-symbols-light:arrow-forward-rounded" />
+                    <div style=" margin-top:-3px" > {{ userRol[0].division?.entidad?.name }} </div>
+                      </div>
+                      
+            </div>
+      </div> 
+    
 
 
-
-</div> 
 
 </div>
                   <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión </button>
