@@ -290,7 +290,7 @@
 
 
 </div>
-                  <button class="logout" v-if="isAuthenticated" @click="logout">Cerrar sesión </button>
+                  <button class="logout" @click="logout">Cerrar sesión  </button>
                   <div st> {{ version }}</div>
 
 
