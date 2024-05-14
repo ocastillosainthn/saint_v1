@@ -13,9 +13,6 @@ export default ({ $router }) => {
       $router.push('/'); // Redirige a la página principal
     }
 
-    // Si el usuario no está autenticado y no está en la página de login ni en la de recuperación
-    if (!isAuthenticated && currentPath !== '/login' && currentPath !== '/recovery' && currentPath !== '/code') {
-      $router.push('/login'); // Redirige a la página de login
-    }
+   
   });
 };

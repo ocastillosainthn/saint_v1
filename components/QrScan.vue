@@ -7,6 +7,8 @@ const cameras = ref([]);
 
 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
   console.log(`QR decoded: ${decodedText}`, decodedResult);
+  const fullUrl = `/qr_read/${decodedText}`;
+  window.location.href = fullUrl;
 };
 
 let html5QrCode;
@@ -24,7 +26,7 @@ function startScanning() {
   html5QrCode = new Html5Qrcode("qr-reader");
   html5QrCode.start(
     cameraId.value, 
-    { fps: 10, qrbox: 250 },
+    { fps: 20, qrbox: 250 },
     qrCodeSuccessCallback,
     errorMessage => console.error(`QR scanning error: ${errorMessage}`)
   ).catch(err => console.error(`Unable to start QR scanner: ${err}`));
