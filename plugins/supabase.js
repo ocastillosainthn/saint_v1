@@ -14,10 +14,15 @@ export default ({ $router }) => {
     }
 
    
- // Si el usuario no está autenticado y no está en la página de login ni en la de recuperación
- if (!isAuthenticated && currentPath !== '/login' && currentPath !== '/recovery' && currentPath !== '/code' && currentPath !== '/qr_read') {
-  $router.push('/login'); // Redirige a la página de login
-}
+    if (
+      !isAuthenticated &&
+      currentPath !== '/login' &&
+      currentPath !== '/recovery' &&
+      currentPath !== '/code' &&
+      !currentPath.startsWith('/qr_read')
+    ) {
+      $router.push('/login'); 
+    }
 
 
 

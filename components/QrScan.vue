@@ -8,6 +8,8 @@ const cameras = ref([]);
 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
   console.log(`QR decoded: ${decodedText}`, decodedResult);
   const fullUrl = `/qr_read/${decodedText}`;
+  console.log('URL:', fullUrl );
+
   window.location.href = fullUrl;
 };
 

@@ -28,11 +28,11 @@
               <div style="width: 1px; height: 34%; background-color:gray; margin-bottom: 3px;"> </div>
               <Icon name="solar:stopwatch-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-right: 0px;" />
             </div>
-            <div style="font-size: 11px; margin-left: 10px;">
+            <div style="font-size: 11px; margin-left: 10px; width: 100%">
               <div> Válido Desde </div>
-              <div style="font-size: 15px; margin-bottom: 15px;"> {{ fechaAmigable }} </div>
+              <div style="font-size: 14px; margin-bottom: 15px;"> {{ fechaAmigable }} </div>
               <div> Hasta </div>
-              <div style="font-size: 15px;"> {{ fechaFinAmigable }} </div>
+              <div style="font-size: 14px;"> {{ fechaFinAmigable }} </div>
             </div>
           </div>
 
@@ -45,7 +45,7 @@
             <div style="display: flex; flex-direction: column; align-items: center;">
               <Icon name="solar:user-check-broken" style="font-size: 17px; color: gray; margin-top: 0px; margin-bottom: 3px;" />
             </div>
-            <div style="font-size: 11px; margin-left: 10px;">
+            <div style="font-size: 11px; margin-left: 10px; width: 100%;" >
               <div> Invitación creada por </div>
               <div style="font-size: 15px; margin-bottom: 1px;"> {{ visita.created_by.name }} </div>
               <p v-if="visita && visita.created_by">
