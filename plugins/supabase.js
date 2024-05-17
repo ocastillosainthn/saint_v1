@@ -24,7 +24,7 @@ export default ({ $router }) => {
       $router.push('/login'); 
     }
 
-
+  
 
   });
 };
