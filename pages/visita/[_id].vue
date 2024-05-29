@@ -95,7 +95,11 @@
                 <div>  Invitación creada por   </div>
                 <div style="font-size: 15px; margin-bottom: 15px; "> {{ visita.created_by.name }} </div>  
               </div>  
+              
             </div>
+            <div style="margin-left:25px; margin-top: 10px; font-size: 14px;">
+        Acompañantes {{ visita.cant }}
+      </div>
           </div>
         
         </div>
@@ -109,7 +113,10 @@
             <Icon name="solar:square-share-line-line-duotone" style="font-size: 17px; color: white; margin-top: 0px; margin-right: 8px;" />
             Compartir
           </div>
+
         </div>
+
+        
       </div>
       
             <div v-if="visita.estado === 'creada'" style="margin-top: 50px; color: red; font-size: 13px; text-align: center;" @click="() => dialogoDeleteVisita(visita.id)">

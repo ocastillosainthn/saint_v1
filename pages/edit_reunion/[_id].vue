@@ -60,9 +60,15 @@
 
   </div>
 
+  
+
 
 </div> 
 
+<div style="margin-bottom: 10px;">
+    <label for="acompanantesVisita">Acompañantes de visita</label>
+    <InputText id="acompanantesVisita" v-model="cantVisita" type="number" aria-describedby="username-help" />
+  </div>
 
 <div class="centerTittleAction"> 
     <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
@@ -379,7 +385,7 @@ import { watch } from 'vue';
 import ListBox from 'primevue/listbox';
 
 
-
+ 
 const nombreVisita = ref('');
 const fechaHora = ref(null);
 const selectedHour = ref(null);
@@ -390,6 +396,7 @@ const toastColor = ref('black');
 
 const checked = ref(false);
 
+const cantVisita = ref(0);
 
 const route = useRoute();
 const router = useRouter();
@@ -472,7 +479,6 @@ onMounted(async () => {
  const datosParticipantes = await cargarParticipantes(route.params._id);
   participantes.value = datosParticipantes;
 
-
   
   await cargarDivision(divisionId);
   await cargarTiposPersona();
@@ -501,6 +507,7 @@ async function actualizarVisita() {
     fecha: fechaHora.value.toISOString(),
     visitaevento: checked.value,
     duracion: selectedHour.value ? selectedHour.value.time : null,
+    cant: cantVisita.value
   };
 
   const { data, error } = await supabase
@@ -563,6 +570,7 @@ async function cargarVisita(visitaId) {
 
     if (error) throw error;
     visita.value = data; 
+    cantVisita.value = data.cant;
   } catch (error) {
     console.error('Error al obtener la visita:', error.message);
   }

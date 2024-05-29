@@ -58,8 +58,12 @@
     </div>
 
     <div style="padding: 15px; padding-top: 20px; background-color: white; margin-top: 10px;">
+      <div style="display: flex; justify-content:space-between ;">
       <div style="font-weight: 700; margin-bottom: 10px;"> Participantes </div>
-
+      <div style="font-size: 14px;">  
+        Acompañantes: {{ visita?.cant }}
+      </div>
+    </div>
       <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
         <template #option="{ option }">
           <div style="display: flex; justify-content: space-between;" @click="seleccionarParticipante(option)">
