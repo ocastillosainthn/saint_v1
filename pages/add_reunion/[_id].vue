@@ -76,7 +76,13 @@
 
 
 </div> 
+<label for="cantidad">Acompañantes de visita </label>
+<InputText id="numberVisita" v-model="numberVisit" type="number" aria-describedby="username-help" />
 
+<div>
+
+
+</div>
 
 <div class="centerTittleAction"> 
     <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
@@ -223,7 +229,7 @@
       <ListBox v-model="personasSeleccionadas" :options="personas" optionLabel="nombre" multiple filter style="width: 100%; height: 500px;">
         <template #item="slotProps">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            {{ slotProps.option.name }}
+            {{ slotProps.option.name }} - {{  }}
             <Icon name="solar:check-circle-bold" style="font-size:25px; color: red;" />
           </div>
         </template>
@@ -344,7 +350,7 @@
 </div>
 
 
-<k-button v-if="!loading" type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+<k-button v-if="!loading &&  personasSeleccionadas.length > 0" type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
               </k-button>
 
 </div>
@@ -418,6 +424,7 @@ const placa = ref('');
 const fehaHora = ref('');
 
 const calendarRef = ref(null);
+const numberVisit = ref(1);
 
 const closeCalendar = () => {
   calendarRef.value.overlayVisible = false;
@@ -486,7 +493,7 @@ async function crearEmpresa() {
     departamento: departamentoID, 
     municipio: municipioID,
     paginaWeb: empresaData.value.paginaWeb,
-    direccion: empresaData.value.direccion
+    direccion: empresaData.value.direccion,
    
   };
 
@@ -530,7 +537,9 @@ async function crearVisita() {
       division: division?.value?.id ? division.value.id : null,
       personas_seleccionadas: idsPersonasSeleccionadas,
       entidad: entidad.value,
-      created_by: userId
+      created_by: userId,
+      cant: numberVisit.value
+
 
       
     };
@@ -629,7 +638,10 @@ async function cargarPersonas() {
     console.log('tipo:', division.value?.entidad.tipo.id);
 
 
-    let query = supabase.from('persona').select('*').order('nombre', { ascending: true });
+    let query = supabase
+    .from('persona')
+    .select('*,tipoPersona(*)')
+    .order('nombre', { ascending: true });
 
     if (division.value?.entidad.tipo.id === 1) {
       console.log('Tipo 1 - Consulta a entidad', entidad.value);

@@ -4,13 +4,27 @@ import { Html5Qrcode } from 'html5-qrcode';
 
 const cameraId = ref('');
 const cameras = ref([]);
+const loading = ref(false);
+
 
 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+  loading.value = true
+
   console.log(`QR decoded: ${decodedText}`, decodedResult);
   const fullUrl = `/qr_read/${decodedText}`;
   console.log('URL:', fullUrl );
 
-  window.location.href = fullUrl;
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => {
+      console.log("QR scanning stopped, navigating to:", fullUrl);
+      window.location.href = fullUrl;
+    }).catch(err => {
+      console.error("Error stopping QR scanner:", err);
+      window.location.href = fullUrl; 
+    });
+  } else {
+    window.location.href = fullUrl; 
+  }
 };
 
 let html5QrCode;
@@ -56,6 +70,11 @@ onUnmounted(() => {
 
 
 <template>
+
+<div v-if="loading"  class="loadingPage"> 
+        <k-preloader  style="display: flex;" size="w-5 h-5" />
+      </div>
+
   <div>
     <div id="qr-reader" style=" width:100%; height: 65vh;"></div>
     <div class="cameraContainer" style="margin: 10px; display: flex; color:white;"> 

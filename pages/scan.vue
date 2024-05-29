@@ -1,6 +1,8 @@
 
 <template>
 
+
+
 <k-page  style="background-color: #f7f7f7;">
 
     <k-navbar 
@@ -40,7 +42,6 @@ import supabase from "../db/supabaseClient";
 
 const route = useRoute();
 const router = useRouter();
-
 
 
   function goBack() {

@@ -59,6 +59,7 @@
 
     <div style="padding: 15px; padding-top: 20px; background-color: white; margin-top: 10px;">
       <div style="font-weight: 700; margin-bottom: 10px;"> Participantes </div>
+
       <Listbox :options="participantes" filter optionLabel="persona.nombre" class="w-full md:w-14rem">
         <template #option="{ option }">
           <div style="display: flex; justify-content: space-between;" @click="seleccionarParticipante(option)">
@@ -70,9 +71,12 @@
                 </span>
               </div>
             </div>
+
+
+
             <kButton v-if="!option.entrada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(option.id)"> ENTRADA </kButton>
-            <kButton v-if="option.entrada && !option.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(option.id)"> SALIDA </kButton>
-            <Icon v-if="option.salida" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
+            <kButton v-if="option.entrada && !fechaFinPasada && !option.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(option.id)"> SALIDA </kButton>
+            <Icon v-if="option.salida && !fechaFinPasada" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
           </div>
         </template>
       </Listbox>
@@ -90,8 +94,8 @@
     <div style="padding: 20px;" v-if="participanteSelected && participanteSelected.persona">
       <div style="font-size:17px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content:space-between">
         {{participanteSelected.persona.nombre}}
-        <kButton v-if="!participanteSelected.entrada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(participanteSelected.id)"> ENTRADA </kButton>
-        <kButton v-if="participanteSelected.entrada && !participanteSelected.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(participanteSelected.id)"> SALIDA </kButton>
+        <kButton v-if="!participanteSelected.entrada && !fechaFinPasada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(participanteSelected.id)"> ENTRADA </kButton>
+        <kButton  v-if="participanteSelected.entrada && !fechaFinPasada && !participanteSelected.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(participanteSelected.id)"> SALIDA </kButton>
         <Icon v-if="participanteSelected.salida" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
       </div>
       <div>
