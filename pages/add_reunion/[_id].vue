@@ -143,9 +143,9 @@
 
 
 
-        <k-popup :opened="popupPersona" @backdropclick="() => (popupPersona = false)">
+        <k-popup :opened="popupPersona" @backdropclick="() => (popupPersona = false)" class="popMedio">
                 <k-navbar  
-                title="Crear Persona"
+                title="Crear Persona "
                 small
                 isTralucent style="background-color: white;">
                 
@@ -979,5 +979,9 @@ label{
 .columnForm{
   margin-bottom: 10px;
   width:100%;
+}
+
+.popMedio{
+  height: 100vh;
 }
 </style>

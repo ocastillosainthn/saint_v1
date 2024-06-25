@@ -61,6 +61,10 @@ body {
     background-color: #f4f4f4;
   }
 
+  .popMedio{
+    height: 100vh;
+  }
+
  
   .chip{
 background-color: rgba(127, 221, 255, 0.097);

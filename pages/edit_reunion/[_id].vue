@@ -103,7 +103,7 @@
 
 
           <k-navbar  
-                title="Agregar participantes"
+                title="Agregar participantes - as"
                 small
                 isTralucent style="background-color: white;">
                 
