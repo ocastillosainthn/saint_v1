@@ -443,12 +443,13 @@ const hours = ref([
     { name: '4 hr 30 min', time: 4.30},
     { name: '5 hr', time: 5},
     { name: '5 hr 30 min', time: 5.30},
+
     { name: '6 hr', time: 6},
-    { name: '6 hr 30 min', time: 6.30},
+    { name: '6 hr 30 min', time: 5.30},
+
+    
     { name: '8 hr', time: 8},
-    { name: '8 hr 30 min', time: 8.30},
-    { name: '12 horas', time: 12},
-    { name: '+ 12 horas', time: 13}
+    { name: '12 horas', time: 12}
 ]);
 
 

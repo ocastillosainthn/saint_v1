@@ -432,23 +432,15 @@ const closeCalendar = () => {
 
 const selectedHour = ref();
 const hours = ref([
-    { name: '30 min', time: 0.30},
-    { name: '1 ht', time: 1},
-    { name: '1 hr 30 min', time: 1.30},
-    { name: '2 hr', time: 2 },
-    { name: '2 hr 30 min', time: 2.30},
-    { name: '3 hr' , time: 3},
-    { name: '3 hr 30 min', time: 3.30},
-    { name: '4 hr', time: 4 },
-    { name: '4 hr 30 min', time: 4.30},
-    { name: '5 hr', time: 5},
-    { name: '5 hr 30 min', time: 5.30},
-    { name: '6 hr', time: 6},
-    { name: '6 hr 30 min', time: 6.30},
-    { name: '8 hr', time: 8},
-    { name: '8 hr 30 min', time: 8.30},
-    { name: '12 horas', time: 12},
-    { name: '+ 12 horas', time: 13}
+    { name: '30 minutos', time: 0.30},
+    { name: '1 hora', time: 1},
+    { name: '2 horas', time: 2 },
+    { name: '3 horas' , time: 3},
+    { name: '4 horas', time: 4 },
+    { name: '5 horas', time: 5},
+    { name: '6 horas', time: 6},
+    { name: '8 horas', time: 8},
+    { name: '12 horas', time: 12}
 ]);
 
 
