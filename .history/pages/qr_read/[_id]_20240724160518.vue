@@ -83,11 +83,14 @@
       </div>
     </k-page>
 
-    <k-popup :opened="noVisita" @backdropclick="() => {}" class="popMedia">
-      <k-navbar title="Error buscando visita" small style="background-color: white; color: red;"></k-navbar>
+    <k-popup :opened="noVisita" @backdropclick="closeNoVisita" class="popMedia">
+      <k-navbar  title="Error buscando visita" small style="background-color: white; color: red;">
+       
+      </k-navbar>
       <div style="padding: 20px; text-align: center;">
-        <p style="margin-bottom: 5px;">{{ errorMessage }}</p>
+        <p style="margin-bottom: 5px;">No se encontró ninguna visita registrada con este código QR.</p>
         <p style="margin-bottom: 20px;">{{ visita?.uuid }}</p>
+
         <kButton style="height: 40px; background-color: red;" @click="scanAgain">Escanear de nuevo</kButton>
       </div>
     </k-popup>
@@ -107,7 +110,6 @@ const participantes = ref([]);
 const loading = ref(true);
 const popupOpened = ref(false);
 const noVisita = ref(false);
-const errorMessage = ref('');
 const participanteSelected = ref(null);
 
 onMounted(async () => {
@@ -138,20 +140,17 @@ async function cargarVisita(visitaId) {
     if (error) throw error;
 
     if (count === 0) {
-      errorMessage.value = 'No se encontró ninguna visita registrada con este código QR.';
       noVisita.value = true;
       return;
     } else if (count > 1) {
-      errorMessage.value = 'Se encontraron múltiples visitas con el UUID proporcionado.';
-      noVisita.value = true;
+      console.error('Se encontraron múltiples visitas con el UUID proporcionado.');
       return;
     }
 
     visita.value = data[0];  // Accede al primer (y único) elemento
     console.log('datos de Visita OK', visita);
   } catch (error) {
-    errorMessage.value = 'Error al obtener la visita: ' + error.message;
-    noVisita.value = true;
+    console.error('Error al obtener la visita:', error.message);
   }
 }
 
@@ -166,8 +165,7 @@ async function cargarParticipantes(visitaId) {
     console.log('resultadoCargar participantes', data);
     return data;
   } catch (error) {
-    errorMessage.value = 'Error al cargar los participantes: ' + error.message;
-    noVisita.value = true;
+    console.error('Error al cargar los participantes:', error.message);
     return [];
   }
 }
@@ -175,66 +173,59 @@ async function cargarParticipantes(visitaId) {
 async function marcarEntrada(participanteId) {
   if (!participanteId) return;
 
-  try {
-    const { data, error } = await supabase
-      .from('participantes')
-      .update({
-        entrada: new Date().toISOString(),
-        estado: "iniciada"
-      })
-      .eq('id', participanteId)
-      .select();
+  const { data, error } = await supabase
+    .from('participantes')
+    .update({
+      entrada: new Date().toISOString(),
+      estado: "iniciada"
+    })
+    .eq('id', participanteId)
+    .select();
 
-    if (error) throw error;
-
-    if (data && data.length > 0) {
-      const updatedParticipante = participantes.value.find(p => p.id === participanteId);
-      if (updatedParticipante) {
-        updatedParticipante.entrada = data[0].entrada;
-      }
-
-      console.log('Entrada del participante actualizada:', data[0]);
-
-      try {
-        await pushSend();
-      } catch (error) {
-        console.error("Error al enviar la notificación:", error);
-      }
-    } else {
-      console.log('No se devolvieron datos tras la actualización');
+  if (error) {
+    console.error('Error al actualizar la entrada del participante:', error);
+  } else if (data && data.length > 0) {
+    const updatedParticipante = participantes.value.find(p => p.id === participanteId);
+    if (updatedParticipante) {
+      updatedParticipante.entrada = data[0].entrada;
     }
-  } catch (error) {
-    errorMessage.value = 'Error al actualizar la entrada del participante: ' + error.message;
-    noVisita.value = true;
+
+    console.log('Entrada del participante actualizada:', data[0]);
+
+    try {
+      await pushSend();
+    } catch (error) {
+      console.error("Error al enviar la notificación:", error);
+    }
+  } else {
+    console.log('No se devolvieron datos tras la actualización');
   }
 }
 
 async function marcarSalida(participanteId) {
+  const { data, error } = await supabase
+    .from('participantes')
+    .update({
+      salida: new Date().toISOString(),
+      estado: "salida"
+    })
+    .eq('id', participanteId)
+    .select();
+
+  if (error) {
+    console.error('Error al marcar la salida del participante:', error);
+    return;
+  }
+
+  const participanteIndex = participantes.value.findIndex((p) => p.id === participanteId);
+  if (participanteIndex !== -1 && data && data.length > 0) {
+    participantes.value[participanteIndex] = { ...participantes.value[participanteIndex], salida: data[0].salida };
+  }
+
   try {
-    const { data, error } = await supabase
-      .from('participantes')
-      .update({
-        salida: new Date().toISOString(),
-        estado: "salida"
-      })
-      .eq('id', participanteId)
-      .select();
-
-    if (error) throw error;
-
-    const participanteIndex = participantes.value.findIndex((p) => p.id === participanteId);
-    if (participanteIndex !== -1 && data && data.length > 0) {
-      participantes.value[participanteIndex] = { ...participantes.value[participanteIndex], salida: data[0].salida };
-    }
-
-    try {
-      await pushOut();
-    } catch (error) {
-      console.error("Error al enviar la notificación:", error);
-    }
+    await pushOut();
   } catch (error) {
-    errorMessage.value = 'Error al marcar la salida del participante: ' + error.message;
-    noVisita.value = true;
+    console.error("Error al enviar la notificación:", error);
   }
 }
 
@@ -414,6 +405,8 @@ export default {
 };
 </script>
 
+
+
 <style>
 input{
     border-width: 1px;
@@ -449,4 +442,6 @@ input{
   height: 65vh!important;
   top: 70Vh;
 }
+
+
 </style>

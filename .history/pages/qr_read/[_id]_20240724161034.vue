@@ -84,11 +84,10 @@
     </k-page>
 
     <k-popup :opened="noVisita" @backdropclick="() => {}" class="popMedia">
-      <k-navbar title="Error buscando visita" small style="background-color: white; color: red;"></k-navbar>
+      <k-navbar title="Error" small style="background-color: white;"></k-navbar>
       <div style="padding: 20px; text-align: center;">
-        <p style="margin-bottom: 5px;">{{ errorMessage }}</p>
-        <p style="margin-bottom: 20px;">{{ visita?.uuid }}</p>
-        <kButton style="height: 40px; background-color: red;" @click="scanAgain">Escanear de nuevo</kButton>
+        <p>{{ errorMessage }}</p>
+        <kButton @click="scanAgain">Escanear de nuevo</kButton>
       </div>
     </k-popup>
   </div>
@@ -138,7 +137,7 @@ async function cargarVisita(visitaId) {
     if (error) throw error;
 
     if (count === 0) {
-      errorMessage.value = 'No se encontró ninguna visita registrada con este código QR.';
+      errorMessage.value = 'No se encontró ninguna visita registrada con ese código QR.';
       noVisita.value = true;
       return;
     } else if (count > 1) {
@@ -357,62 +356,12 @@ function goBack() {
   router.back();
 }
 
-function closeNoVisita() {
-  noVisita.value = false;
-}
-
 function scanAgain() {
   noVisita.value = false;
   router.back();
 }
 </script>
 
-<script>
-import { ref } from 'vue';
-import {
-  kPage,
-  kNavbar,
-  kPanel,
-  kBlock,
-  kBlockTitle,
-  kLink,
-  kButton,
-  kCard,
-  kNavbarBackLink,
-  kList,
-  kListGroup,
-  kListItem,
-  kSearchbar,
-  kFab,
-  kPopup,
-  kListInput,
-  kToast,
-  kPreloader
-} from 'konsta/vue';
-
-export default {
-  components: {
-    kPage,
-    kNavbar,
-    kNavbarBackLink,
-    kPanel,
-    kBlock,
-    kBlockTitle,
-    kLink,
-    kButton,
-    kCard,
-    kList,
-    kListGroup,
-    kListItem,
-    kSearchbar,
-    kFab,
-    kPopup,
-    kListInput,
-    kPreloader,
-    kToast,
-  },
-};
-</script>
 
 <style>
 input{
@@ -449,4 +398,6 @@ input{
   height: 65vh!important;
   top: 70Vh;
 }
+
+
 </style>
