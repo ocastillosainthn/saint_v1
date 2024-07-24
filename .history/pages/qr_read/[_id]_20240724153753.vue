@@ -82,6 +82,57 @@
         </Listbox>
       </div>
     </k-page>
+
+    <k-popup :opened="popupOpened" @backdropclick="() => (popupOpened = false)" class="popMedia">
+      <k-navbar title="" small isTralucent style="background-color: white;">
+        <template #left>
+          <k-link navbar @click="() => (popupOpened = false)">
+            <Icon name="solar:close-circle-outline" style="font-size:32px; color: #141515;" />
+          </k-link>
+        </template>
+      </k-navbar>
+      <div style="padding: 20px;" v-if="participanteSelected && participanteSelected.persona">
+        <div style="font-size:17px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content:space-between">
+          {{participanteSelected.persona.nombre}}
+          <kButton v-if="!participanteSelected.entrada && !fechaFinPasada" style="width:30%; height: 40px;" @click.stop="marcarEntrada(participanteSelected.id)"> ENTRADA </kButton>
+          <kButton v-if="participanteSelected.entrada && !fechaFinPasada && !participanteSelected.salida" style="width:30%; height: 40px; background-color: red;" @click.stop="marcarSalida(participanteSelected.id)"> SALIDA </kButton>
+          <Icon v-if="participanteSelected.salida" name="solar:shield-check-bold" style="font-size: 40px; margin-right: 7px; margin-left:7px; color: #65AE2C;" />
+        </div>
+        <div>
+          <div style="font-size: 11px;"> Entrada </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.entrada }} </div>
+          <div style="font-size: 11px;"> Salida </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.salida }} </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; margin-top: 27px; margin-bottom:12px; font-weight: 600;"> DATOS DE VISITANTE</div>
+        </div>
+        <div>
+          <div style="font-size: 11px;"> Número de Identidad </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.persona.dniPasaporte }} </div>
+          <div style="font-size: 11px;"> Teléfono </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.persona.telefono }} </div>
+          <div style="font-size: 11px;"> Correo electrónico </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.persona.correo }} </div>
+          <div style="font-size: 11px;"> Placa </div>
+          <div style="font-size: 15px; margin-bottom: 7px;"> {{ participanteSelected.persona.placa }} </div>
+        </div>
+      </div>
+    </k-popup>
+
+    <k-popup :opened="noVisita" @backdropclick="closeNoVisita">
+      <k-navbar title="" small style="background-color: white;">
+        <template #left>
+          <k-link navbar @click="closeNoVisita">
+            <Icon name="solar:close-circle-outline" style="font-size:32px; color: #141515;" />
+          </k-link>
+        </template>
+      </k-navbar>
+      <div style="padding: 20px; text-align: center;">
+        <p>No se encontró ninguna visita registrada con ese código.</p>
+        <kButton @click="scanAgain">Escanear de nuevo</kButton>
+      </div>
+    </k-popup>
   </div>
 </template>
 
@@ -97,21 +148,22 @@ const visita = ref(null);
 const participantes = ref([]);
 const loading = ref(true);
 const popupOpened = ref(false);
+const noVisita = ref(false);
 const participanteSelected = ref(null);
 
 onMounted(async () => {
   if (route.params._id) {
-    loading.value = true;
+    loading.value = true
     await cargarVisita(route.params._id);
     if (visita.value && visita.value.id) {
       console.log('visita id', visita.value.id);
       const datosParticipantes = await cargarParticipantes(visita.value.id);
       participantes.value = datosParticipantes;
     }
-    loading.value = false;
+    loading.value = false
   } else {
     console.error("El ID de la visita no está definido");
-    loading.value = false;
+    loading.value = false
   }
 });
 
@@ -127,8 +179,8 @@ async function cargarVisita(visitaId) {
     if (error) throw error;
 
     if (count === 0) {
-      alert('No se encontró ninguna visita registrada con ese código.');
-      goBack();
+      console.error('No se encontró ninguna visita con el UUID proporcionado:', visitaId);
+      noVisita.value = true;
       return;
     } else if (count > 1) {
       console.error('Se encontraron múltiples visitas con el UUID proporcionado.');
@@ -335,6 +387,15 @@ function seleccionarParticipante(participante) {
 function goBack() {
   router.back();
 }
+
+function closeNoVisita() {
+  noVisita.value = false;
+}
+
+function scanAgain() {
+  noVisita.value = false;
+  router.back();
+}
 </script>
 
 <script>
@@ -383,9 +444,6 @@ export default {
   },
 };
 </script>
-
-  
-
 
 
 

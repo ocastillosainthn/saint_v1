@@ -46,7 +46,7 @@
               <div style="font-size: 11px; margin-left: 10px; width: 100%">  
                 <div>  Invitación creada por   </div>
                 <div style="font-size: 15px; margin-bottom: 15px; "> {{ visita.created_by.name }} </div>  
-                <div style="font-size: 12px;"> {{ visita.id }}/ {{ visita.created_at }}</div>
+                <div> {{ visita.id }}/ </div>
               </div>  
             </div>
           </div>

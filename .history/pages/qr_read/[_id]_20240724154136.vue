@@ -386,6 +386,8 @@ export default {
 
   
 
+  };
+</script>
 
 
 
