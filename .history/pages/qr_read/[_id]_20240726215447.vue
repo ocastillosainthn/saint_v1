@@ -121,7 +121,7 @@
           </div>
 
           <div class="itemPersona"> 
-            <div>Correo </div>
+            <div>Correo electrónico </div>
             <div> {{ participanteSelected?.persona?.correo }} </div>
           </div>
 
