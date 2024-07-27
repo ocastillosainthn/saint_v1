@@ -132,7 +132,7 @@
 
           <div class="itemPersona"> 
             <div>Tipo </div>
-            <div> {{ participanteSelected?.persona?.tipoPersona.tipoPersona }} </div>
+            <div> {{ participanteSelected?.persona?.tipoPersona }} </div>
           </div>
 
 

@@ -99,7 +99,7 @@
 
       </k-navbar>
       
-      
+      participantSel
       <div style="padding: 20px;">
 
         <div>
@@ -132,7 +132,7 @@
 
           <div class="itemPersona"> 
             <div>Tipo </div>
-            <div> {{ participanteSelected?.persona?.tipoPersona.tipoPersona }} </div>
+            <div> {{ participanteSelected?.persona?.tipoPersona }} </div>
           </div>
 
 
@@ -238,7 +238,7 @@ async function cargarParticipantes(visitaId) {
   try {
     const { data, error } = await supabase
       .from('participantes')
-      .select('*,persona(*, empresa(*), tipoPersona(*))')
+      .select('*,persona(*, empresa(*))')
       .eq('visita', visitaId);
 
     if (error) throw error;

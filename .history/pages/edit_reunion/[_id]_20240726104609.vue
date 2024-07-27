@@ -728,7 +728,9 @@ const abrirDialogoConfirmacion = (id) => {
 
 async function cargarPersonas() {
   try {
-   
+    console.log('division.value:', division.value?.id);
+    console.log('entidad.value:', entidad.value);
+    console.log('tipo:', division.value?.entidad.tipo.id);
 
 
     let query = supabase.from('persona').select('*').order('nombre', { ascending: true });
