@@ -53,18 +53,17 @@
 
   <div  style="min-width: 60%; margin-right: 10px;">
       <label for="fehaHoraVisita">Fecha y hora </label>
-      <Calendar
-            ref="calendarRef"
-            showTime
-            v-model="fehaHora"
-            hourFormat="12"
-            :minDate="minDate"
-            :disabledDates="[]"
-            :disabledHours="disabledHours"
-            showButtonBar
-            showIcon
-            iconDisplay="input"
-          >
+      <Calendar 
+          ref="calendarRef"
+          showTime
+          v-model="fehaHora"
+          hourFormat="12"
+          :minDate="minDate"
+          :disabledDates="disabledDates"
+          :disabledHours="disabledHours"
+          showButtonBar
+          showIcon
+          iconDisplay="input">
 
       <template v-if="fehaHora" #footer>
       <Button class="closeCalendar" @click="closeCalendar" >Confirmar fecha</Button>
@@ -433,9 +432,6 @@ const fehaHora = ref('');
 
 const calendarRef = ref(null);
 const numberVisit = ref(1);
-const minDate = ref(new Date());
-const disabledDates = ref([]);
-
 
 const closeCalendar = () => {
   calendarRef.value.overlayVisible = false;
@@ -463,17 +459,6 @@ const hours = ref([
 ]);
 
 
-const disabledHours = (date) => {
-  const now = new Date();
-  if (
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-  ) {
-    return Array.from({ length: now.getHours() }, (_, i) => i);
-  }
-  return [];
-};
 
 onMounted(async () => {
   const divisionId = route.params._id;

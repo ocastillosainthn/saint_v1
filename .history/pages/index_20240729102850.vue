@@ -9,7 +9,7 @@
   <k-navbar  v-if="rol !== 'user'"
       title=""
       class="top-0 sticky"
-      style="background-color: white;"
+      style="background-color: white;"`
     >
       
       <template #right>
@@ -677,7 +677,7 @@ async function cargarVisita() {
     console.error('Error al cargar las visitas y participantes:', error.message);
   }
 }
-  
+
 
 
 function haptic(style) {

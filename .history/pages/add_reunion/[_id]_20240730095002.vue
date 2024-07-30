@@ -59,7 +59,7 @@
             v-model="fehaHora"
             hourFormat="12"
             :minDate="minDate"
-            :disabledDates="[]"
+            :disabledDates="disabledDates"
             :disabledHours="disabledHours"
             showButtonBar
             showIcon
@@ -433,8 +433,7 @@ const fehaHora = ref('');
 
 const calendarRef = ref(null);
 const numberVisit = ref(1);
-const minDate = ref(new Date());
-const disabledDates = ref([]);
+
 
 
 const closeCalendar = () => {
@@ -463,7 +462,9 @@ const hours = ref([
 ]);
 
 
-const disabledHours = (date) => {
+const minDate = new Date();
+const disabledDates = ref<Date[]>([]);
+const disabledHours = (date: Date) => {
   const now = new Date();
   if (
     date.getDate() === now.getDate() &&
@@ -474,6 +475,7 @@ const disabledHours = (date) => {
   }
   return [];
 };
+
 
 onMounted(async () => {
   const divisionId = route.params._id;

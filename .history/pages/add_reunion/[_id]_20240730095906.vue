@@ -463,14 +463,14 @@ const hours = ref([
 ]);
 
 
-const disabledHours = (date) => {
+const disabledHours = (date: Date) => {
   const now = new Date();
   if (
     date.getDate() === now.getDate() &&
     date.getMonth() === now.getMonth() &&
     date.getFullYear() === now.getFullYear()
   ) {
-    return Array.from({ length: now.getHours() }, (_, i) => i);
+    return Array.from({ length: now.getHours() }, (_, i) => i); // Deshabilita horas anteriores a la actual
   }
   return [];
 };
