@@ -351,7 +351,7 @@
       v-for="(persona, index) in personasSeleccionadas" 
         :key="index" 
         :title="persona.nombre" 
-        :footer="persona.tipoPersona.tipoPersona">
+        :footer="persona.email">
         <template #after>
           <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removeSelectedPerson(index)"/>
         </template>
@@ -548,10 +548,17 @@ async function crearEmpresa() {
 
 
 
-const formattedPersonas = computed(() => personas.value.map(persona => ({
-  ...persona,
-  nombre: persona.nombre,
-})));
+const formattedPersonas = computed(() =>
+  personas.value.map(persona => ({
+    ...persona,
+    optionLabel: 
+    `
+     ${persona.nombre} 
+      - ${persona.tipoPersona.tipoPersona}
+
+    `
+  }))
+);
 
 async function crearVisita() {
   loading.value = true;
@@ -977,10 +984,8 @@ label{
 }
 
 .spaceB{
-  justify-content: space-between;
-  align-items: center;
+  
 }
-
 
 .p-checkbox-box{
   border-width: 1px;

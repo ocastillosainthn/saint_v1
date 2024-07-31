@@ -234,13 +234,14 @@
 
       </div>
       
-      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="" multiple filter style="width: 100%; height: 500px;">
-    <template #option="slotProps">
-      <div class="flex align-items-center spaceB">
-        <span>{{ slotProps.option.nombre }}</span>
-        <span style="color: gray; font-size: 13px; margin-left: 10px;">
-           {{ slotProps.option.tipoPersona.tipoPersona }}
-        </span>
+      <ListBox v-model="personasSeleccionadas" :options="personas"  multiple filter style="width: 100%; height: 500px;">
+    <template #item="slotProps">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <div>
+          <div>{{ slotProps.option.nombre }}</div>
+          <div>{{ slotProps.option.tipoPersona.tipoPersona }}</div>
+        </div>
+        <Icon name="solar:check-circle-bold" style="font-size:25px; color: red;" />
       </div>
     </template>
   </ListBox>
@@ -351,7 +352,7 @@
       v-for="(persona, index) in personasSeleccionadas" 
         :key="index" 
         :title="persona.nombre" 
-        :footer="persona.tipoPersona.tipoPersona">
+        :footer="persona.email">
         <template #after>
           <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removeSelectedPerson(index)"/>
         </template>
@@ -548,10 +549,14 @@ async function crearEmpresa() {
 
 
 
-const formattedPersonas = computed(() => personas.value.map(persona => ({
-  ...persona,
-  nombre: persona.nombre,
-})));
+const formattedPersonas = personas.value.map(persona => ({
+      ...persona,
+      optionLabel: `${persona.nombre} - ${persona.tipoPersona.tipoPersona}`
+    }));
+
+    return { personasSeleccionadas, formattedPersonas };
+  }
+  
 
 async function crearVisita() {
   loading.value = true;
@@ -975,12 +980,6 @@ label{
   font-size: 14px;
   color: gray;
 }
-
-.spaceB{
-  justify-content: space-between;
-  align-items: center;
-}
-
 
 .p-checkbox-box{
   border-width: 1px;

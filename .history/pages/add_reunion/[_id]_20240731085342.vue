@@ -234,12 +234,12 @@
 
       </div>
       
-      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="" multiple filter style="width: 100%; height: 500px;">
-    <template #option="slotProps">
-      <div class="flex align-items-center spaceB">
+      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="nombre" multiple filter style="width: 100%; height: 500px;">
+    <template #item="slotProps">
+      <div style="display: flex; align-items: center;">
         <span>{{ slotProps.option.nombre }}</span>
-        <span style="color: gray; font-size: 13px; margin-left: 10px;">
-           {{ slotProps.option.tipoPersona.tipoPersona }}
+        <span style="color: blue; font-size: 12px; margin-left: 10px;">
+          - {{ slotProps.option.tipoPersona.tipoPersona }}
         </span>
       </div>
     </template>
@@ -351,7 +351,7 @@
       v-for="(persona, index) in personasSeleccionadas" 
         :key="index" 
         :title="persona.nombre" 
-        :footer="persona.tipoPersona.tipoPersona">
+        :footer="persona.email">
         <template #after>
           <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removeSelectedPerson(index)"/>
         </template>
@@ -550,8 +550,10 @@ async function crearEmpresa() {
 
 const formattedPersonas = computed(() => personas.value.map(persona => ({
   ...persona,
-  nombre: persona.nombre,
+  // Mantenemos `optionLabel` en `nombre` para que el `ListBox` sepa qué campo usar
 })));
+
+
 
 async function crearVisita() {
   loading.value = true;
@@ -975,12 +977,6 @@ label{
   font-size: 14px;
   color: gray;
 }
-
-.spaceB{
-  justify-content: space-between;
-  align-items: center;
-}
-
 
 .p-checkbox-box{
   border-width: 1px;

@@ -351,7 +351,7 @@
       v-for="(persona, index) in personasSeleccionadas" 
         :key="index" 
         :title="persona.nombre" 
-        :footer="persona.tipoPersona.tipoPersona">
+        :footer="persona.email">
         <template #after>
           <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removeSelectedPerson(index)"/>
         </template>
@@ -550,7 +550,7 @@ async function crearEmpresa() {
 
 const formattedPersonas = computed(() => personas.value.map(persona => ({
   ...persona,
-  nombre: persona.nombre,
+  nombre: persona.nombre, // Aquí se mantiene 'nombre' como la propiedad principal para optionLabel
 })));
 
 async function crearVisita() {
