@@ -126,13 +126,11 @@
         <div > 
 
               <k-fab
-              
               v-if="personasSeleccionadas.length > 0"
                 class="fixed left-1/2 bottom-4-safe transform -translate-x-1/2 z-20 "
                 text="Agregar "
                 text-position="after"
                 @click="() => (popupOpened = false)"
-                
                 >
               </k-fab>
 
@@ -188,16 +186,16 @@
             </div>
 
             <div style="margin-bottom: 10px;">
-              <label for="personaName">Nombre de persona</label>
-              <InputText id="personaName" v-model="personaName" aria-describedby="personaName-help" />
-              <p v-if="errors.personaName" style="color: red;">{{ errors.personaName }}</p>
-            </div>
+  <label for="personaName">Nombre de persona</label>
+  <InputText id="personaName" v-model="personaName" aria-describedby="personaName-help" />
+  <p v-if="errors.personaName" style="color: red;">{{ errors.personaName }}</p>
+</div>
 
-            <div style="margin-bottom: 20px;"> 
-              <label for="tipopersona">Tipo de persona</label>
-              <Dropdown v-model="selectTipoPersona" editable :options="tipoPersonaOptions" optionLabel="label" placeholder="Tipo persona" class="w-full md:w-14rem" />
-              <p v-if="errors.selectTipoPersona" style="color: red;">{{ errors.selectTipoPersona }}</p>
-            </div>
+<div style="margin-bottom: 20px;"> 
+  <label for="tipopersona">Tipo de persona</label>
+  <Dropdown v-model="selectTipoPersona" editable :options="tipoPersonaOptions" optionLabel="label" placeholder="Tipo persona" class="w-full md:w-14rem" />
+  <p v-if="errors.selectTipoPersona" style="color: red;">{{ errors.selectTipoPersona }}</p>
+</div>
 
 
             <div style="margin-bottom: 10px;">
@@ -238,20 +236,16 @@
 
       </div>
       
-      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="nombre" multiple filter style="width: 100%; height: 500px;">
-        <template #option="slotProps">
-          <div class="flex align-items-center spaceB">
-            <div> 
-              <span>{{ slotProps.option.nombre }}</span>
-              <span style="color: gray; font-size: 13px; margin-left: 10px;">
-                {{ slotProps.option.tipoPersona.tipoPersona }}
-              </span>
-            </div>
-            <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removePerson(slotProps.option.id)"/>
-          </div>
-        </template>
-      </ListBox>
-
+      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="" multiple filter style="width: 100%; height: 500px;">
+    <template #option="slotProps">
+      <div class="flex align-items-center spaceB">
+        <span>{{ slotProps.option.nombre }}</span>
+        <span style="color: gray; font-size: 13px; margin-left: 10px;">
+           {{ slotProps.option.tipoPersona.tipoPersona }}
+        </span>
+      </div>
+    </template>
+  </ListBox>
 
       </k-popup>
 
@@ -431,7 +425,6 @@ const empresasActivas = ref([]);
 const selectedEmpresa = ref(null);
 
 const userData = ref(null);
-const errors = ref({});
 
 
 const puestoEmpresa = ref('');
@@ -473,21 +466,6 @@ const hours = ref([
     { name: '+ 12 horas', time: 13}
 ]);
 
-
-function validarFormulario() {
-  errors.value = {};
-
-  if (!personaName.value.trim()) {
-    errors.value.personaName = 'El nombre de la persona es obligatorio.';
-  }
-
-  if (!selectTipoPersona.value) {
-    errors.value.selectTipoPersona = 'El tipo de persona es obligatorio.';
-  }
-
-  // Retorna false si hay errores
-  return Object.keys(errors.value).length === 0;
-}
 
 const disabledHours = (date) => {
   const now = new Date();
@@ -575,7 +553,6 @@ async function crearEmpresa() {
 const formattedPersonas = computed(() => personas.value.map(persona => ({
   ...persona,
   nombre: persona.nombre,
-  id: persona.id,
 })));
 
 async function crearVisita() {
@@ -664,10 +641,6 @@ async function crearParticipantes(personasSeleccionadas, visita) {
 }
 
 async function crearPersona() {
-  if (!validarFormulario()) {
-    return; // Se detiene la ejecución si la validación falla
-  }
-
   loading.value = true;
 
   const payload = {
@@ -683,18 +656,23 @@ async function crearPersona() {
     entidad: entidad.value
   };
 
+  console.log('Payload enviado:', payload);
+
   const { data, error } = await supabase.from('persona').insert([payload]);
 
   if (error) {
     console.error('Error al crear persona:', error);
     triggerToast('Error al crear persona', 'red');
+    loading.value = false;
+
   } else {
+   
     cargarPersonas();
     triggerToast('Persona creada exitosamente', 'green');
     popupPersona.value = false;
-  }
+    loading.value = false;
 
-  loading.value = false;
+  }
 }
 
 
@@ -704,11 +682,11 @@ async function cargarPersonas() {
     console.log('entidad.value:', entidad.value);
     console.log('tipo:', division.value?.entidad.tipo.id);
 
+
     let query = supabase
-      .from('persona')
-      .select('*,tipoPersona(*)')
-      .eq('delete', false ) // Excluir personas que tienen delete como true
-      .order('nombre', { ascending: true });
+    .from('persona')
+    .select('*,tipoPersona(*)')
+    .order('nombre', { ascending: true });
 
     if (division.value?.entidad.tipo.id === 1) {
       console.log('Tipo 1 - Consulta a entidad', entidad.value);
@@ -723,17 +701,19 @@ async function cargarPersonas() {
     if (error) {
       console.error('Error al cargar personas:', error);
       loading.value = false;
+
     } else {
       personas.value = data;
       console.log('personas', personas);
       loading.value = false;
+
     }
   } catch (error) {
     console.error('Error al cargar personas:', error);
     loading.value = false;
+
   }
 }
-
 
 async function cargarEmpresasActivas() {
   let { data: empresas, error } = await supabase
@@ -895,36 +875,6 @@ async function cargarDepartamentos() {
       label: dep.nomDepto, 
       value: dep.IDdepto 
     }));
-  }
-}
-
-
-async function removePerson(id) {
-  try {
-    // Verificar que el ID sea válido
-    if (id) {
-      // Realizar la actualización en la base de datos para marcar la persona como eliminada
-      const { error } = await supabase
-        .from('persona')
-        .update({ delete: true }) // Asumiendo que la columna se llama "delete"
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error al marcar como eliminada a la persona:', error);
-        triggerToast('Error al eliminar persona', 'red');
-      } else {
-        // Eliminar la persona de la lista de seleccionados
-        personasSeleccionadas.value = personasSeleccionadas.value.filter(persona => persona.id !== id);
-        triggerToast('Persona eliminada correctamente', 'green');
-        cargarPersonas();
-      }
-    } else {
-      console.error('ID inválido o persona no encontrada');
-      triggerToast('ID inválido o persona no encontrada', 'red');
-    }
-  } catch (error) {
-    console.error('Error al eliminar persona:', error);
-    triggerToast('Error al eliminar persona', 'red');
   }
 }
 

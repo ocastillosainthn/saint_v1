@@ -242,6 +242,7 @@
         <template #option="slotProps">
           <div class="flex align-items-center spaceB">
             <div> 
+              <span>{{ slotProps.option.id }} - </span>
               <span>{{ slotProps.option.nombre }}</span>
               <span style="color: gray; font-size: 13px; margin-left: 10px;">
                 {{ slotProps.option.tipoPersona.tipoPersona }}
@@ -916,7 +917,7 @@ async function removePerson(id) {
         // Eliminar la persona de la lista de seleccionados
         personasSeleccionadas.value = personasSeleccionadas.value.filter(persona => persona.id !== id);
         triggerToast('Persona eliminada correctamente', 'green');
-        cargarPersonas();
+        cargarPersonas
       }
     } else {
       console.error('ID inválido o persona no encontrada');

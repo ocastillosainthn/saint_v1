@@ -1,13 +1,7 @@
 <template>
   <k-page v-if="division" style="background-color: rgb(247, 247, 247);">
-
-    <div v-if="loading"  class="loadingPage"> 
-        <k-preloader  style="display: flex;" size="w-5 h-5" />
-      </div>
-
-
     <k-navbar 
-    :title="dynamicTitle"
+    title="Agregar persona"
       small
       class="top-0 sticky"
       style="background-color: white;"
@@ -23,88 +17,81 @@
 <div class="container">
 
 <div style="display: flex; justify-content: space-between; "> 
-  <div v-if="division && division.entidad.tipo.id === 1"  class="flex align-items-center" 
 
-    style="margin-bottom: 15px; display: flex;
-    justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita Privada </span></label>
-       
-  </div>
+  <div > 
 
-  <div  v-if="division && division.entidad.tipo.id === 2" class="flex align-items-center" 
-    style="margin-bottom: 15px; display: flex;
-    justify-content: space-between;">
-      <label style="margin-right: 20px;"> Crear como <span style="font-weight: 800; color: black;"> Visita Privada </span></label>
-  </div>
-    
-  <Checkbox v-model="checked" :binary="true" />
+<div style="margin-bottom: 10px;" v-if="division && division.entidad.tipo.id === 1"> 
+
+
+<div style="display: flex;"> 
+<div style="width: 90%;" > 
+  <label  for="empresa">Empresa  </label>
+  <Dropdown v-model="selectedEmpresa" editable :options="empresasActivas" optionLabel="name" placeholder="Buscar empresa" class="w-full md:w-14rem" />
+</div>
+
+<Icon name="solar:add-circle-bold" @click="openEmpresa" style="font-size:25px; color: #0586F0; margin-top: 29px; margin-left:25px"/>
+
+</div>
+
+<div style="margin-top: 10px;">
+  <label for="puestoEmpresa"> Puesto </label>
+  <InputText id="puestoEmpresa" v-model="puestoEmpresa" aria-describedby="puestoEmpresa-help" />
+</div>
+
+
+</div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="personaName">Nombre de persona</label>
+      <InputText id="personaName" v-model="personaName" aria-describedby="personaName-help" />
+      <p v-if="errors.personaName" style="color: red;">{{ errors.personaName }}</p>
+    </div>
+
+    <div style="margin-bottom: 20px;"> 
+      <label for="tipopersona">Tipo de persona</label>
+      <Dropdown v-model="selectTipoPersona" editable :options="tipoPersonaOptions" optionLabel="label" placeholder="Tipo persona" class="w-full md:w-14rem" />
+      <p v-if="errors.selectTipoPersona" style="color: red;">{{ errors.selectTipoPersona }}</p>
+    </div>
+
+
+    <div style="margin-bottom: 10px;">
+      <label for="email">Correo electrónico </label>
+      <InputText id="email" v-model="emailPersona" aria-describedby="email-help" />
+    </div>
+
+
+    <div style="display: flex;">
+
+        <div class="columnForm" style="margin-right: 10px;">
+          <label for="dni">DNI/ Pasaporte </label>
+          <InputText id="dni" v-model="dniPasaporte" aria-describedby="dniPasaporte-help" />
+      </div>
+
+      <div class="columnForm">
+          <label for="phone">Teléfono </label>
+          <InputText id="phone" v-model="phone" aria-describedby="phone-help" />
+      </div>
+
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="placa">Placa vehicular </label>
+      <InputText id="placa" v-model="placa" aria-describedby="placa-help" />
+    </div>
+
+    <k-button type="submit" @click="crearPersona" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+    </k-button>
+
+    </div>
+
+
+  
   
 </div>
 
 
-  <div style="margin-bottom: 10px;">
+  
 
-      <label for="username">Motivo de la visita </label>
-      <InputText id="nameVisita" v-model="nameVisita" aria-describedby="username-help" />
-  </div>
-
-
- <div style="display: flex; margin-bottom: 10px;">
-
-  <div  style="min-width: 60%; margin-right: 10px;">
-      <label for="fehaHoraVisita">Fecha y hora </label>
-      <Calendar
-            ref="calendarRef"
-            showTime
-            v-model="fehaHora"
-            hourFormat="12"
-            :minDate="minDate"
-            :disabledDates="[]"
-            :disabledHours="disabledHours"
-            showButtonBar
-            showIcon
-            iconDisplay="input"
-          >
-
-      <template v-if="fehaHora" #footer>
-      <Button class="closeCalendar" @click="closeCalendar" >Confirmar fecha</Button>
-    </template>
-
-    </Calendar> 
-      
-  </div>
-
-
-  <div style="width: 35%;">
-    <label for="duracion">Duración </label>
-    <Dropdown v-model="selectedHour" 
-    :options="hours" optionLabel="name" placeholder="Seleccionar" checkmark :highlightOnSelect="false" class="w-full md:w-14rem" />
-
-  </div>
-
-
-</div> 
-<label for="cantidad">Acompañantes de visita </label>
-<InputText id="numberVisita" v-model="numberVisit" type="number" aria-describedby="username-help" />
-
-<div>
-
-
-</div>
-
-<div class="centerTittleAction"> 
-    <k-block-title style="margin-bottom: 5px; margin-top: 5px;">Participantes</k-block-title>
-    <Icon name="solar:add-circle-bold" @click="openPopup" style="font-size:28px; color: #0586F0; "/>
-
-</div>
- <div  class="center-content"  v-if="personasSeleccionadas.length == 0">
-
-  <Icon name="solar:user-cross-broken" style="font-size:40px; color: #4d4d4d; margin-bottom: 10px;"/>
-  <p>No se han agregado participantes</p>
-
-  <Button @click="openPopup"  style="color:#0586F0; font-size: 15px; font-weight: 600; margin-bottom: 40px">Agregar Participante </Button>
-
-</div>
 
 <div class="addUser">
 
@@ -125,16 +112,6 @@
 
         <div > 
 
-              <k-fab
-              
-              v-if="personasSeleccionadas.length > 0"
-                class="fixed left-1/2 bottom-4-safe transform -translate-x-1/2 z-20 "
-                text="Agregar "
-                text-position="after"
-                @click="() => (popupOpened = false)"
-                
-                >
-              </k-fab>
 
               <k-fab
                   class="fixed right-4-safe bottom-4-safe z-20"
@@ -153,9 +130,9 @@
 
 
 
-        <k-popup :opened="popupPersona" @backdropclick="() => (popupPersona = false)" class="popMedio">
+        <k-popup :opened="popupPersona" @backdropclick="() => (popupPersona = false)">
                 <k-navbar  
-                title="Crear Persona "
+                title="Crear Persona"
                 small
                 isTralucent style="background-color: white;">
                 
@@ -164,7 +141,7 @@
               </template>
             </k-navbar>
 
-            <div class="container" > 
+   <div class="container" > 
 
               <div style="margin-bottom: 10px;" v-if="division && division.entidad.tipo.id === 1"> 
           
@@ -187,16 +164,14 @@
             
             </div>
 
-            <div style="margin-bottom: 10px;">
-              <label for="personaName">Nombre de persona</label>
-              <InputText id="personaName" v-model="personaName" aria-describedby="personaName-help" />
-              <p v-if="errors.personaName" style="color: red;">{{ errors.personaName }}</p>
+                <div style="margin-bottom: 10px;">
+                <label for="personaName">Nombre del persona </label>
+                <InputText id="personaName" v-model="personaName" aria-describedby="personaName-help" />
             </div>
 
-            <div style="margin-bottom: 20px;"> 
-              <label for="tipopersona">Tipo de persona</label>
-              <Dropdown v-model="selectTipoPersona" editable :options="tipoPersonaOptions" optionLabel="label" placeholder="Tipo persona" class="w-full md:w-14rem" />
-              <p v-if="errors.selectTipoPersona" style="color: red;">{{ errors.selectTipoPersona }}</p>
+            <div style="margin-bottom: 20px;" > 
+                <label for="tipopersona">Tipo de persona </label>
+                  <Dropdown v-model="selectTipoPersona" editable :options="tipoPersonaOptions" optionLabel="label" placeholder="Tipo persona" class="w-full md:w-14rem" />
             </div>
 
 
@@ -225,7 +200,7 @@
                 <InputText id="placa" v-model="placa" aria-describedby="placa-help" />
             </div>
 
-            <k-button v-if="!loading" type="submit" @click="crearPersona" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
+            <k-button type="submit" @click="crearPersona" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
               </k-button>
 
               </div>
@@ -237,21 +212,15 @@
 
 
       </div>
-      
-      <ListBox v-model="personasSeleccionadas" :options="formattedPersonas" optionLabel="nombre" multiple filter style="width: 100%; height: 500px;">
-        <template #option="slotProps">
-          <div class="flex align-items-center spaceB">
-            <div> 
-              <span>{{ slotProps.option.nombre }}</span>
-              <span style="color: gray; font-size: 13px; margin-left: 10px;">
-                {{ slotProps.option.tipoPersona.tipoPersona }}
-              </span>
-            </div>
-            <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removePerson(slotProps.option.id)"/>
+
+      <ListBox v-model="personasSeleccionadas" :options="personas" optionLabel="nombre" multiple filter style="width: 100%; height: 500px;">
+        <template #item="slotProps">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            {{ slotProps.option.name }}
+            <Icon name="solar:check-circle-bold" style="font-size:25px; color: red;" />
           </div>
         </template>
       </ListBox>
-
 
       </k-popup>
 
@@ -359,7 +328,7 @@
       v-for="(persona, index) in personasSeleccionadas" 
         :key="index" 
         :title="persona.nombre" 
-        :footer="persona.tipoPersona.tipoPersona">
+        :footer="persona.email">
         <template #after>
           <Icon name="solar:trash-bin-minimalistic-line-duotone" style="font-size:17px; color: #f54e4e;" @click.stop="removeSelectedPerson(index)"/>
         </template>
@@ -368,8 +337,6 @@
 </div>
 
 
-<k-button v-if="!loading &&  personasSeleccionadas.length > 0" type="submit" @click="crearVisita" label="+ Crear" style="width: 100%; margin-top: 10px; height:50px!important; background-image: linear-gradient(to right, #20C4D6, #0586F0);">
-              </k-button>
 
 </div>
 
@@ -397,6 +364,7 @@ import ListBox from 'primevue/listbox';
 
 
 
+const errors = ref({});
 
 
 const openedToast = ref(false);
@@ -414,7 +382,6 @@ const popupOpened = ref(false);
 const popupPersona = ref(false);
 const popupEmpresa = ref(false);
 const personas = ref([]);
-const loading = ref(false);
 
 const selectTipoPersona = ref(null);
 const tipoPersonaOptions = ref([]);
@@ -426,12 +393,12 @@ const selectDepartamento = ref(null);
 const selectMunicipio = ref(null);
 const departamentoOptions = ref([]);
 const personasSeleccionadas = ref([]);
+
 const municipioOptions = ref([]);
 const empresasActivas = ref([]);
 const selectedEmpresa = ref(null);
 
 const userData = ref(null);
-const errors = ref({});
 
 
 const puestoEmpresa = ref('');
@@ -442,35 +409,16 @@ const phone = ref('');
 const placa = ref('');
 const fehaHora = ref('');
 
-const calendarRef = ref(null);
-const numberVisit = ref(1);
-const minDate = ref(new Date());
-const disabledDates = ref([]);
-
-
-const closeCalendar = () => {
-  calendarRef.value.overlayVisible = false;
-};
-
 const selectedHour = ref();
 const hours = ref([
-    { name: '30 min', time: 30},
-    { name: '1 hr', time: 1},
-    { name: '1 hr 30 min', time: 130},
-    { name: '2 hr', time: 2 },
-    { name: '2 hr 30 min', time: 230},
-    { name: '3 hr' , time: 3},
-    { name: '3 hr 30 min', time: 330},
-    { name: '4 hr', time: 4 },
-    { name: '4 hr 30 min', time: 430},
-    { name: '5 hr', time: 5},
-    { name: '5 hr 30 min', time: 530},
-    { name: '6 hr', time: 6},
-    { name: '6 hr 30 min', time: 630},
-    { name: '8 hr', time: 8},
-    { name: '8 hr 30 min', time: 830},
-    { name: '12 horas', time: 12},
-    { name: '+ 12 horas', time: 13}
+    { name: '1 hora', time: 1},
+    { name: '2 horas', time: 2 },
+    { name: '3 horas' , time: 3},
+    { name: '4 horas', time: 4 },
+    { name: '5 horas', time: 5},
+    { name: '6 horas', time: 6},
+    { name: '8 horas', time: 8},
+    { name: '12 horas', time: 12}
 ]);
 
 
@@ -485,21 +433,8 @@ function validarFormulario() {
     errors.value.selectTipoPersona = 'El tipo de persona es obligatorio.';
   }
 
-  // Retorna false si hay errores
   return Object.keys(errors.value).length === 0;
 }
-
-const disabledHours = (date) => {
-  const now = new Date();
-  if (
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-  ) {
-    return Array.from({ length: now.getHours() }, (_, i) => i);
-  }
-  return [];
-};
 
 onMounted(async () => {
   const divisionId = route.params._id;
@@ -535,7 +470,6 @@ onMounted(async () => {
 });
 
 async function crearEmpresa() {
-  loading.value = true;
   const departamentoID = empresaData.value.selectDepartamento; 
   const municipioID = empresaData.value.selectMunicipio.value;
   const tipoEmpresaID = empresaData.value.tipoEmpresa.value;
@@ -550,8 +484,7 @@ async function crearEmpresa() {
     departamento: departamentoID, 
     municipio: municipioID,
     paginaWeb: empresaData.value.paginaWeb,
-    direccion: empresaData.value.direccion,
-   
+    direccion: empresaData.value.direccion
   };
 
 
@@ -560,34 +493,19 @@ async function crearEmpresa() {
   if (error) {
     console.error('Error al crear empresa:', error);
     triggerToast('Error al crear empresa', 'red');
-    loading.value = false;
-
   } else {
     triggerToast('Empresa creada exitosamente', 'black');
     popupEmpresa.value = false; 
     cargarEmpresasActivas();
-    loading.value = false;
   }
 }
 
-
-
-const formattedPersonas = computed(() => personas.value.map(persona => ({
-  ...persona,
-  nombre: persona.nombre,
-  id: persona.id,
-})));
-
 async function crearVisita() {
-  loading.value = true;
   try {
     
-    if (!nameVisita.value || !fehaHora.value || !selectedHour.value) { 
-      triggerToast('Nombre, fecha, dirección y duración son campos requeridos', 'red');
-      loading.value = false;
-
+    if (!nameVisita.value.trim() || !fehaHora.value.trim() || !direccion.value.trim()) {
+      triggerToast('Nombre, fecha y dirección son campos requeridos', 'red');
       return; 
-
     }
 
     const userId = userData.value?.id;
@@ -604,10 +522,7 @@ async function crearVisita() {
       visitaevento: checked.value,
       division: division?.value?.id ? division.value.id : null,
       personas_seleccionadas: idsPersonasSeleccionadas,
-      entidad: entidad.value,
-      created_by: userId,
-      cant: numberVisit.value
-
+      created_by: userId
 
       
     };
@@ -623,18 +538,13 @@ async function crearVisita() {
       console.log('ID de la visita creada:', visitaId);
       triggerToast('Visita Creada exitosamente ', 'green');
       navigateToVisita(visitaId);
-      loading.value = false;
 
     } else {
       throw new Error('No se pudo obtener el ID de la visita después de crearla.');
-      loading.value = false;
-
     }
   } catch (error) {
     console.error('Error al crear visita:', error);
     triggerToast('Error al crear visita', 'red');
-    loading.value = false;
-
   }
 }
 
@@ -653,23 +563,13 @@ async function crearParticipantes(personasSeleccionadas, visita) {
       if (error) throw error;
 
       console.log(`Participante creado para persona ${personaId} en la visita ${visita}.`);
-      loading.value = false;
-
     }
   } catch (error) {
     console.error('Error al crear participantes:', error.message);
-    loading.value = false;
-
   }
 }
 
 async function crearPersona() {
-  if (!validarFormulario()) {
-    return; // Se detiene la ejecución si la validación falla
-  }
-
-  loading.value = true;
-
   const payload = {
     empresa: selectedEmpresa?.value?.value === "" ? null : selectedEmpresa?.value?.value,
     puesto: puestoEmpresa.value || '',
@@ -683,18 +583,20 @@ async function crearPersona() {
     entidad: entidad.value
   };
 
+  console.log('Payload enviado:', payload);
+
   const { data, error } = await supabase.from('persona').insert([payload]);
 
   if (error) {
     console.error('Error al crear persona:', error);
     triggerToast('Error al crear persona', 'red');
   } else {
+   
     cargarPersonas();
     triggerToast('Persona creada exitosamente', 'green');
     popupPersona.value = false;
-  }
 
-  loading.value = false;
+  }
 }
 
 
@@ -704,11 +606,8 @@ async function cargarPersonas() {
     console.log('entidad.value:', entidad.value);
     console.log('tipo:', division.value?.entidad.tipo.id);
 
-    let query = supabase
-      .from('persona')
-      .select('*,tipoPersona(*)')
-      .eq('delete', false ) // Excluir personas que tienen delete como true
-      .order('nombre', { ascending: true });
+
+    let query = supabase.from('persona').select('*').order('nombre', { ascending: true });
 
     if (division.value?.entidad.tipo.id === 1) {
       console.log('Tipo 1 - Consulta a entidad', entidad.value);
@@ -722,18 +621,14 @@ async function cargarPersonas() {
 
     if (error) {
       console.error('Error al cargar personas:', error);
-      loading.value = false;
     } else {
       personas.value = data;
       console.log('personas', personas);
-      loading.value = false;
     }
   } catch (error) {
     console.error('Error al cargar personas:', error);
-    loading.value = false;
   }
 }
-
 
 async function cargarEmpresasActivas() {
   let { data: empresas, error } = await supabase
@@ -745,12 +640,8 @@ async function cargarEmpresasActivas() {
 
   if (error) {
     console.error('Error al cargar empresas:', error);
-    loading.value = false;
-
   } else {
     console.log('Listado empresas:', error);
-    loading.value = false;
-
 
     empresasActivas.value = empresas.map(empresa => ({
       name: empresa.nombre, 
@@ -798,11 +689,8 @@ async function cargarDivision(divisionId) {
     entidad.value = data.entidad.id;
   } catch (error) {
     console.error('Error al obtener la división:', error);
-    loading.value = false;
-
   }
 }
-
 
 function goBack() {
   router.back();
@@ -811,7 +699,6 @@ function goBack() {
 function openPopup() {
   popupOpened.value = true;
   const personasSeleccionadasArray = personasSeleccionadas._rawValue || personasSeleccionadas._value;
-  console.log(personasSeleccionadasArray)
 
   if (Array.isArray(personasSeleccionadasArray)) {
     const ids = personasSeleccionadasArray.map(persona => persona.id);
@@ -895,36 +782,6 @@ async function cargarDepartamentos() {
       label: dep.nomDepto, 
       value: dep.IDdepto 
     }));
-  }
-}
-
-
-async function removePerson(id) {
-  try {
-    // Verificar que el ID sea válido
-    if (id) {
-      // Realizar la actualización en la base de datos para marcar la persona como eliminada
-      const { error } = await supabase
-        .from('persona')
-        .update({ delete: true }) // Asumiendo que la columna se llama "delete"
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error al marcar como eliminada a la persona:', error);
-        triggerToast('Error al eliminar persona', 'red');
-      } else {
-        // Eliminar la persona de la lista de seleccionados
-        personasSeleccionadas.value = personasSeleccionadas.value.filter(persona => persona.id !== id);
-        triggerToast('Persona eliminada correctamente', 'green');
-        cargarPersonas();
-      }
-    } else {
-      console.error('ID inválido o persona no encontrada');
-      triggerToast('ID inválido o persona no encontrada', 'red');
-    }
-  } catch (error) {
-    console.error('Error al eliminar persona:', error);
-    triggerToast('Error al eliminar persona', 'red');
   }
 }
 
@@ -1028,12 +885,6 @@ label{
   color: gray;
 }
 
-.spaceB{
-  justify-content: space-between;
-  align-items: center;
-}
-
-
 .p-checkbox-box{
   border-width: 1px;
   border-style: solid;
@@ -1081,9 +932,5 @@ label{
 .columnForm{
   margin-bottom: 10px;
   width:100%;
-}
-
-.popMedio{
-  height: 100vh;
 }
 </style>

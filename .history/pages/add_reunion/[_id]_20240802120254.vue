@@ -242,6 +242,7 @@
         <template #option="slotProps">
           <div class="flex align-items-center spaceB">
             <div> 
+              <span>{{ slotProps.option.id }} - </span>
               <span>{{ slotProps.option.nombre }}</span>
               <span style="color: gray; font-size: 13px; margin-left: 10px;">
                 {{ slotProps.option.tipoPersona.tipoPersona }}
@@ -707,7 +708,7 @@ async function cargarPersonas() {
     let query = supabase
       .from('persona')
       .select('*,tipoPersona(*)')
-      .eq('delete', false ) // Excluir personas que tienen delete como true
+      .neq('delete', ) // Excluir personas que tienen delete como true
       .order('nombre', { ascending: true });
 
     if (division.value?.entidad.tipo.id === 1) {
@@ -916,7 +917,6 @@ async function removePerson(id) {
         // Eliminar la persona de la lista de seleccionados
         personasSeleccionadas.value = personasSeleccionadas.value.filter(persona => persona.id !== id);
         triggerToast('Persona eliminada correctamente', 'green');
-        cargarPersonas();
       }
     } else {
       console.error('ID inválido o persona no encontrada');

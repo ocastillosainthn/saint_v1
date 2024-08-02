@@ -242,6 +242,7 @@
         <template #option="slotProps">
           <div class="flex align-items-center spaceB">
             <div> 
+              <span>{{ slotProps.option.id }} - </span>
               <span>{{ slotProps.option.nombre }}</span>
               <span style="color: gray; font-size: 13px; margin-left: 10px;">
                 {{ slotProps.option.tipoPersona.tipoPersona }}

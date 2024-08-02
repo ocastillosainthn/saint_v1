@@ -243,6 +243,8 @@
           <div class="flex align-items-center spaceB">
             <div> 
               <span>{{ slotProps.option.nombre }}</span>
+
+              <span>{{ slotProps.option.nombre }}</span>
               <span style="color: gray; font-size: 13px; margin-left: 10px;">
                 {{ slotProps.option.tipoPersona.tipoPersona }}
               </span>
@@ -704,11 +706,11 @@ async function cargarPersonas() {
     console.log('entidad.value:', entidad.value);
     console.log('tipo:', division.value?.entidad.tipo.id);
 
+
     let query = supabase
-      .from('persona')
-      .select('*,tipoPersona(*)')
-      .eq('delete', false ) // Excluir personas que tienen delete como true
-      .order('nombre', { ascending: true });
+    .from('persona')
+    .select('*,tipoPersona(*)')
+    .order('nombre', { ascending: true });
 
     if (division.value?.entidad.tipo.id === 1) {
       console.log('Tipo 1 - Consulta a entidad', entidad.value);
@@ -723,17 +725,19 @@ async function cargarPersonas() {
     if (error) {
       console.error('Error al cargar personas:', error);
       loading.value = false;
+
     } else {
       personas.value = data;
       console.log('personas', personas);
       loading.value = false;
+
     }
   } catch (error) {
     console.error('Error al cargar personas:', error);
     loading.value = false;
+
   }
 }
-
 
 async function cargarEmpresasActivas() {
   let { data: empresas, error } = await supabase
@@ -916,7 +920,6 @@ async function removePerson(id) {
         // Eliminar la persona de la lista de seleccionados
         personasSeleccionadas.value = personasSeleccionadas.value.filter(persona => persona.id !== id);
         triggerToast('Persona eliminada correctamente', 'green');
-        cargarPersonas();
       }
     } else {
       console.error('ID inválido o persona no encontrada');
