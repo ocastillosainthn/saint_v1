@@ -466,11 +466,9 @@ const hours = ref([
     { name: '5 hr', time: 5},
     { name: '5 hr 30 min', time: 6},
     { name: '6 hr', time: 6},
-    { name: '6 hr 30 min', time: 7},
-    { name: '7 hr', time: 7},
-    { name: '7 hr 30 min', time: 8},
+    { name: '6 hr 30 min', time: 630},
     { name: '8 hr', time: 8},
-    { name: '8 hr 30 min', time: 9},
+    { name: '8 hr 30 min', time: 830},
     { name: '12 horas', time: 12},
     { name: '+ 12 horas', time: 13}
 ]);
