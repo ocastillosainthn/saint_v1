@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint Access - Descarga la App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 420px;
+            width: 85%;
+        }
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: 1.6rem;
+            color: #0052cc;
+            margin-bottom: 1rem;
+        }
+        p {
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .btn img {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+        .android { background-color: #3DDC84; color: #073042; }
+        .ios { background-color: #000000; }
+        
+        .footer-text {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="Logo SAINT.png" alt="Saint Logo" class="logo">
+    
+    <h1>¡Actualízate a Saint Access!</h1>
+    <p>Hemos lanzado una nueva versión mejorada. Por favor, descarga la nueva aplicación oficial para continuar disfrutando de nuestros servicios sin interrupciones.</p>
+
+    <div class="btn-list">
+        <a href="https://play.google.com/store/apps/details?id=com.saint.access&hl=es_HN" class="btn android" target="_blank">
+            <img src="android4.png" alt="Google Play">
+            Descargar para Android
+        </a>
+
+        <a href="https://apps.apple.com/hn/app/saint-access/id6759109608" class="btn ios" target="_blank">
+            <img src="applec.jpeg" alt="App Store">
+            Descargar para iOS
+        </a>
+    </div>
+
+    <p class="footer-text">© 2026 Saint - Todos los derechos reservados</p>
+</div>
+
+</body>
+</html>
